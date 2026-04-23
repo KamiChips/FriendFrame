@@ -23,7 +23,8 @@ const LoginScreen = () => {
 
     return (
         <LinearGradient
-            className={`flex-1 justify-center items-center px-6 space-y-4 ${isDark ? 'dark' : ''}`}
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+            className={`px-6 ${isDark ? 'dark' : ''}`}
             colors={
                 isDark ? ["#182240", "#115A67", "#AA3E14"] 
                 : ["#FAFAFA", "#30C2D9", "#FF9B42"]
@@ -31,9 +32,9 @@ const LoginScreen = () => {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
         >
-            <View className='w-4/5 justify-center space-y-6'>
+            <View className='w-3/4 self-center'>
                 {/* Welcome back */}
-                <View className="mb-8">
+                <View className="mb-20">
                     <Text className="text-background-dark dark:text-background-light text-4xl font-bold">
                     Welcome Back!
                     </Text>
@@ -43,7 +44,7 @@ const LoginScreen = () => {
                 </View>
 
                 {/* Login form */}
-                <View className="space-y-4">
+                <View className="mb-18">
                     <TextField
                         placeholder="Username"
                         value={username}
@@ -58,12 +59,12 @@ const LoginScreen = () => {
                     />
 
                     {/* Remember me / Forgot Password? */}
-                    <View className="flex-row justify-between">
+                    <View className="flex-row justify-between mb-12">
                         <Text className='dark:text-background-light'>[] Remember me</Text>
                         <Text className='font-semibold dark:text-background-light'>Forgot Password?</Text>
                     </View>
 
-                    <View className='items-center'>
+                    <View className='items-center mb-18 mt-12'>
                         <Button 
                             title="Log In" 
                             variant={isDark ? 'primary' : 'secondary'} 
@@ -73,8 +74,8 @@ const LoginScreen = () => {
                 </View>
 
                 {/* Login with Google or Sign up */}
-                <View className='items-center space-y-4'>
-                    <Text className='dark:text-background-light'>
+                <View className='items-center mb-4 mt-8'>
+                    <Text className='dark:text-background-light mb-4'>
                         Log in with
                     </Text>
                     <TouchableOpacity onPress={logInWithGoogle} >
@@ -83,7 +84,7 @@ const LoginScreen = () => {
                             source={require('../../assets/images/google-logo.png')}
                         />
                     </TouchableOpacity>
-                    <Text className='dark:text-background-light'>
+                    <Text className='dark:text-background-light mt-4'>
                         Don't have an account? {" "}
                         <Text className='font-semibold dark:text-background-light' onPress={() => console.log("go to sign up screen")}>
                             Sign up
