@@ -11,6 +11,8 @@ module.exports = {
         background:{
           light: "#FAFAFA", //Color blanco
           dark: "#182240", //Color azul obscuro
+          semidark: "#1D2A4F",
+          gray: "#F0EDED",
         },
         primary:{
           light:"#30C2D9", //Color cyan (para los hombres azul) 
