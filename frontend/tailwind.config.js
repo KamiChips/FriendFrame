@@ -34,3 +34,28 @@ module.exports = {
   darkMode: "class",
   plugins: [],
 };
+
+/*
+Como utilizar el dark mode y fonts:
+  - Para utilizar dark mode es lo siguiente:
+    Dentro de la linea de tailwind style se agrega "dark:"
+    para indicar los colores que se van a utilizar cuando la 
+    preferencia sea en modo dark y en cuanto a light mode se 
+    utiliza tailwind como siempre sin necesidad de agregar "light:"
+
+    EJEMPLO PARA UTILIZAR COLORES Y CLASE DARK:
+    className="bg-background-light dark:bg-background-dark"
+
+    bg -> clase de tailwind
+    background -> es una de las propiedades que defini dentro de tailwind.config 
+    light -> Propiedad que se encuentra dentro de background
+
+Como utilizar los fonts: 
+  - Pra utilizar font que descargamos:
+    Se debe de utilizar de la siguiente manera:
+    "font-borel"
+    "font-spartan"
+    "font-spartan-bold"
+
+    dentro de className de tailwind
+*/
