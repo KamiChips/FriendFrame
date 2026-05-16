@@ -20,18 +20,18 @@ const ChatMessageInput = ({ onSend, isDark }: ChatMessageInputProps) => {
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <View className='flex-row items-center -px-3 -py-2 border border-background-dark rounded-2xl mx-3 mb-3'>
+            <View className='flex-row items-center -px-3 -py-2 border border-background-dark rounded-2xl mx-3 mb-3 dark:border-background-light'>
                 
                 {/* Camara */}
                 {!text && (
                     <TouchableOpacity className="p-2 mr-1">
-                        <Ionicons name='camera' size={24} />
+                        <Ionicons name='camera' size={24} color={ isDark ? "#FAFAFA" : '#000000'} />
                     </TouchableOpacity>
                 )}
 
                 {/* Input */}
                 <TextInput
-                    className='flex-1 px-2 text-base max-h-24 '
+                    className='flex-1 px-2 text-base max-h-24 dark:text-background-light'
                     placeholder='Escribe un mensaje...'
                     placeholderTextColor={`${isDark ? '#aaa' : '#182240'}`}
                     value={text}
@@ -42,14 +42,14 @@ const ChatMessageInput = ({ onSend, isDark }: ChatMessageInputProps) => {
                 {/* Imagen*/}
                 {!text && (
                     <TouchableOpacity className='p-2 ml-1'>
-                        <Ionicons name='image' size={24} />
+                        <Ionicons name='image' size={24} color={ isDark ? "#FAFAFA" : '#000000'} />
                     </TouchableOpacity>
                 )}
 
                 {/* Enviar */}
                 {text.trim() && (
                     <TouchableOpacity className="p-2 ml-1" onPress={handleSend}>
-                        <Ionicons name='send' size={24} />
+                        <Ionicons name='send' size={24} color={ isDark ? "#FAFAFA" : '#000000'} />
                     </TouchableOpacity>
                 )}
             </View>

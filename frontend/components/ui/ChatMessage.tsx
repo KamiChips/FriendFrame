@@ -12,10 +12,10 @@ const ChatMessage = ({ message, time, sender }: ChatMessageProps) => {
 
     return (
         <View
-            className={`${isMe ? 'self-end bg-primary-light' : 'self-start bg-background-light'} max-w-[65%] p-3 my-1 rounded-2xl flex-row`}
+            className={`${isMe ? 'self-end bg-primary-light dark:bg-secondary-dark' : 'self-start bg-background-light dark:bg-slate-600'} max-w-[65%] p-3 my-1 rounded-2xl flex-row`}
         >
             <Text 
-                className={`${isMe ? 'text-background-light' : 'text-black'} pr-2 flex-shrink`}
+                className={`${isMe ? 'text-background-light' : 'text-black dark:text-gray-200'} pr-2 flex-shrink`}
             >
                 {message}
             </Text>

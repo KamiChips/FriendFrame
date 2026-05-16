@@ -12,12 +12,12 @@ interface ChatHeaderProps {
 
 const ChatHeader = ({isDark, username, initials, lastActive} : ChatHeaderProps) => {
     return (
-        <View className="opacity-85 flex-row ml-1">
+        <View className="opacity-85 flex-row pl-1 pb-2 dark:bg-background-dark dark:opacity-100">
             <TouchableOpacity className="p-2" onPress={() => router.back()}>
                 <Ionicons
                     name='arrow-back'
                     size={32}
-                    color={"#000000"}
+                    color={ isDark ? "#FAFAFA" : '#000000'}
                 />
             </TouchableOpacity>
             
@@ -44,8 +44,8 @@ const ChatHeader = ({isDark, username, initials, lastActive} : ChatHeaderProps) 
                     </View>
 
                     <View>
-                        <Text className="font-bold text-xl">{username}</Text>
-                        <Text className="font-light text-sm">{lastActive}</Text>
+                        <Text className="font-bold text-xl dark:text-background-light">{username}</Text>
+                        <Text className="font-light text-sm dark:text-background-light">{lastActive}</Text>
                     </View>
                 </TouchableOpacity>
             </View>

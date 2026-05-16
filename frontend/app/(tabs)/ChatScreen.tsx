@@ -45,8 +45,7 @@ const MESSAGES = [
 ];
 
 const ChatScreen = () => {
-    const isDark = false;
-    // useColorScheme() === 'dark';
+    const isDark = useColorScheme() === 'dark';
     const [messages, setMessages] = useState([...MESSAGES]);
     const scrollViewRef = useRef<ScrollView>(null);
 
@@ -68,14 +67,14 @@ const ChatScreen = () => {
     }
     
     return (
-        <SafeAreaView className="flex-1 bg-background-light">
+        <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
             <StatusBar 
                 barStyle={isDark ? 'light-content' : 'dark-content'} 
                 backgroundColor={isDark ? '#1a1a1a' : "#ffffff"}
             />
             <ChatHeader {...HEADER_PROPS}/>
 
-            <View className="flex-1 bg-gray-50 pt-5 pb-3">
+            <View className="flex-1 bg-gray-50 pt-5 pb-3 dark:bg-background-semidark">
                 <ScrollView 
                     className="flex-1"
                     ref={scrollViewRef}
