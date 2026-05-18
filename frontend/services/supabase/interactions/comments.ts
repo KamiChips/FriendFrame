@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase/client"
-import { assertTarget, getAuthUser, validateContent, assertUUID, targetToFilter, parseError, attachStatsToComments, buildCommentTree, normalizePagination } from "./helper"
+import { assertTarget, validateContent, targetToFilter, parseError, attachStatsToComments, buildCommentTree, normalizePagination } from "./helper"
 import { AppComment as Comment,PublicationTarget, InteractionResult, CommentWithReplies, DEFAULT_LIMIT, GetCommentsParams } from "./types"
+import { assertUUID, getAuthUser } from "../helpers/validation"
 
 // Agregar comentario a un post o fragmento 
 //Y cuando hay un parent comment se crea una respuesta anidada

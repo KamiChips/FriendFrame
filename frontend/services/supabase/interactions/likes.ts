@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase/client";
-import { assertTarget, assertUUID, getAuthUser, parseError, targetToFilter } from "./helper";
+import { assertTarget, parseError, targetToFilter } from "./helper";
 import { PublicationTarget, InteractionResult, Like, ToggleLikeResult } from "./types";
+import { assertUUID, getAuthUser } from "../helpers/validation";
 
 
 //operacion de UI/UX
