@@ -7,6 +7,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Link } from 'expo-router';
 import { TextField } from '@/components/ui/TextField';
+import ChatBubble from '@/components/ui/ChatBubble';
 
 export default function HomeScreen() {
   return (
@@ -24,6 +25,9 @@ export default function HomeScreen() {
       </ThemedView>
 
       <TextField placeholder="Username" />
+      
+      <ChatBubble message={{ text: "Hello, how are you?" }} currentUser={'luis'} />
+      <ChatBubble message={{ text: "I'm good, thanks! How about you?", senderId: "user1" }} currentUser={'user1'} />
 
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
