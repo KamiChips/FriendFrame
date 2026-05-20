@@ -1,9 +1,8 @@
 import { supabase } from "@/lib/supabase/client";
-import { parseError } from "../helpers/errors";
 import { assertUUID, getAuthUser } from "../helpers/validation";
 import { enrichUsersWithRelationship, fetchBlockStatus, fetchRelationshipStatus, notifyFollow } from "./queries";
 import { SocialResult, Follow, PaginationParams, SocialUser } from "./types";
-import { normalizePagination } from "./helper";
+import { normalizePagination, parseError } from "./helper";
 
 export async function followUser(
   targetUserId: string
