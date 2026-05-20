@@ -13,7 +13,7 @@ module.exports = {
           dark: "#182240", //Color azul obscuro
         },
         primary:{
-          light:"#30C2D9", //Color cyan (para los hombres azul)
+          light:"#30C2D9", //Color cyan (para los hombres azul) 
           dark: "#FF9B42", //Color naranja fosfo
         },
         secondary:{
