@@ -27,19 +27,16 @@ export default function FeedCard({
   isLiked = false,
 }: FeedCardProps) {
   return (
-    // Contenedor principal de la tarjeta. Usa tus colores de tailwind.config.js
     <View className="mb-4 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-transparent dark:bg-background-semidark">
       
       {/* --- CABECERA (Header) --- */}
       <View className="flex-row items-start p-4">
-        {/* Avatar con iniciales usando un degradado (simulado con colores de la paleta) */}
         <View className="h-12 w-12 items-center justify-center rounded-full bg-primary-light dark:bg-secondary-light">
           <Text className="font-spartan-bold text-lg text-white">
             {authorInitials}
           </Text>
         </View>
 
-        {/* Información del autor y destino */}
         <View className="ml-3 flex-1">
           <Text className="font-spartan-bold text-lg text-black dark:text-white">
             {authorName}
@@ -47,7 +44,6 @@ export default function FeedCard({
           <Text className="font-spartan text-sm text-gray-500 dark:text-gray-400">
             {timeAgo}
           </Text>
-          
           <Text className="mt-1 font-spartan text-sm text-gray-600 dark:text-gray-300">
             → en el perfil de <Text className="font-spartan-bold">{targetProfileName}</Text>
           </Text>
@@ -62,32 +58,33 @@ export default function FeedCard({
       </View>
 
       {/* --- IMAGEN (Renderizado Híbrido) --- */}
-      {/* Comprueba si es un string (URL) o un archivo local (require) */}
       {imageSource && (
         <View className="w-full bg-gray-50 dark:bg-gray-800/50">
           <Image
             source={typeof imageSource === 'string' ? { uri: imageSource } : imageSource}
-            className="h-80 w-full" // Aumentamos la altura de h-60 a h-80 para darle mejor espacio
-            contentFit="contain" // ¡Esta es la clave mágica para no recortar nada!
+            // Quitamos las clases h-80 y w-full de aquí
+            className="" 
+            // Y forzamos las medidas con style nativo (320 = h-80 en Tailwind)
+            style={{ width: '100%', height: 320 }} 
+            contentFit="contain" 
             transition={200}
           />
         </View>
       )}
+
       {/* --- PIE DE PÁGINA (Interacciones) --- */}
       <View className="flex-row items-center p-4">
-        {/* Botón de Like */}
         <Pressable className="mr-6 flex-row items-center">
           <Ionicons
             name={isLiked ? 'heart' : 'heart-outline'}
             size={24}
-            color={isLiked ? '#30C2D9' : '#8A8A8E'} // Cyan de tu primary.light si le dio like
+            color={isLiked ? '#30C2D9' : '#8A8A8E'} 
           />
           <Text className="ml-2 font-spartan text-base text-gray-500 dark:text-gray-400">
             {likesCount}
           </Text>
         </Pressable>
 
-        {/* Botón de Comentarios */}
         <Pressable className="flex-row items-center">
           <Ionicons 
             name="chatbubble-outline" 
