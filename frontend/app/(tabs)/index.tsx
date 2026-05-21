@@ -25,6 +25,7 @@ export default function HomeScreen() {
       </ThemedView>
 
       <TextField placeholder="Username" />
+
       
       <ChatBubble message={{ text: "Hello, how are you?" }} currentUser={'luis'} />
       <ChatBubble message={{ text: "I'm good, thanks! How about you?", senderId: "user1" }} currentUser={'user1'} />

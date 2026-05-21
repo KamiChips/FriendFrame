@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase/client"
-import { PublicationTarget, DEFAULT_LIMIT, MAX_PAGE_LIMIT, MAX_COMMENT_LENGTH, CommentWithReplies, AppComment as Comment, Like, CommentStats } from "./types"
+import { PublicationTarget, DEFAULT_LIMIT, MAX_PAGE_LIMIT, MAX_COMMENT_LENGTH, CommentWithReplies, AppComment as Comment, CommentStats } from "./types"
 import { assertUUID } from "../helpers/validation"
 
 export function assertTarget(target: PublicationTarget): void {

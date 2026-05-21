@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase/client"
-import { AuthUser } from "@supabase/supabase-js"
-import { SignInParams, AuthResult } from "./types"
+import {  SignInParams, AuthResult, AuthUser } from "@/services/supabase/auth/types"
 import { parseAuthError } from "./auth.errors"
+import { _removeCurrentDeviceToken } from "./notifications";
 
 export async function signIn({
     email,
@@ -112,6 +112,5 @@ export async function changePassword(
     }
 }
 
-function _removeCurrentDeviceToken(id: string) {
-    throw new Error("Function not implemented.")
-}
+
+

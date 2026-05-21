@@ -10,7 +10,7 @@ export function normalizePagination(params: PaginationParams) : {from: number; t
     return{ from: page * limit, to: page * limit + limit - 1}
 }
 
-function parseError(err: unknown): string {
+export function parseError(err: unknown): string {
   if (!err) return 'Error desconocido'
   const msg = (err as Error).message ?? String(err)
  

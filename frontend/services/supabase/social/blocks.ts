@@ -1,9 +1,8 @@
 import { supabase } from "@/lib/supabase/client";
-import { parseError } from "../helpers/errors";
 import { assertUUID, getAuthUser } from "../helpers/validation";
 import { SocialResult, Block, PaginationParams, SocialUser } from "./types";
 import { fetchBlockStatus } from "./queries";
-import { normalizePagination } from "./helper";
+import { normalizePagination, parseError } from "./helper";
 
 export async function blockUser(
   targetUserId: string

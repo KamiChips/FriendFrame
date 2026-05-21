@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase/client"
-import { AuthUser } from "@supabase/supabase-js"
+import { AuthUser } from "@/services/supabase/auth/types"
 
 export function onAuthStateChange(
     callback: (user: AuthUser | null) => void
@@ -11,7 +11,7 @@ export function onAuthStateChange(
                 return
             }
 
-            if(event == 'SIGNED_IN' || event == 'TOKEN_REFRESHED'){
+            if(event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED'){
                 const{data: profile} = await supabase
                 .from('users')
                 .select('*')
@@ -21,7 +21,7 @@ export function onAuthStateChange(
                 callback(profile as AuthUser ?? null)
             }
 
-            if(event == 'SIGNED_OUT'){
+            if(event === 'SIGNED_OUT'){
                 callback(null)
             }
         }

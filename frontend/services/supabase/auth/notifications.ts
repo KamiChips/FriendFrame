@@ -10,7 +10,7 @@ export async function registerDeviceToken(userId: string): Promise<void>{
         const{ status: existing} = await Notifications.getPermissionsAsync()
         let finalStatus = existing
 
-        if(existing !== 'granted')return
+        if(finalStatus !== 'granted')return
 
         const token = (await Notifications.getExpoPushTokenAsync()).data
 
@@ -27,7 +27,7 @@ export async function registerDeviceToken(userId: string): Promise<void>{
     }
 }
 
-async function _removeCurrentDeviceToken(userId: string): Promise<void>{
+export async function _removeCurrentDeviceToken(userId: string): Promise<void>{
     try{
         const Notifications = await import('expo-notifications')
         const token = (await Notifications.getExpoPushTokenAsync()).data

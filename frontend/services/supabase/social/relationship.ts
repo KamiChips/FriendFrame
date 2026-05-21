@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase/client"
 import { RelationshipStatus, SocialResult, SocialUser } from "./types"
-import { parseError } from "../helpers/errors"
+import { parseError } from "./helper"
 import { assertUUID, getAuthUser } from "../helpers/validation"
 import { fetchRelationshipStatus } from "./queries"
 
