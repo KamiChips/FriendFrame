@@ -62,9 +62,7 @@ export default function FeedCard({
         <View className="w-full bg-gray-50 dark:bg-gray-800/50">
           <Image
             source={typeof imageSource === 'string' ? { uri: imageSource } : imageSource}
-            // Quitamos las clases h-80 y w-full de aquí
             className="" 
-            // Y forzamos las medidas con style nativo (320 = h-80 en Tailwind)
             style={{ width: '100%', height: 320 }} 
             contentFit="contain" 
             transition={200}

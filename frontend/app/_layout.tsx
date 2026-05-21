@@ -15,8 +15,6 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [appIsReady, setAppIsReady] = useState(false);
 
-  // 1. Cargamos las fuentes. 
-  // OJO: Los nombres de la izquierda deben coincidir EXACTAMENTE con lo que pusiste en los corchetes de tailwind.config.js
   const [fontsLoaded, fontError] = useFonts({
     'LeagueSpartan-Regular': require('../assets/fonts/LeagueSpartan-Regular.ttf'),
     'LeagueSpartan-Bold': require('../assets/fonts/LeagueSpartan-Bold.ttf'),
