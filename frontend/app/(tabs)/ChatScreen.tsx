@@ -5,7 +5,15 @@ import { useRef, useState } from "react";
 import { View, useColorScheme, ScrollView, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const MESSAGES = [
+interface Message {
+    id: number;
+    message: string;
+    time: string;
+    sender: string;
+    initials?: string;
+}
+
+const MESSAGES: Message[] = [
     {
         id: 1,
         message: "Hola trabalenguas, dime un trabalenguas",
@@ -17,12 +25,14 @@ const MESSAGES = [
         message: "Hay que volvernos expertos en el valo",
         time: "1:28 pm",
         sender: "other",
+        initials: "AR",
     },
     {
         id: 3,
         message: "Al final nunca sacamos el apex, ahi esta empolvado",
         time: "1:28 pm",
         sender: "other",
+        initials: "AR",
     },
     {
         id: 4,
@@ -35,6 +45,7 @@ const MESSAGES = [
         message: "n0 sE M3 Ocur3E N4d0ta",
         time: "1:28 pm",
         sender: "other",
+        initials: "AR",
     },
     {
         id: 6,
@@ -45,7 +56,7 @@ const MESSAGES = [
 ];
 
 const ChatScreen = () => {
-    const isDark = useColorScheme() === 'dark';
+    const isDark = useColorScheme() === "dark";
     const [messages, setMessages] = useState([...MESSAGES]);
     const scrollViewRef = useRef<ScrollView>(null);
 
@@ -84,7 +95,7 @@ const ChatScreen = () => {
                 >
                     {/* Chats */}
                     {messages.map(m => (
-                        <ChatMessage key={m.id} {...m} />
+                        <ChatMessage key={m.id} {...m} isDark={isDark} />
                     ))}
                 </ScrollView>
             </View>

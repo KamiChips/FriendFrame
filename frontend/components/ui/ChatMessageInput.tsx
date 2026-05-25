@@ -20,7 +20,7 @@ const ChatMessageInput = ({ onSend, isDark }: ChatMessageInputProps) => {
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <View className='flex-row items-center -px-3 -py-2 border border-background-dark rounded-2xl mx-3 mb-3 dark:border-background-light'>
+            <View className='flex-row items-center -px-3 -py-2 border border-[#e6e6e6] rounded-2xl mx-3 dark:border-[#404b65]'>
                 
                 {/* Camara */}
                 {!text && (
@@ -31,7 +31,7 @@ const ChatMessageInput = ({ onSend, isDark }: ChatMessageInputProps) => {
 
                 {/* Input */}
                 <TextInput
-                    className='flex-1 px-2 text-base max-h-24 dark:text-background-light'
+                    className='flex-1 px-2 text-base font-spartan max-h-24 bg-background-gray dark:text-background-light dark:bg-[#1f2b4a] rounded-xl'
                     placeholder='Escribe un mensaje...'
                     placeholderTextColor={`${isDark ? '#aaa' : '#182240'}`}
                     value={text}
