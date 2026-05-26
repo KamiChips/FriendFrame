@@ -12,12 +12,14 @@ export default function FeedScreen() {
     // Se implementa dark mode usando las clases de Tailwind y el color de fondo definido en tu tailwind.config.js
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark"> 
       
-      {/* HEADER Provisional */}
+     {/* HEADER Provisional */}
       <View className="w-full max-w-2xl mx-auto px-4 py-3 flex-row justify-between items-center border-b border-gray-200 dark:border-gray-800/50">
-        {/* Aquí usamos font-borel que tienes en tu tailwind.config */}
-        <Text className="text-2xl font-borel text-black dark:text-white">
+        
+        {/* Agregamos py-2 para que los trazos de Borel no se corten */}
+        <Text className="text-2xl font-borel text-black dark:text-white py-3">
           FriendFrame
         </Text>
+        
         <Ionicons name="notifications-outline" size={24} color="#8A8A8E" />
       </View>
 
@@ -48,7 +50,7 @@ export default function FeedScreen() {
             timeAgo="hace 2 horas"
             targetProfileName="María González"
             textContent="María siempre encuentra los mejores lugares para el café! ☕"
-            imageSource={require('@/assets/images/EjemploPost.jpg')} 
+            imageSource={require('../../assets/images/EjemploPost.jpg')} 
             likesCount={46}
             commentsCount={12}
             isLiked={false}

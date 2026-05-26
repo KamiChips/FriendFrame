@@ -19,9 +19,8 @@ export default function HomeScreen() {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-
-      <View className="mb-20">
-        <Text className="text-4xl mb-40 font-borel">
+      <View className="mb-20 items-center">
+        <Text className="text-5xl mb-40 font-borel py-4 leading-loose text-background-dark dark:text-background-light">
           FriendFrame
         </Text>
 
@@ -34,7 +33,6 @@ export default function HomeScreen() {
           <Button title="Have an Account?" onPress={() => { }} variant="primary" />
         </Link>
       </View>
-
     </LinearGradient>
   );
 }

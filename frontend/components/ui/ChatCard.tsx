@@ -1,6 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, StatusBar, Text, TouchableOpacity, View, useColorScheme } from "react-native";
 import '../../global.css';
+import ProfileIcon from "./ProfileIcon";
 
 type ChatCardProps = {
     id: number,
@@ -28,23 +29,7 @@ const ChatCard = ({ initials, name, message, time, unread, isDark }:ChatCardProp
             {/* Perfil de usuario */}
             <TouchableOpacity>
                 <View className="mr-3 relative">
-                    <LinearGradient  
-                        colors={
-                            isDark ? ["#182240", "#115A67", "#AA3E14"] 
-                            : ["#FAFAFA", "#30C2D9", "#FF9B42"]
-                        }
-                        style={{
-                            width: 48,
-                            height: 48,
-                            alignItems: 'center',
-                            justifyContent: "center",
-                            borderRadius: "50%",  
-                        }}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 0.7, y: 0.7 }}
-                    >
-                        <Text className="text-background-light font-semibold">{initials}</Text>
-                    </LinearGradient>
+                    <ProfileIcon initials={initials} isDark={isDark} />
 
                     {/* Puntito de no leido */}
                     {unread && (
