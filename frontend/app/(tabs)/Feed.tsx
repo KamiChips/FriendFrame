@@ -17,7 +17,7 @@ export default function FeedScreen() {
         
         {/* Agregamos py-2 para que los trazos de Borel no se corten */}
         <Text className="text-2xl font-borel text-black dark:text-white py-3">
-          FriendFrame
+          friendframe
         </Text>
         
         <Ionicons name="notifications-outline" size={24} color="#8A8A8E" />

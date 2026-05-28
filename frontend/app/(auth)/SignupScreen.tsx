@@ -105,7 +105,10 @@ const SignUpScreen = () => {
                             <Button
                                 title="Sign Up"
                                 variant={isDark ? 'primary' : 'secondary'}
-                                onPress={handleSubmit} />
+                                onPress={() => {
+                                    handleSubmit();
+                                    router.push('/Feed');
+                                }}/>
                         </View>
                     </View>
 
