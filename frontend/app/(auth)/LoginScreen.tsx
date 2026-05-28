@@ -74,7 +74,10 @@ const LoginScreen = () => {
                             <Button
                                 title="Log In"
                                 variant={isDark ? 'primary' : 'secondary'}
-                                onPress={handleSubmit} />
+                                onPress={() => {
+                                    handleSubmit();
+                                    router.push('/Feed');
+                                }} />
                         </View>
                     </View>
 
