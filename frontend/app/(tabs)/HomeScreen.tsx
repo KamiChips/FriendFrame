@@ -21,7 +21,7 @@ export default function HomeScreen() {
     >
       <View className="mb-20 items-center">
         <Text className="text-5xl mb-40 font-borel py-4 leading-loose text-background-dark dark:text-background-light">
-          FriendFrame
+          friendframe
         </Text>
 
         <Link href="/SignupScreen" asChild>
