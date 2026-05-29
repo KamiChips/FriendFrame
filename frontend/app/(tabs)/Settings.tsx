@@ -4,6 +4,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import '../../global.css'; 
 import { Toggle } from '@/components/ui/Toggle';
+import { EditProfileModal } from '@/components/ui/EditProfileModal';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -17,6 +18,12 @@ export default function SettingsScreen() {
 
   // Lista de las pestañas superiores
   const tabs = ['General', 'Bloqueados', 'Mis Posts', 'Mis Fragments'];
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [userData, setUserData] = useState({
+    name: 'María González',
+    username: 'maria_g'
+  });
 
   return (
     <SafeAreaView className="flex-grow bg-[#F9F9F9] dark:bg-neutral-900">
@@ -93,8 +100,8 @@ export default function SettingsScreen() {
             {/* Perfil */}
             <View className="bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 mb-4 shadow-sm">
               <Text className="text-lg font-bold text-[#1D2A4F] dark:text-white mb-1">Perfil</Text>
-              <Text className="text-gray-400 text-sm mb-4">María González (@maria_g)</Text>
-              <TouchableOpacity className="active:opacity-60">
+              <Text className="text-gray-400 text-sm mb-4">{userData.name} (@{userData.username})</Text>
+              <TouchableOpacity onPress={() => setModalVisible(true)} className="active:opacity-60" >
                 <Text className="text-[#34C2DD] font-semibold text-base">Editar perfil</Text>
               </TouchableOpacity>
             </View>
@@ -128,6 +135,19 @@ export default function SettingsScreen() {
         )}
 
       </ScrollView>
+
+      {/* Modal para editar perfil */}
+      <EditProfileModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        currentName={userData.name}
+        currentUsername={userData.username}
+        onSave={(newName, newUsername) => {
+          // Al guardar en el modal, actualizamos el estado de la pantalla principal
+          setUserData({ name: newName, username: newUsername });
+        }}
+      />
+
     </SafeAreaView>
   );
 }
