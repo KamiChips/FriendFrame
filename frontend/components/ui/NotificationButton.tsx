@@ -1,6 +1,7 @@
 import { TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import '../../global.css';
+import { router } from 'expo-router';
 
 interface NotificationButtonProps {
     hasUnreadNotifications?: boolean,
@@ -9,7 +10,7 @@ interface NotificationButtonProps {
 
 const NotificationButton = ({ isDark, hasUnreadNotifications = true }: NotificationButtonProps) => {
     return(
-        <TouchableOpacity className='relative' onPress={() => console.log("Open notifications")}>
+        <TouchableOpacity className='relative' onPress={() => router.navigate("/NotificationInbox")}>
             <Ionicons
                 name='notifications-outline'
                 size={28}

@@ -1,7 +1,7 @@
 import { ScrollView, StatusBar, Text, View, useColorScheme, TouchableOpacity } from "react-native";
 import '../../global.css';
 import ChatCard from "@/components/ui/ChatCard";
-import HeaderWithLogoAndNotificationBell from "@/components/ui/HeaderWithLogoAndNotificationBell";
+import FriendframeHeader from "@/components/ui/FriendframeHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from 'expo-router'; 
 import { Ionicons } from '@expo/vector-icons'; 
@@ -32,14 +32,14 @@ const ChatInboxScreen = () => {
     ];
 
     return (
-        <SafeAreaView className={`flex-1 bg-background-gray ${isDark ? 'dark' : ''} dark:bg-background-semidark `} >
+        <SafeAreaView className={`flex-1 bg-background-light ${isDark ? 'dark' : ''} dark:bg-background-semidark `} >
             <StatusBar 
                 barStyle={isDark ? 'light-content' : 'dark-content'} 
-                backgroundColor={isDark ? '#1a1a1a' : "#ffffff"}
+                backgroundColor={isDark ? '#1a1a1a' : "#fafafa"}
             />
 
             {/* Header */}
-            <HeaderWithLogoAndNotificationBell isDark={isDark} />
+            <FriendframeHeader isDark={isDark} />
 
             {/* Inbox */}
             <View className="flex-1 bg-gray-50 dark:bg-background-dark">

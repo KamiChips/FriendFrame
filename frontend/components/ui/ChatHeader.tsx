@@ -1,8 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
 import { View, TouchableOpacity, Text } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
 import ProfileIcon from "./ProfileIcon";
+import GoBackButton from "./GoBackButton";
 
 interface ChatHeaderProps {
     isDark: boolean,
@@ -14,13 +12,7 @@ interface ChatHeaderProps {
 const ChatHeader = ({isDark, username, initials, lastActive} : ChatHeaderProps) => {
     return (
         <View className="opacity-85 flex-row pl-1 pb-2 dark:bg-background-dark dark:opacity-100 border-b border-[#e6e6e6] dark:border-[#404b65]">
-            <TouchableOpacity className="p-2" onPress={() => router.back()}>
-                <Ionicons
-                    name='arrow-back'
-                    size={32}
-                    color={ isDark ? "#FAFAFA" : '#000000'}
-                />
-            </TouchableOpacity>
+            <GoBackButton isDark={isDark} />
             
             <View className="">
                 <TouchableOpacity className="flex-row justify-center">
