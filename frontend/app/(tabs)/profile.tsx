@@ -20,6 +20,8 @@ export default function ProfileScreen() {
           followersCount={100}
         />
 
+        <BlockUserWarning name='vgyutcd' />
+
         {/* Contenedor inferior (la "tarjeta" que se ve en tu mockup) */}
         <View className="flex-1 bg-background-gray dark:bg-background-semidark mt-4 rounded-t-[30px] min-h-[500px]">
           {/* Aquí irá todo el contenido de las publicaciones gestionadas por los amigos */}
