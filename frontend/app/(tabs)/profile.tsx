@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import UserProfileHeader from '@/components/ui/UserProfileHeader'; // Ajusta la ruta si es necesario
+import BlockUserWarning from '@/components/ui/BlockUserWarning';
 
 export default function ProfileScreen() {
   return (
@@ -17,6 +18,8 @@ export default function ProfileScreen() {
           friendsCount={100}
           followersCount={100}
         />
+
+        <BlockUserWarning name='vgyutcd' />
 
         {/* Contenedor inferior (la "tarjeta" que se ve en tu mockup) */}
         <View className="flex-1 bg-background-gray dark:bg-background-semidark mt-4 rounded-t-[30px] min-h-[500px]">
