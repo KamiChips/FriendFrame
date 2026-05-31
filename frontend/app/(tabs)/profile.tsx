@@ -1,7 +1,9 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import UserProfileHeader from '@/components/ui/UserProfileHeader'; // Ajusta la ruta si es necesario
+import UserProfileHeader from '@/components/ui/UserProfileHeader'; 
+import '../../global.css';
+import { FloatingMenu } from '@/components/ui/FloatingMenu';
 
 export default function ProfileScreen() {
   return (
@@ -23,6 +25,17 @@ export default function ProfileScreen() {
           {/* Aquí irá todo el contenido de las publicaciones gestionadas por los amigos */}
         </View>
 
+        <FloatingMenu
+          onCreatePost={() => {
+            // Aquí puedes manejar la acción de crear un nuevo post
+            console.log('Crear nuevo post');
+          }}
+          onCreateFragment={() => {
+            // Aquí puedes manejar la acción de crear un nuevo fragment
+            console.log('Crear nuevo fragment');
+          }}
+        />
+        
       </ScrollView>
     </SafeAreaView>
   );
