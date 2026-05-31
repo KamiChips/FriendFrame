@@ -4,6 +4,7 @@ import ChatMessageInput from "@/components/ui/ChatMessageInput";
 import { useRef, useState } from "react";
 import { View, useColorScheme, ScrollView, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import '../global.css';
 
 interface Message {
     id: number;
