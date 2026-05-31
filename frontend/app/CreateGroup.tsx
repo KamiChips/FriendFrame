@@ -30,7 +30,7 @@ export default function CreateGroupScreen() {
   };
 
   return (
-    // KeyboardAvoidingView evita que el teclado de Android/iOS oculte tu UI
+    // KeyboardAvoidingView evita que el teclado de Android/iOS oculte la UI
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 justify-end bg-black/50" // Fondo translúcido oscuro
@@ -101,7 +101,7 @@ export default function CreateGroupScreen() {
 
         </ScrollView>
 
-        {/* BOTÓN CREAR (Alineado abajo para completar el formulario) */}
+        {/* BOTÓN CREAR */}
         <TouchableOpacity 
           disabled={groupName.length === 0 || selectedFriends.length === 0}
           className={`py-4 rounded-xl items-center mt-2 ${
