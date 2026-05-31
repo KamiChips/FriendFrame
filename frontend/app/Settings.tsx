@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Switch, SafeAreaView } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'; 
 import { useRouter } from 'expo-router';
-import '../../global.css'; 
+import '../global.css'; 
 import { Toggle } from '@/components/ui/Toggle';
 import { EditProfileModal } from '@/components/ui/EditProfileModal';
 

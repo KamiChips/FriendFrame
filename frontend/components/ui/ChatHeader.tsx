@@ -21,7 +21,7 @@ const ChatHeader = ({isDark, username, initials, lastActive} : ChatHeaderProps) 
                     </View>
 
                     <View>
-                        <Text className="font-bold text-xl dark:text-background-light font-spartan">{username}</Text>
+                        <Text className="text-xl dark:text-background-light font-spartan-bold">{username}</Text>
                         <Text className="font-light text-sm dark:text-background-light font-spartan">{lastActive}</Text>
                     </View>
                 </TouchableOpacity>

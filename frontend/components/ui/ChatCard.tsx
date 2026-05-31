@@ -2,6 +2,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, StatusBar, Text, TouchableOpacity, View, useColorScheme } from "react-native";
 import '../../global.css';
 import ProfileIcon from "./ProfileIcon";
+import { router } from "expo-router";
 
 type ChatCardProps = {
     id: number,
@@ -25,9 +26,10 @@ const ChatCard = ({ initials, name, message, time, unread, isDark }:ChatCardProp
                 shadowRadius: 6,
                 elevation: 2,
             }}
+            onPress={() => router.navigate("/ChatScreen")}
         >
             {/* Perfil de usuario */}
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => router.navigate("/profile")}>
                 <View className="mr-3 relative">
                     <ProfileIcon initials={initials} isDark={isDark} />
 
@@ -43,8 +45,8 @@ const ChatCard = ({ initials, name, message, time, unread, isDark }:ChatCardProp
             
             {/* Info del Chat */}
             <View className="flex-1">
-                <Text className="font-semibold text-[#1a1a1a] mb-0.5 dark:text-background-light">{name}</Text>
-                <Text className="text-xs text-[#888] dark:text-background-light">{message}</Text> 
+                <Text className="font-spartan text-[#1a1a1a] mb-0.5 dark:text-background-light">{name}</Text>
+                <Text className="text-xs text-[#888] dark:text-background-light font-spartan">{message}</Text> 
             </View>
 
             <Text className="text-xs text-[#aaa] ml-2">{time}</Text>

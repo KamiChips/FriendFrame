@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 
 interface UserProfileHeaderProps {
   name: string;
@@ -26,7 +27,7 @@ export default function UserProfileHeader({
     <View className="w-full bg-background-light dark:bg-background-dark px-6 py-12 relative">
       
       {/* Icono de Menú superior derecho */}
-      <TouchableOpacity className="absolute right-6 top-12 z-10">
+      <TouchableOpacity className="absolute right-6 top-12 z-10" onPress={() => router.navigate("/Settings")}>
         <Ionicons 
           name="menu-outline" 
           size={32} 

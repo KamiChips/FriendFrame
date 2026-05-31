@@ -46,7 +46,7 @@ const ChatInboxScreen = () => {
                 
                 {/* --- HEADER DE MENSAJES CON BOTÓN DE CREAR GRUPO --- */}
                 <View className="flex-row justify-between items-center px-4 pt-5 pb-3">
-                    <Text className="font-bold text-2xl text-[#1a1a1a] dark:text-background-light">
+                    <Text className="font-spartan-bold text-2xl text-[#1a1a1a] dark:text-background-light">
                         Mensajes
                     </Text>
 
