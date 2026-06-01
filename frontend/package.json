@@ -66,7 +66,16 @@
   "jest": {
     "preset": "jest-expo",
     "moduleNameMapper": {
-      "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/fileMock.ts"
+      "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/fileMock.ts",
+      "collectCoverage": true,
+      "collectCoverageFrom": [
+        "**/*.{ts,tsx,js,jsx}",
+        "!**/coverage/**",
+        "!**/node_modules/**",
+        "!**/babel.config.js",
+        "!**/expo-env.d.ts",
+        "!**/.expo/**"
+      ]
     }
   },
   "private": true
