@@ -28,16 +28,12 @@ export default function ProfileScreen() {
           {/* Aquí irá todo el contenido de las publicaciones gestionadas por los amigos */}
         </View>
 
-        <FloatingMenu
-          onCreatePost={() => {
-            // Aquí puedes manejar la acción de crear un nuevo post
-            console.log('Crear nuevo post');
-          }}
-          onCreateFragment={() => {
-            // Aquí puedes manejar la acción de crear un nuevo fragment
-            console.log('Crear nuevo fragment');
-          }}
-        />
+        <View className="mb-40 pb-10">
+          <FloatingMenu 
+            onCreatePost={() => console.log('Crear Post')}
+            onCreateFragment={() => console.log('Crear Fragment')}
+          />
+        </View>
         
       </ScrollView>
     </SafeAreaView>
