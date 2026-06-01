@@ -37,3 +37,14 @@ export interface ProfileResult<T = null> {
   data:  T | null
   error: string | null
 }
+
+export interface PaginationParams {
+  page?: number
+  limit?: number
+}
+
+export const MAX_PAGE_LIMIT = 50
+export const DEFAULT_LIMIT = 30
+export const MIN_SEARCH_LENGTH = 2
+export const MAX_SEARCH_LENGTH = 50
+export const MAX_SEARCH_RESULTS = 50
