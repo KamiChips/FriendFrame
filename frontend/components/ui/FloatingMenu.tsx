@@ -59,7 +59,7 @@ export function FloatingMenu({ onCreatePost, onCreateFragment }: FloatingMenuPro
   };
 
   return (
-    <View className="absolute inset-0 pointer-events-box-none z-50 justify-end items-end p-6">
+    <View className="absolute inset-0 pointer-events-box-none z-50 justify-end items-end pb-10 pr-6">
       
       {/* Fondo oscuro (Aparece y si lo tocas, cierra el menú) */}
       {isOpen && (
@@ -72,7 +72,7 @@ export function FloatingMenu({ onCreatePost, onCreateFragment }: FloatingMenuPro
       )}
 
       {/* Contenedor de las Opciones del Menú */}
-      <Animated.View style={[animatedStyles]} className="mb-5 space-y-6 items-end">
+      <Animated.View style={[animatedStyles]} className="pb-10 mb-5 space-y-6 items-end">
         
         {/* Opción: Crear Post */}
         <TouchableOpacity 
