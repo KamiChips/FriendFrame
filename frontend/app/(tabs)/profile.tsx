@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import UserProfileHeader from '@/components/ui/UserProfileHeader'; 
 import '../../global.css';
 import { FloatingMenu } from '@/components/ui/FloatingMenu';
+import BlockUserWarning from '@/components/ui/BlockUserWarning';
 
 export default function ProfileScreen() {
   return (
