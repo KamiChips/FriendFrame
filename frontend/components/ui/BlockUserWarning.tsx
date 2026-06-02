@@ -43,7 +43,7 @@ const BlockUserWarning = ({ name }:{ name:string }) => {
     };
 
     return (
-        <SafeAreaView className='flex-1 justify-center items-center'>
+        <View>
             <Modal
                 animationType='none'
                 transparent={true}
@@ -78,13 +78,17 @@ const BlockUserWarning = ({ name }:{ name:string }) => {
                 </Animated.View>
             </Modal>
 
+            {/* Trigger: línea separadora + texto sutil */}
             <Pressable
-                className='bg-[#D4183D] dark:bg-[#82181A] p-3 rounded-2xl'
+                className='flex-row items-center justify-center py-0.5'
                 onPress={openModal}
             >
-                <Text className='font-spartan text-lg text-[#FFFFFF] text-center'>BLOQUEAR USUARIO</Text>
+                <Ionicons name="ban-outline" size={20} color={isDark ? "#ef4444" : "#B91C1C"} />
+                <Text className='font-spartan-bold text-base text-red-800 dark:text-red-500 ml-2'>
+                    Bloquear usuario
+                </Text>
             </Pressable>
-        </SafeAreaView>
+        </View>
     );
 }
 
