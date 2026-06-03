@@ -140,6 +140,7 @@ export default function SignUpScreen() {
           {/* Sign up form */}
           <View className="mb-6">
             <TextField
+              testID="fullname-textfield"
               placeholder="Full Name"
               value={form.full_name}
               onChangeText={(text) =>
@@ -150,6 +151,7 @@ export default function SignUpScreen() {
               }
             />
             <TextField
+              testID="username-signup-textfield"
               placeholder="Username"
               value={form.username}
               onChangeText={(text) =>
@@ -160,6 +162,7 @@ export default function SignUpScreen() {
               }
             />
             <TextField
+              testID="email-signup-textfield"
               placeholder="Email"
               value={form.email}
               onChangeText={(text) =>
@@ -170,6 +173,7 @@ export default function SignUpScreen() {
               }
             />
             <TextField
+              testID="password-signup-textfield"
               placeholder="Password"
               value={form.password}
               onChangeText={(text) =>
@@ -184,6 +188,7 @@ export default function SignUpScreen() {
             {/* Checkbox de Términos */}
             <View className="flex-row items-center justify-start w-full my-4 pr-2">
               <TouchableOpacity
+                testID="tac-button"
                 activeOpacity={0.8}
                 onPress={() => setIsTermsAccepted(!isTermsAccepted)}
                 className={`w-5 h-5 rounded border mr-3 justify-center items-center ${
