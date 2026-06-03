@@ -105,9 +105,9 @@ export const NewFragment = ({ isVisible, onClose, onPublish }: NewFragmentProps)
                         <View className="flex-row justify-between items-center px-1 mb-6">
                             <View className="flex-row items-center space-x-2">
                                 {/* Teal progress circle */}
-                                <View className="w-8 h-8 rounded-full border-2 border-cyan-400 items-center justify-center">
+                                <View className="w-8 h-8 rounded-full border-2 border-cyan-400 dark:border-[#f97316] dark:items-center dark:justify-center">
                                     {text.length > 0 && (
-                                        <Text style={{ fontSize: 8 }} className="text-cyan-500">
+                                        <Text style={{ fontSize: 8 }} className="text-cyan-500 dark:text-[#f97316]">
                                             {Math.round((text.length / maxChars) * 100)}
                                         </Text>
                                     )}
