@@ -6,31 +6,40 @@ import {
   TouchableOpacity,
   Switch,
   SafeAreaView,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import "../global.css";
 import { Toggle } from "@/components/ui/Toggle";
 import { EditProfileModal } from "@/components/ui/EditProfileModal";
+import { signOut } from "@/services/supabase/auth/auth.sign-in";
 
 export default function SettingsScreen() {
   const router = useRouter();
 
   // Estado para controlar la pestaña activa (Fiel a image_a19276.png)
   const [activeTab, setActiveTab] = useState("General");
-
-  // Estados para los interruptores (Switches)
   const [isDark, setIsDark] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-
-  // Lista de las pestañas superiores
   const tabs = ["General", "Bloqueados", "Mis Posts", "Mis Fragments"];
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [userData, setUserData] = useState({
     name: "María González",
     username: "maria_g",
   });
+
+  const handleLogOut = async () => {
+    setLoading(true);
+    const { error } = await signOut();
+    setLoading(false);
+
+    if (error) Alert.alert("Error", error);
+  };
 
   return (
     <SafeAreaView className="flex-grow bg-[#F9F9F9] dark:bg-neutral-900">
@@ -144,16 +153,27 @@ export default function SettingsScreen() {
             </View>
 
             {/* Botón: Cerrar Sesión */}
-            <TouchableOpacity className="bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 flex-row justify-center items-center shadow-sm active:opacity-70 mt-2">
-              <MaterialIcons
-                name="logout"
-                size={20}
-                color="#DC2626"
-                className="mr-2"
-              />
-              <Text className="text-red-600 font-semibold text-base">
-                Cerrar sesión
-              </Text>
+            <TouchableOpacity
+              className="bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 flex-row justify-center items-center shadow-sm active:opacity-70 mt-2"
+              onPress={handleLogOut}
+              activeOpacity={0.8}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator />
+              ) : (
+                <>
+                  <MaterialIcons
+                    name="logout"
+                    size={20}
+                    color="#DC2626"
+                    className="mr-2"
+                  />
+                  <Text className="text-red-600 font-semibold text-base">
+                    Cerrar sesión
+                  </Text>
+                </>
+              )}
             </TouchableOpacity>
           </View>
         )}
