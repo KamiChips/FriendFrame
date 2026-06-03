@@ -51,148 +51,154 @@ export default function ProfileScreen() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240]">
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <UserProfileHeader
-          name={targetName}
-          username={isOwnProfile ? "maria_g" : "carlos_r"}
-          profileImageSource={require("../../assets/images/Rick.jpg")}
-          postsCount={isOwnProfile ? 3 : 2}
-          friendsCount={2}
-          followersCount={3}
-        />
+    // 1. EL CONTENEDOR PADRE: Pinta la barra de estado superior (reloj/batería)
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1F2B4A]">
+      
+      {/* 2. EL CONTENEDOR DEL CUERPO: Mantiene el color original de tu Perfil */}
+      <View className="flex-1 bg-background-light dark:bg-[#182240]">
+        
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header */}
+          <UserProfileHeader
+            name={targetName}
+            username={isOwnProfile ? "maria_g" : "carlos_r"}
+            profileImageSource={require("../../assets/images/Rick.jpg")}
+            postsCount={isOwnProfile ? 3 : 2}
+            friendsCount={2}
+            followersCount={3}
+          />
 
-        {/* Biografia y acciones */}
-        <View className="px-6 pb-4 bg-background-light dark:bg-[#182240]">
-          <Text className="font-spartan text-sm text-gray-800 dark:text-gray-300 mb-4">
-            {userBio}
-          </Text>
+          {/* Biografia y acciones */}
+          <View className="px-6 pb-4 bg-background-light dark:bg-[#182240]">
+            <Text className="font-spartan text-sm text-gray-800 dark:text-gray-300 mb-4">
+              {userBio}
+            </Text>
 
-          {isOwnProfile ? (
-            // ESCENARIO 1: Mi perfil/usuario
-            <TouchableOpacity className="w-full py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center">
-              <Text className="font-spartan-bold text-black dark:text-white text-base">
-                Editar Perfil
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            // ESCENARIOS 2 Y 3: Otro usuario
-            <View>
-              {!isFollowing ? (
-                // ESCENARIO 2: No lo sigo :( — solo botón Seguir
-                <TouchableOpacity
-                  className="w-full py-3.5 rounded-2xl bg-[#30C2D9] dark:bg-[#AA3E14] items-center"
-                  onPress={() => setIsFollowing(true)}
-                >
-                  <Text className="font-spartan-bold text-white text-base">
-                    Seguir
-                  </Text>
-                </TouchableOpacity>
-              ) : (
-                // ESCENARIO 3: Si lo sigo :) — botones Siguiendo + Mensaje
-                <View className="flex-row justify-between gap-3">
+            {isOwnProfile ? (
+              // ESCENARIO 1: Mi perfil/usuario
+              <TouchableOpacity className="w-full py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center">
+                <Text className="font-spartan-bold text-black dark:text-white text-base">
+                  Editar Perfil
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              // ESCENARIOS 2 Y 3: Otro usuario
+              <View>
+                {!isFollowing ? (
+                  // ESCENARIO 2: No lo sigo :( — solo botón Seguir
                   <TouchableOpacity
-                    className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
-                    onPress={() => setIsFollowing(false)}
+                    className="w-full py-3.5 rounded-2xl bg-[#30C2D9] dark:bg-[#AA3E14] items-center"
+                    onPress={() => setIsFollowing(true)}
                   >
-                    <Text className="font-spartan-bold text-black dark:text-white text-base">
-                      Siguiendo
+                    <Text className="font-spartan-bold text-white text-base">
+                      Seguir
                     </Text>
                   </TouchableOpacity>
+                ) : (
+                  // ESCENARIO 3: Si lo sigo :) — botones Siguiendo + Mensaje
+                  <View className="flex-row justify-between gap-3">
+                    <TouchableOpacity
+                      className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
+                      onPress={() => setIsFollowing(false)}
+                    >
+                      <Text className="font-spartan-bold text-black dark:text-white text-base">
+                        Siguiendo
+                      </Text>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center">
-                    <Text className="font-spartan-bold text-black dark:text-white text-base">
-                      Mensaje
-                    </Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center">
+                      <Text className="font-spartan-bold text-black dark:text-white text-base">
+                        Mensaje
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                {/* Bloquear usuario */}
+                <View className="mt-3">
+                  <BlockUserWarning
+                    name={isOwnProfile ? "maria_g" : "carlos_r"}
+                  />
+                </View>
+              </View>
+            )}
+          </View>
+
+          {/* TABS */}
+          <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+          {/* POSTS */}
+          <View className="flex-1 bg-background-light dark:bg-[#182240] pt-4 min-h-[500px] items-center">
+            <View>
+              {activeTab === "grid" && (
+                <View className="flex-row flex-wrap gap-2">
+                  {mockPosts.map((post) => (
+                    <TouchableOpacity
+                      key={post.id}
+                      className="w-[32%] aspect-square bg-gray-200 dark:bg-[#2A3654]"
+                      onPress={() => console.log("Post:", post.id)}
+                    >
+                      {post.hasImage ? (
+                        <Image
+                          source={
+                            typeof post.imageSource === "string"
+                              ? { uri: post.imageSource }
+                              : post.imageSource
+                          }
+                          style={{ width: "100%", height: "100%" }}
+                          contentFit="cover"
+                        />
+                      ) : (
+                        <View className="flex-1 p-1 justify-center items-center">
+                          <Text
+                            className="font-spartan text-[10px] leading-4 text-black dark:text-white text-center"
+                            numberOfLines={5}
+                          >
+                            {post.textContent}
+                          </Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  ))}
                 </View>
               )}
 
-              {/* Bloquear usuario */}
-              <View className="mt-3">
-                <BlockUserWarning
-                  name={isOwnProfile ? "maria_g" : "carlos_r"}
-                />
-              </View>
+              {activeTab === "list" && (
+                <View className="gap-y-4">
+                  {mockPosts.map((post) => (
+                    <FeedCard
+                      key={post.id}
+                      authorName={targetName}
+                      authorInitials="CR"
+                      timeAgo={post.timeAgo}
+                      targetProfileName={targetName}
+                      textContent={post.textContent}
+                      imageSource={post.hasImage ? post.imageSource : undefined}
+                      likesCount={post.likes}
+                      commentsCount={post.comments}
+                      isLiked={false}
+                      comments={[]}
+                    />
+                  ))}
+                </View>
+              )}
             </View>
-          )}
-        </View>
-
-        {/* TABS */}
-        <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
-        {/* POSTS */}
-        <View className="flex-1 bg-background-light dark:bg-[#182240] pt-4 min-h-[500px] items-center">
-          <View>
-            {activeTab === "grid" && (
-              <View className="flex-row flex-wrap gap-2">
-                {mockPosts.map((post) => (
-                  <TouchableOpacity
-                    key={post.id}
-                    className="w-[32%] aspect-square bg-gray-200 dark:bg-[#2A3654]"
-                    onPress={() => console.log("Post:", post.id)}
-                  >
-                    {post.hasImage ? (
-                      <Image
-                        source={
-                          typeof post.imageSource === "string"
-                            ? { uri: post.imageSource }
-                            : post.imageSource
-                        }
-                        style={{ width: "100%", height: "100%" }}
-                        contentFit="cover"
-                      />
-                    ) : (
-                      <View className="flex-1 p-1 justify-center items-center">
-                        <Text
-                          className="font-spartan text-[10px] leading-4 text-black dark:text-white text-center"
-                          numberOfLines={5}
-                        >
-                          {post.textContent}
-                        </Text>
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-
-            {activeTab === "list" && (
-              <View className="gap-y-4">
-                {mockPosts.map((post) => (
-                  <FeedCard
-                    key={post.id}
-                    authorName={targetName}
-                    authorInitials="CR"
-                    timeAgo={post.timeAgo}
-                    targetProfileName={targetName}
-                    textContent={post.textContent}
-                    imageSource={post.hasImage ? post.imageSource : undefined}
-                    likesCount={post.likes}
-                    commentsCount={post.comments}
-                    isLiked={false}
-                    comments={[]}
-                  />
-                ))}
-              </View>
-            )}
           </View>
-        </View>
 
-        {/* FloatingMenu */}
-        {/*!isOwnProfile && (
-          <View className="mb-40 pb-10 z-10">
-            <FloatingMenu
-              onCreatePost={() => console.log("Crear Post")}
-              onCreateFragment={() => console.log("Crear Fragment")}
-            />
-          </View>
-        )*/}
-      </ScrollView>
+          {/* FloatingMenu */}
+          {/*!isOwnProfile && (
+            <View className="mb-40 pb-10 z-10">
+              <FloatingMenu
+                onCreatePost={() => console.log("Crear Post")}
+                onCreateFragment={() => console.log("Crear Fragment")}
+              />
+            </View>
+          )*/}
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }

@@ -11,9 +11,9 @@ const FriendframeHeader = ({ isDark }: { isDark: boolean }) => {
                 maskElement={
                     <Text
                         className="text-3xl font-borel"
-                        style={{ lineHeight: 50 }}
+                        style={{ lineHeight: 52 }}
                     >
-                        FriendFrame
+                        friendframe
                     </Text>
                 }
             >
@@ -28,7 +28,7 @@ const FriendframeHeader = ({ isDark }: { isDark: boolean }) => {
                         className="text-3xl font-borel opacity-0"
                         style={{ lineHeight: 50 }}
                     >
-                        FriendFrame
+                        Friendframe
                     </Text>
                 </LinearGradient>
             </MaskedView>
