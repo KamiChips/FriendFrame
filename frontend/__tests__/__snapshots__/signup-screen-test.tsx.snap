@@ -21,115 +21,31 @@ exports[`<SignUpScreen /> matches snapshot 1`] = `
   <View
     className="mb-6"
   >
-    <View
-      className="w-full mb-4"
-    >
-      <Text
-        className="font-medium"
-        collapsable={false}
-        style={
-          {
-            "color": "rgba(24, 34, 64, 1)",
-            "fontSize": 16,
-            "left": 0,
-            "position": "absolute",
-            "top": 12,
-          }
-        }
-      >
-        Full Name
-      </Text>
-      <TextInput
-        className="py-2 text-[#1D2A4F] font-semibold border-b-2 border-[#1D2A4F] dark:text-background-light dark:border-background-light"
-        onBlur={[Function]}
-        onChangeText={[Function]}
-        onFocus={[Function]}
-        placeholder=""
-        value=""
-      />
-    </View>
-    <View
-      className="w-full mb-4"
-    >
-      <Text
-        className="font-medium"
-        collapsable={false}
-        style={
-          {
-            "color": "rgba(24, 34, 64, 1)",
-            "fontSize": 16,
-            "left": 0,
-            "position": "absolute",
-            "top": 12,
-          }
-        }
-      >
-        Username
-      </Text>
-      <TextInput
-        className="py-2 text-[#1D2A4F] font-semibold border-b-2 border-[#1D2A4F] dark:text-background-light dark:border-background-light"
-        onBlur={[Function]}
-        onChangeText={[Function]}
-        onFocus={[Function]}
-        placeholder=""
-        value=""
-      />
-    </View>
-    <View
-      className="w-full mb-4"
-    >
-      <Text
-        className="font-medium"
-        collapsable={false}
-        style={
-          {
-            "color": "rgba(24, 34, 64, 1)",
-            "fontSize": 16,
-            "left": 0,
-            "position": "absolute",
-            "top": 12,
-          }
-        }
-      >
-        Email
-      </Text>
-      <TextInput
-        className="py-2 text-[#1D2A4F] font-semibold border-b-2 border-[#1D2A4F] dark:text-background-light dark:border-background-light"
-        onBlur={[Function]}
-        onChangeText={[Function]}
-        onFocus={[Function]}
-        placeholder=""
-        value=""
-      />
-    </View>
-    <View
-      className="w-full mb-4"
-    >
-      <Text
-        className="font-medium"
-        collapsable={false}
-        style={
-          {
-            "color": "rgba(24, 34, 64, 1)",
-            "fontSize": 16,
-            "left": 0,
-            "position": "absolute",
-            "top": 12,
-          }
-        }
-      >
-        Password
-      </Text>
-      <TextInput
-        className="py-2 text-[#1D2A4F] font-semibold border-b-2 border-[#1D2A4F] dark:text-background-light dark:border-background-light"
-        onBlur={[Function]}
-        onChangeText={[Function]}
-        onFocus={[Function]}
-        placeholder=""
-        secureTextEntry={true}
-        value=""
-      />
-    </View>
+    <TextInput
+      onChangeText={[Function]}
+      placeholder="Full Name"
+      testID="fullname-textfield"
+      value=""
+    />
+    <TextInput
+      onChangeText={[Function]}
+      placeholder="Username"
+      testID="username-signup-textfield"
+      value=""
+    />
+    <TextInput
+      onChangeText={[Function]}
+      placeholder="Email"
+      testID="email-signup-textfield"
+      value=""
+    />
+    <TextInput
+      onChangeText={[Function]}
+      placeholder="Password"
+      secureTextEntry={true}
+      testID="password-signup-textfield"
+      value=""
+    />
     <View
       className="flex-row items-center justify-start w-full my-4 pr-2"
     >
@@ -166,6 +82,7 @@ exports[`<SignUpScreen /> matches snapshot 1`] = `
             "opacity": 1,
           }
         }
+        testID="tac-button"
       />
       <Text
         className="text-background-dark dark:text-background-light text-sm flex-row items-center"
