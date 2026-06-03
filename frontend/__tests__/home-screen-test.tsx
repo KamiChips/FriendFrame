@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react-native';
 import { useColorScheme } from 'react-native';
-import HomeScreen from '@/app/(tabs)/HomeScreen';
+import HomeScreen from '@/app/(tabs)/home';
 
 const mockPush = jest.fn();
 
@@ -27,16 +27,6 @@ jest.mock("expo-router", () => ({
             </TouchableOpacity>
         );
     },
-}));
-
-// Mock expo-linear-gradient
-jest.mock("expo-linear-gradient", () => ({
-    LinearGradient: ({ children }: { children: React.ReactNode }) => children,
-}));
-
-// Mock de useColorScheme
-jest.mock("react-native/Libraries/Utilities/useColorScheme", () => ({
-    default: jest.fn(() => "light"),
 }));
 
 describe('<HomeScreen />', () => {
@@ -94,16 +84,16 @@ describe("<HomeScreen /> - Navigation", () => {
         mockPush.mockClear();
     });
 
-    test("'Get Started' navigates to /SignupScreen", () => {
+    test("'Get Started' navigates to /signup", () => {
         const { getByText } = render(<HomeScreen />);
         fireEvent.press(getByText('Get Started'));
-        expect(mockPush).toHaveBeenCalledWith('/SignupScreen');
+        expect(mockPush).toHaveBeenCalledWith('@/app/(auth)/signup');
     });
 
-    test("'Have an Account?' navigates to /LoginScreen", () => {
+    test("'Have an Account?' navigates to /login", () => {
         const { getByText } = render(<HomeScreen />);
         fireEvent.press(getByText('Have an Account?'));
-        expect(mockPush).toHaveBeenCalledWith('/LoginScreen');
+        expect(mockPush).toHaveBeenCalledWith('@/app/(auth)/login');
     });
 
     test('Buttons navigate to different routes', () => {
@@ -111,7 +101,7 @@ describe("<HomeScreen /> - Navigation", () => {
         fireEvent.press(getByText('Get Started'));
         fireEvent.press(getByText('Have an Account?'));
         expect(mockPush).toHaveBeenCalledTimes(2);
-        expect(mockPush).toHaveBeenNthCalledWith(1, '/SignupScreen');
-        expect(mockPush).toHaveBeenNthCalledWith(2, '/LoginScreen');
+        expect(mockPush).toHaveBeenNthCalledWith(1, '@/app/(auth)/signup');
+        expect(mockPush).toHaveBeenNthCalledWith(2, '@/app/(auth)/login');
     });
 });
