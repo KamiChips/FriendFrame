@@ -19,7 +19,7 @@ export async function updateProfilePic(
       };
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
@@ -29,17 +29,19 @@ export async function updateProfilePic(
       return { data: null, error: null };
 
     const image = result.assets[0];
-    const response = await fetch(image.uri);
-    if (!response.ok)
-      throw new Error("No se pudo leer la imagen seleccionada.");
-
-    const blob = await response.blob();
     const filePath = `${userId}.jpg`;
+
+    const formData = new FormData();
+    formData.append("file", {
+      uri: image.uri,
+      name: filePath,
+      type: "image/jpeg",
+    } as any);
 
     const { error: uploadError } = await supabase.storage
       .from("profile-pictures")
-      .upload(filePath, blob, {
-        contentType: "image/jpeg",
+      .upload(filePath, formData, {
+        contentType: "multipart/form-data",
         upsert: true,
         cacheControl: "3600",
       });
