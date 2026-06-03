@@ -22,6 +22,7 @@ import {
   updateProfilePic,
 } from "@/services/supabase/auth/auth.profile";
 import { loadStaticParamsAsync } from "expo-router/build/loadStaticParamsAsync";
+import { Image } from "expo-image";
 
 interface EditProfileModalProps {
   visible: boolean;
@@ -44,7 +45,7 @@ export function EditProfileModal({
   const [picLoading, setPicLoading] = useState(false);
   const { user, setProfilePic } = useAuth();
   const [isDark, setIsDark] = useState(useColorScheme() === "dark");
-  const size = 60; // Tamaño del avatar
+  const size = 80; // Tamaño del avatar
 
   useEffect(() => {
     if (visible) {
@@ -123,7 +124,7 @@ export function EditProfileModal({
           className="w-full"
         >
           {/* Tarjeta Blanca del Modal */}
-          <View className="bg-white dark:bg-neutral-950 rounded-t-[32px] px-6 pt-6 pb-10 shadow-2xl border-t border-gray-100 dark:border-neutral-800">
+          <View className="flex-col bg-background-light dark:bg-background-dark rounded-t-[32px] px-6 pt-10 pb-14 shadow-2xl border-t border-gray-100 dark:border-neutral-800">
             {/* Encabezado del modal */}
             <View className="flex-row justify-between items-center mb-8">
               <Text className="text-xl font-bold text-[#1D2A4F] dark:text-white">
@@ -131,13 +132,13 @@ export function EditProfileModal({
               </Text>
               <TouchableOpacity
                 onPress={onClose}
-                className="p-1 bg-gray-100 dark:bg-neutral-800 rounded-full"
+                className="p-1 bg-gray-100 dark:bg-background-semidark rounded-full"
                 disabled={loading}
               >
                 <Ionicons
                   name="close"
                   size={20}
-                  color="#1D2A4F"
+                  color={isDark ? "#FAFAFA" : "#2C2C2C"}
                   className="dark:text-white"
                 />
               </TouchableOpacity>
@@ -146,26 +147,35 @@ export function EditProfileModal({
             {/* avatar */}
             <View className="items-center mb-8">
               <View className="relative">
-                <View className="rounded-full overflow-hidden">
-                  <LinearGradient
-                    colors={
-                      isDark
-                        ? ["#182240", "#AA3E14", "#115A67"]
-                        : ["#FAFAFA", "#30C2D9", "#FF9B42"]
-                    }
-                    style={{
-                      width: size,
-                      height: size,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 0.7, y: 0.7 }}
-                  >
-                    <Text className="text-white text-3xl font-bold tracking-wider">
-                      {initials}
-                    </Text>
-                  </LinearGradient>
+                <View className={`rounded-full overflow-hidden w-90`}>
+                  {user?.profile_pic ? (
+                    <Image
+                      source={{ uri: user.profile_pic }}
+                      style={{ width: size, height: size }}
+                      contentFit="cover"
+                      cachePolicy="none"
+                    />
+                  ) : (
+                    <LinearGradient
+                      colors={
+                        isDark
+                          ? ["#182240", "#AA3E14", "#115A67"]
+                          : ["#FAFAFA", "#30C2D9", "#FF9B42"]
+                      }
+                      style={{
+                        width: size,
+                        height: size,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 0.7, y: 0.7 }}
+                    >
+                      <Text className="text-white text-3xl font-bold tracking-wider">
+                        {initials}
+                      </Text>
+                    </LinearGradient>
+                  )}
                 </View>
 
                 {/* Botón de añadir */}
@@ -184,24 +194,24 @@ export function EditProfileModal({
             </View>
 
             {/* formulario */}
-            <View className="space-y-5 mb-8">
+            <View className="space-y-5 mb-4">
               {/* Input 1: Nombre completo */}
               <View className="mb-4">
                 <View className="flex-row items-center mb-2">
                   <Feather
                     name="user"
-                    size={16}
-                    color="#1D2A4F"
-                    className="dark:text-neutral-400 mr-2"
+                    size={20}
+                    color={isDark ? "#FAFAFA" : "#2C2C2C"}
+                    className="dark:text-background-light mr-2"
                   />
-                  <Text className="font-bold text-[#1D2A4F] dark:text-neutral-300 text-sm">
+                  <Text className="font-bold text- dark:text-[#FAFAFA] text-base">
                     Nombre completo
                   </Text>
                 </View>
                 <TextInput
                   value={name}
                   onChangeText={setName}
-                  className="bg-[#EAEAEA] dark:bg-neutral-900 p-4 rounded-xl text-gray-700 dark:text-white font-medium text-base"
+                  className="bg-[#EAEAEA] dark:bg-background-semidark border-2 border-[#E0E0E0] dark:border-[#2D3B63] p-4 rounded-xl text-gray-700 dark:text-white font-medium text-base text-left justify-center"
                   placeholderTextColor="#9CA3AF"
                   editable={!loading}
                   maxLength={120}
@@ -213,11 +223,11 @@ export function EditProfileModal({
                 <View className="flex-row items-center mb-2">
                   <Feather
                     name="at-sign"
-                    size={16}
-                    color="#1D2A4F"
+                    size={20}
+                    color={isDark ? "#FAFAFA" : "#2C2C2C"}
                     className="dark:text-neutral-400 mr-2"
                   />
-                  <Text className="font-bold text-[#1D2A4F] dark:text-neutral-300 text-sm">
+                  <Text className="font-bold text-[#1D2A4F] dark:text-white text-base">
                     Nombre de usuario
                   </Text>
                 </View>
@@ -227,7 +237,7 @@ export function EditProfileModal({
                     setUsername(t.toLowerCase().replace(/[^a-zA-Z0-9_]/g, ""))
                   }
                   autoCapitalize="none"
-                  className="bg-[#EAEAEA] dark:bg-neutral-900 p-4 rounded-xl text-gray-700 dark:text-white font-medium text-base"
+                  className="text-left justify-center bg-[#EAEAEA] dark:bg-background-semidark border-2 border-[#E0E0E0] dark:border-[#2D3B63] p-4 rounded-xl text-gray-700 dark:text-white font-medium text-base"
                   placeholderTextColor="#9CA3AF"
                   maxLength={30}
                 />
@@ -242,28 +252,28 @@ export function EditProfileModal({
               onPress={handleSave}
               disabled={loading}
               activeOpacity={0.8}
-              className="active:opacity-90 shadow-md"
+              className="active:opacity-90 shadow-md rounded-2xl overflow-hidden"
             >
               <LinearGradient
                 colors={["#34C2DD", "#FBA353"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }} // Gradiente horizontal
-                className="py-4 rounded-xl flex-row justify-center items-center"
+                className="w-full justify-center items-center"
               >
                 {loading ? (
                   <ActivityIndicator color="white" />
                 ) : (
-                  <>
+                  <View className="flex-row py-5 items-center justify-center ">
                     <Ionicons
                       name="save-outline"
                       size={20}
                       color="white"
-                      className="mr-2"
+                      className="mr-2 flex"
                     />
-                    <Text className="text-white font-bold text-base">
+                    <Text className=" text-white font-bold text-base">
                       Guardar Cambios
                     </Text>
-                  </>
+                  </View>
                 )}
               </LinearGradient>
             </TouchableOpacity>
