@@ -29,7 +29,7 @@ export default function UserProfileHeader({
     <View className="w-full">
       
       {/* SECCIÓN SUPERIOR: Flecha, Campana y Menú */}
-      <View className="bg-background-light dark:bg-[#1F2A4D] pt-12 pb-4 px-6 border-b-[1px] border-gray-300 dark:border-white/10 flex-row items-center justify-between">
+      <View className="bg-background-light dark:bg-[#1F2A4D] pt-7 pb-2 px-6 border-b-[1px] border-gray-300 dark:border-white/10 flex-row items-center justify-between">
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={26} color={iconColor} />
         </TouchableOpacity>

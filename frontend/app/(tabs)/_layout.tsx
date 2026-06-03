@@ -44,7 +44,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="home"
+        name="search"
         options={{
           title: "Buscar",
           tabBarIcon: ({ color }) => (

@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react-native';
 import { useColorScheme } from 'react-native';
-import HomeScreen from '@/app/(tabs)/HomeScreen';
+import HomeScreen from '@/app/(tabs)/home';
 
 const mockPush = jest.fn();
 

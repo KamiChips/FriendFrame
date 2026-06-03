@@ -98,63 +98,59 @@ export default function FeedScreen() {
   // 3. RENDERIZADO DE LA VISTA (INTERFAZ DE USUARIO)
  
   return (
-    // SafeAreaView protege el contenido para que no quede debajo de la muesca del iPhone o la barra de estado
-    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+    // 1. EL CONTENEDOR PADRE: Color superior para el reloj y el Header
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1F2B4A]">
       
-      {/* Componente que muestra el logo de FriendFrame en la parte superior */}
-      <FriendframeHeader isDark={isDark} />
+      {/* Componente que muestra el logo de FriendFrame en la zona azul oscuro */}
+      <View className="">
+        <FriendframeHeader isDark={isDark} />
+      </View>
 
-      {/* ScrollView permite que el usuario pueda deslizar la pantalla hacia abajo */}
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={false} // Oculta la barrita gris lateral de scroll
-        contentContainerStyle={{ paddingBottom: 40 }} // Da un margen inferior para que el último post no se corte
-      >
-        {/* Contenedor centralizado para limitar el ancho máximo en pantallas grandes (Tablets/Web) */}
-        <View className="w-full max-w-2xl mx-auto px-4 mt-4 gap-6">
-          
-
-          {/* TARJETA 1: PUBLICACIÓN DE ANA LÓPEZ */}
-
-          <FeedCard
-            authorName="Ana López"               // Nombre principal del que publica
-            authorInitials="AL"                  // Iniciales para el Avatar circular
-            timeAgo="hace 5 horas"               // Etiqueta de tiempo
-            targetProfileName="María González"   // Perfil receptor del mensaje (El "-> en el perfil de...")
-            textContent="Una de las personas más auténticas que conozco. Gracias por siempre estar ahí! 💙" // Texto principal
-            likesCount={79}                      // Número estático de Likes
-            isLiked={true}                       // Define si el corazón está coloreado o gris
+      {/* 2. EL CONTENEDOR DEL CUERPO: Mantiene el color original del Feed */}
+      <View className="flex-1 bg-background-light dark:bg-background-dark">
+        
+        {/* ScrollView permite que el usuario pueda deslizar la pantalla hacia abajo */}
+        <ScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false} // Oculta la barrita gris lateral de scroll
+          contentContainerStyle={{ paddingBottom: 40 }} // Da un margen inferior para que el último post no se corte
+        >
+          {/* Contenedor centralizado para limitar el ancho máximo en pantallas grandes (Tablets/Web) */}
+          <View className="w-full max-w-2xl mx-auto px-4 mt-4 gap-6">
             
-            // PROPS DINÁMICOS PARA COMENTARIOS:
-            commentsCount={comentariosAna.length} // Cuenta automáticamente cuántos elementos hay en el estado
-            comments={comentariosAna}             // Pasa el arreglo de datos al modal para que los dibuje
-            onAddComment={agregarComentarioAna}   // Le inyecta la función para que el botón de "Enviar" sepa qué hacer
-          />
+            {/* TARJETA 1: PUBLICACIÓN DE ANA LÓPEZ */}
+            <FeedCard
+              authorName="Ana López"
+              authorInitials="AL"
+              timeAgo="hace 5 horas"
+              targetProfileName="María González"
+              textContent="Una de las personas más auténticas que conozco. Gracias por siempre estar ahí! 💙"
+              likesCount={79}
+              isLiked={true}
+              commentsCount={comentariosAna.length}
+              comments={comentariosAna}
+              onAddComment={agregarComentarioAna}
+            />
 
+            {/* TARJETA 2: PUBLICACIÓN DE CARLOS RAMÍREZ */}
+            <FeedCard
+              authorName="Carlos Ramírez"
+              authorInitials="CR"
+              timeAgo="hace 2 horas"
+              targetProfileName="María González"
+              textContent="Un cafecito con los camaradas"
+              imageSource={require("../../assets/images/EjemploPost.jpg")} 
+              likesCount={46}
+              isLiked={false}
+              commentsCount={comentariosCarlos.length} 
+              comments={comentariosCarlos}
+              onAddComment={agregarComentarioCarlos} 
+            />
 
-          {/* TARJETA 2: PUBLICACIÓN DE CARLOS RAMÍREZ */}
-
-          <FeedCard
-            authorName="Carlos Ramírez"
-            authorInitials="CR"
-            timeAgo="hace 2 horas"
-            targetProfileName="María González"
-            textContent="Un cafecito con los camaradas"
-            
-            // Prop exclusivo de esta tarjeta: Renderiza una imagen debajo del texto
-            imageSource={require("../../assets/images/EjemploPost.jpg")} 
-            
-            likesCount={46}
-            isLiked={false}
-            
-            // PROPS DINÁMICOS PARA COMENTARIOS:
-            commentsCount={comentariosCarlos.length} 
-            comments={comentariosCarlos}
-            onAddComment={agregarComentarioCarlos} 
-          />
-
-        </View>
-      </ScrollView>
+          </View>
+        </ScrollView>
+        
+      </View>
     </SafeAreaView>
   );
 }
