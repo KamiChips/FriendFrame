@@ -6,27 +6,31 @@ const mockPush = jest.fn();
 
 // Mock de expo-router
 jest.mock("expo-router", () => ({
-    Link: ({ href, children, asChild }: { 
-        href: string; 
-        children: React.ReactElement; 
-        asChild?: boolean 
-    }) => {
-        const { TouchableOpacity } = require('react-native');
-        
-        if (asChild) {
-            // Clonar el hijo e inyectarle el onPress de navegación
-            const React = require('react');
-            return React.cloneElement(children, {
-                onPress: () => mockPush(href)
-            });
-        }
-        
-        return (
-            <TouchableOpacity onPress={() => mockPush(href)}>
-                {children}
-            </TouchableOpacity>
-        );
-    },
+  Link: ({
+    href,
+    children,
+    asChild,
+  }: {
+    href: string;
+    children: React.ReactElement;
+    asChild?: boolean;
+  }) => {
+    const { TouchableOpacity } = require("react-native");
+
+    if (asChild) {
+      // Clonar el hijo e inyectarle el onPress de navegación
+      const React = require("react");
+      return React.cloneElement(children, {
+        onPress: () => mockPush(href),
+      });
+    }
+
+    return (
+      <TouchableOpacity onPress={() => mockPush(href)}>
+        {children}
+      </TouchableOpacity>
+    );
+  },
 }));
 
 describe('<HomeScreen />', () => {

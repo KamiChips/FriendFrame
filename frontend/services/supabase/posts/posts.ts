@@ -28,7 +28,7 @@ export async function createPost(
       throw new Error("Se necesita permiso para acceder a la galería.");
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ["images", "videos", "livePhotos"],
       allowsEditing: false,
       quality: 0.85,
     });
