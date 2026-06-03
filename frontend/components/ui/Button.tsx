@@ -9,6 +9,7 @@ type Props = {
   disabled?: boolean;
   activeOpacity?: number;
   children?: ReactNode;
+  testID?: string,
 };
 
 export function Button({
@@ -18,9 +19,11 @@ export function Button({
   disabled,
   activeOpacity,
   children,
+  testID
 }: Props) {
   return (
     <TouchableOpacity
+      testID={testID}
       disabled={disabled}
       onPress={onPress}
       activeOpacity={activeOpacity}

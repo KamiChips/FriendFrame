@@ -1,0 +1,244 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<SignUpScreen /> matches snapshot 1`] = `
+<View
+  className="w-3/4 self-center"
+>
+  <View
+    className="mb-14"
+  >
+    <Text
+      className="text-background-dark dark:text-background-light text-4xl font-bold"
+    >
+      Get Started!
+    </Text>
+    <Text
+      className="text-background-dark dark:text-background-light text-xl mt-1"
+    >
+      Let your friends tell your story
+    </Text>
+  </View>
+  <View
+    className="mb-6"
+  >
+    <View
+      className="w-full mb-4"
+    >
+      <Text
+        className="font-medium"
+        collapsable={false}
+        style={
+          {
+            "color": "rgba(24, 34, 64, 1)",
+            "fontSize": 16,
+            "left": 0,
+            "position": "absolute",
+            "top": 12,
+          }
+        }
+      >
+        Full Name
+      </Text>
+      <TextInput
+        className="py-2 text-[#1D2A4F] font-semibold border-b-2 border-[#1D2A4F] dark:text-background-light dark:border-background-light"
+        onBlur={[Function]}
+        onChangeText={[Function]}
+        onFocus={[Function]}
+        placeholder=""
+        value=""
+      />
+    </View>
+    <View
+      className="w-full mb-4"
+    >
+      <Text
+        className="font-medium"
+        collapsable={false}
+        style={
+          {
+            "color": "rgba(24, 34, 64, 1)",
+            "fontSize": 16,
+            "left": 0,
+            "position": "absolute",
+            "top": 12,
+          }
+        }
+      >
+        Username
+      </Text>
+      <TextInput
+        className="py-2 text-[#1D2A4F] font-semibold border-b-2 border-[#1D2A4F] dark:text-background-light dark:border-background-light"
+        onBlur={[Function]}
+        onChangeText={[Function]}
+        onFocus={[Function]}
+        placeholder=""
+        value=""
+      />
+    </View>
+    <View
+      className="w-full mb-4"
+    >
+      <Text
+        className="font-medium"
+        collapsable={false}
+        style={
+          {
+            "color": "rgba(24, 34, 64, 1)",
+            "fontSize": 16,
+            "left": 0,
+            "position": "absolute",
+            "top": 12,
+          }
+        }
+      >
+        Email
+      </Text>
+      <TextInput
+        className="py-2 text-[#1D2A4F] font-semibold border-b-2 border-[#1D2A4F] dark:text-background-light dark:border-background-light"
+        onBlur={[Function]}
+        onChangeText={[Function]}
+        onFocus={[Function]}
+        placeholder=""
+        value=""
+      />
+    </View>
+    <View
+      className="w-full mb-4"
+    >
+      <Text
+        className="font-medium"
+        collapsable={false}
+        style={
+          {
+            "color": "rgba(24, 34, 64, 1)",
+            "fontSize": 16,
+            "left": 0,
+            "position": "absolute",
+            "top": 12,
+          }
+        }
+      >
+        Password
+      </Text>
+      <TextInput
+        className="py-2 text-[#1D2A4F] font-semibold border-b-2 border-[#1D2A4F] dark:text-background-light dark:border-background-light"
+        onBlur={[Function]}
+        onChangeText={[Function]}
+        onFocus={[Function]}
+        placeholder=""
+        secureTextEntry={true}
+        value=""
+      />
+    </View>
+    <View
+      className="flex-row items-center justify-start w-full my-4 pr-2"
+    >
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "opacity": 1,
+          }
+        }
+      />
+      <Text
+        className="text-background-dark dark:text-background-light text-sm flex-row items-center"
+      >
+        Acepto los
+         
+        <Text
+          className="font-bold underline text-background-dark dark:text-background-light"
+          onPress={[Function]}
+        >
+          Términos de Servicio y Privacidad
+        </Text>
+      </Text>
+    </View>
+    <View
+      className="items-center mb-6 mt-4"
+    >
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": false,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "opacity": 1,
+          }
+        }
+        testID="signup-button"
+      >
+        <Text>
+          Crear cuenta
+        </Text>
+      </View>
+    </View>
+  </View>
+  <View
+    className="items-center mb-4 mt-2"
+  >
+    <Text
+      className="dark:text-background-light mt-6"
+    >
+      Already have an account?
+       
+      <Text
+        className="font-semibold dark:text-background-light"
+        onPress={[Function]}
+      >
+        Log In
+      </Text>
+    </Text>
+  </View>
+</View>
+`;
