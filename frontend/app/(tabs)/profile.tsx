@@ -260,19 +260,21 @@ export default function ProfileScreen() {
                   )}
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
-                  onPress={() => {
-                    router.push({
-                      pathname: "/(tabs)/ChatInboxScreen",
-                      params: { targetUserId: profile.user_id },
-                    });
-                  }}
-                >
-                  <Text className="font-spartan-bold text-black dark:text-white text-base">
-                    Mensaje
-                  </Text>
-                </TouchableOpacity>
+                {profile.is_friend && (
+                  <TouchableOpacity
+                    className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
+                    onPress={() => {
+                      router.push({
+                        pathname: "/(tabs)/ChatInboxScreen",
+                        params: { targetUserId: profile.user_id },
+                      });
+                    }}
+                  >
+                    <Text className="font-spartan-bold text-black dark:text-white text-base">
+                      Mensaje
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
               {/* Bloquear */}
