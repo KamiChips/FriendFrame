@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import "../../global.css";
+import "../global.css";
 import { Button } from "@/components/ui/Button";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
