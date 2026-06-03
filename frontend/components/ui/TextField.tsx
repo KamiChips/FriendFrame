@@ -48,7 +48,7 @@ export function TextField({placeholder, value, onFocus, onBlur, onChangeText, ..
     });
 
     return (
-       <View className="w-full mb-4">
+        <View className="w-full mb-4">
             <Animated.Text
                 style={{
                     position: 'absolute',
@@ -79,6 +79,6 @@ export function TextField({placeholder, value, onFocus, onBlur, onChangeText, ..
                 }}
                 placeholder="" className="py-2 text-[#1D2A4F] font-semibold border-b-2 border-[#1D2A4F] dark:text-background-light dark:border-background-light"
             />
-       </View>
+        </View>
     )
 }

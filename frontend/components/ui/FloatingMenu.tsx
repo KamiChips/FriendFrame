@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, Animated, TouchableWithoutFeedback } from 'react-native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons'; 
+import { NewFragment } from './NewFragment';
 
 interface FloatingMenuProps {
   onCreatePost?: () => void;
@@ -53,6 +54,16 @@ export function FloatingMenu({ onCreatePost, onCreateFragment }: FloatingMenuPro
     outputRange: ['0deg', '90deg'],
   });
 
+  // 5. Controla si el modal de Fragment está abierto
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  // 6. Funcion para publicar el Fragment
+  const handlePublishFragment = (text: string) => {
+    console.log("Publicando Fragment: ", text);
+    // logica de base de datos
+    setIsModalVisible(false); // Cierra el modal después de publicar
+  };
+
   const animatedStyles = {
     transform: [{ translateY }],
     opacity: menuOpacity,
@@ -91,7 +102,7 @@ export function FloatingMenu({ onCreatePost, onCreateFragment }: FloatingMenuPro
         <TouchableOpacity 
           onPress={() => {
             toggleMenu();
-            if (onCreateFragment) onCreateFragment();
+            setIsModalVisible(true);
           }}
           activeOpacity={0.8}
           className="flex-row items-center bg-white px-5 py-3 rounded-full shadow-lg shadow-black/20"
@@ -99,7 +110,13 @@ export function FloatingMenu({ onCreatePost, onCreateFragment }: FloatingMenuPro
           <Ionicons name="document-text" size={18} color="#f97316" className="mr-2" />
           <Text className="text-gray-800 font-medium text-sm">Crear Fragment</Text>
         </TouchableOpacity>
-        
+
+        {/* Modal de Fragment */}
+        <NewFragment
+          isVisible={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
+          onPublish={handlePublishFragment}
+        />
       </Animated.View>
 
       {/* Botón Principal (Trigger) */}

@@ -1,14 +1,20 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-import { useEffect, useState } from 'react';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import SplashScreen from '@/components/ui/SplashScreen'; 
-import { useFonts } from 'expo-font'; // <-- Importamos useFonts
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import "react-native-reanimated";
+import { useEffect, useState } from "react";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import SplashScreen from "@/components/ui/SplashScreen";
+import { useFonts } from "expo-font"; // <-- Importamos useFonts
+import { AuthProvider } from "@/context/AuthContext";
+import { RouteGuard } from "@/navigation/RouteGuard";
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  anchor: "(tabs)",
 };
 
 export default function RootLayout() {
@@ -16,9 +22,9 @@ export default function RootLayout() {
   const [appIsReady, setAppIsReady] = useState(false);
 
   const [fontsLoaded, fontError] = useFonts({
-    'LeagueSpartan-Regular': require('../assets/fonts/LeagueSpartan-Regular.ttf'),
-    'LeagueSpartan-Bold': require('../assets/fonts/LeagueSpartan-Bold.ttf'),
-    'Borel-regular': require('../assets/fonts/Borel-Regular.ttf'), // Verifica que el archivo .ttf se llame así
+    "LeagueSpartan-Regular": require("../assets/fonts/LeagueSpartan-Regular.ttf"),
+    "LeagueSpartan-Bold": require("../assets/fonts/LeagueSpartan-Bold.ttf"),
+    "Borel-regular": require("../assets/fonts/Borel-Regular.ttf"), // Verifica que el archivo .ttf se llame así
   });
 
   useEffect(() => {
@@ -28,7 +34,7 @@ export default function RootLayout() {
       if (fontsLoaded || fontError) {
         setAppIsReady(true);
       }
-    }, 8000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [fontsLoaded, fontError]); // Agregamos las fuentes a las dependencias
@@ -40,28 +46,36 @@ export default function RootLayout() {
 
   // cuando carga, renderizamos la navegación de los temas
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="NotificationInbox" options={{ headerShown: false }} />
-        <Stack.Screen name="ChatScreen" options={{ headerShown: false }} />
-        <Stack.Screen name="Settings" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-        
-        {/* Pantalla de Crear Grupo */}
-        <Stack.Screen 
-          name="CreateGroup" 
-          options={{ 
-            presentation: 'transparentModal', 
-            headerShown: false,
-            animation: 'slide_from_bottom' 
-          }} 
-        />
-        
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <AuthProvider>
+      <RouteGuard />
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="NotificationInbox"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="ChatScreen" options={{ headerShown: false }} />
+          <Stack.Screen name="Settings" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="modal"
+            options={{ presentation: "modal", title: "Modal" }}
+          />
+
+          {/* Pantalla de Crear Grupo */}
+          <Stack.Screen
+            name="CreateGroup"
+            options={{
+              presentation: "transparentModal",
+              headerShown: false,
+              animation: "slide_from_bottom",
+            }}
+          />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
