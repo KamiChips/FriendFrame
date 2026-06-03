@@ -33,7 +33,6 @@ export default function UserProfileHeader({
           <Ionicons name="arrow-back" size={26} color={iconColor} />
         </TouchableOpacity>
 
-        {/* Contenedor Derecho: Campana + Menú */}
         <View className="flex-row items-center" style={{ gap: 20 }}>
           <TouchableOpacity onPress={() => router.navigate("/Settings")}>
             <Ionicons name="menu-outline" size={30} color={iconColor} />
