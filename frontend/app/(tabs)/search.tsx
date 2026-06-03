@@ -1,85 +1,114 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, useColorScheme } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, ActivityIndicator, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SearchBar from '@/components/ui/SearchBar';
 import UserSearchRow from '@/components/ui/user-search-row';
-import FriendFrameHeader from '@/components/ui/FriendframeHeader'; 
+import FriendFrameHeader from '@/components/ui/FriendframeHeader';
 import '../../global.css';
-
-const mockUsers = [
-  { id: '1', name: 'Carlos Ramírez', username: 'carlos_r', initials: 'CR' },
-  { id: '2', name: 'Ana López', username: 'ana_lopez', initials: 'AL' },
-  { id: '3', name: 'Pedro Martínez', username: 'pedro_m', initials: 'PM' },
-  { id: '4', name: 'Laura Ruiz', username: 'laura_r', initials: 'LR' },
-  { id: '5', name: 'Diego Silva', username: 'diego_s', initials: 'DS' },
-];
+import { supabase } from "@/lib/supabase/client";
+import { useUserSearch } from '@/hooks/useUserSearch';
+import { useRouter } from 'expo-router';
 
 export default function ExploreScreen() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [userID, setUserID] = useState<string | undefined>(undefined);
   const isDark = useColorScheme() === 'dark';
+  const router = useRouter();
 
-  const filteredUsers = mockUsers.filter(user => 
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    user.username.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUserID(data.session?.user.id);
+    });
+  }, []);
+
+  const { query, setQuery, results, loading, error } = useUserSearch({
+    currentUserId: userID,
+  });
+
+  const showEmpty = !loading && !error && query.trim().length >= 2 && results.length === 0;
+  const showHint  = !loading && !error && query.trim().length < 2;
 
   return (
-    // 1. EL CONTENEDOR PADRE: Aquí pones el color para el reloj y el Header
     <SafeAreaView className="flex-1 bg-white dark:bg-[#1F2B4A]">
-      
-      {/* HEADER: Vive en la zona con el nuevo color */}
+
       <View className="">
         <FriendFrameHeader isDark={isDark} />
       </View>
 
-      {/* 2. EL CONTENEDOR DEL CUERPO: Aquí mantenemos tu color original (#182240) */}
       <View className="flex-1 bg-background-light dark:bg-[#182240]">
-        
-        {/* Título y Barra de Búsqueda */}
+
         <View className="px-6 pt-6 pb-4">
           <Text className="font-spartan-bold text-2xl text-black dark:text-white mb-6">
             Buscar Usuarios
           </Text>
-
-          <SearchBar 
+          <SearchBar
             placeholder="Buscar por nombre o usuario..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
+            value={query}
+            onChangeText={setQuery}
             autoCapitalize="none"
           />
         </View>
 
-        {/* Lista de Resultados */}
-        <ScrollView 
+        <ScrollView
           className="flex-1 px-6 pt-2"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 40 }}
+          keyboardShouldPersistTaps="handled"
         >
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
-              <UserSearchRow
-                key={user.id}
-                name={user.name}
-                username={`@${user.username}`}
-                initials={user.initials}
-                onPress={() => console.log('Ir al perfil de:', user.username)}
-              />
-            ))
-          ) : (
+          {/* Bug fix: era loading && error, nunca mostraba nada */}
+          {!loading && error && (
             <View className="mt-10 items-center justify-center">
-              <Text className="font-spartan text-gray-500 dark:text-gray-400 text-center">
-                No se encontraron usuarios con "{searchQuery}"
+              <Text className="font-spartan text-red-400 text-center">{error}</Text>
+            </View>
+          )}
+
+          {loading && (
+            <View className="mt-10 items-center justify-center">
+              <ActivityIndicator color={isDark ? '#ffffff' : '#182240'} />
+            </View>
+          )}
+
+          {showEmpty && (
+            <View className="mt-10 items-center justify-center">
+              <Text className="font-spartan text-gray-400 text-center">
+                No se encontraron usuarios con "{query}"
               </Text>
             </View>
           )}
 
-          {filteredUsers.length > 0 && (
-            <Text className="font-spartan text-sm text-gray-400 dark:text-gray-500 text-center mt-10">
-              Busca usuarios para seguir y conectar
-            </Text>
+          {showHint && (
+            <View className="mt-10 items-center justify-center">
+              <Text className="font-spartan text-gray-400 text-center">
+                Ingresa al menos 2 caracteres para buscar usuarios.
+              </Text>
+            </View>
           )}
+
+          {!loading && !error && results.map((u) => {
+            // Bug fix: mapea los campos reales del RPC, no los del mock
+            const displayName = u.full_name ?? u.username;
+            const initials = displayName
+              .split(' ')
+              .map((w: string) => w[0])
+              .slice(0, 2)
+              .join('')
+              .toUpperCase();
+
+            return (
+              <UserSearchRow
+                key={u.user_id}
+                name={displayName}
+                username={`@${u.username}`}
+                initials={initials}
+                onPress={() =>
+                  router.push({
+                  pathname: "/(tabs)/profile",
+                  params: { userId: u.user_id },
+                })}
+              />
+            );
+          })}
         </ScrollView>
-        
+
       </View>
     </SafeAreaView>
   );

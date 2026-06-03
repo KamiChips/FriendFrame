@@ -210,7 +210,7 @@ export default function SettingsScreen() {
         onClose={() => setModalVisible(false)}
         currentName={userData.name}
         currentUsername={userData.username}
-        onSave={(newName, newUsername) => {
+        onSaved={(newName, newUsername) => {
           // Al guardar en el modal, actualizamos el estado de la pantalla principal
           setUserData({ name: newName, username: newUsername });
         }}
