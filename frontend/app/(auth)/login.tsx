@@ -12,7 +12,6 @@ import "../../global.css";
 import { TextField } from "../../components/ui/TextField";
 import { Button } from "../../components/ui/Button";
 import { router, Stack } from "expo-router";
-import { set } from "mongoose";
 import {
   signIn,
   signInWithGoogle,
@@ -118,13 +117,14 @@ export default function LoginScreen() {
 
             <View className="items-center mb-18 mt-12">
               <Button
+                testID = "login-button"
                 variant={isDark ? "primary" : "secondary"}
                 onPress={handleSubmit}
                 disabled={loading}
                 activeOpacity={0.8}
               >
                 {loading ? (
-                  <ActivityIndicator />
+                  <ActivityIndicator testID="loading-indicator" />
                 ) : (
                   <Text>Iniciando Sesión</Text>
                 )}
@@ -138,6 +138,7 @@ export default function LoginScreen() {
               Log in with
             </Text>
             <TouchableOpacity
+              testID="google-signin-button"
               onPress={handleGoogleSignIn}
               disabled={loading}
               activeOpacity={0.8}

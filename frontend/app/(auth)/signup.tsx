@@ -51,7 +51,7 @@ export default function SignUpScreen() {
     console.log("[UI] Click Register");
     setError(null);
 
-    if (!validateTerms) return;
+    if (!validateTerms()) return;
 
     const { full_name, username, email, password } = form;
 
@@ -212,12 +212,13 @@ export default function SignUpScreen() {
 
             <View className="items-center mb-6 mt-4">
               <Button
+                testID="signup-button"
                 variant={isDark ? "primary" : "secondary"}
                 onPress={handleRegister}
                 disabled={loading}
                 activeOpacity={0.8}
               >
-                {loading ? <ActivityIndicator /> : <Text>Crear cuenta</Text>}
+                {loading ? <ActivityIndicator testID="signup-loaging-indicator"/> : <Text>Crear cuenta</Text>}
               </Button>
             </View>
           </View>

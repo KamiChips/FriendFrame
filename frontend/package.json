@@ -68,18 +68,19 @@
   },
   "jest": {
     "preset": "jest-expo",
+    "setupFilesAfterEnv": ["<rootDir>/__mocks__/setup.ts"],
     "moduleNameMapper": {
-      "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/fileMock.ts",
-      "collectCoverage": true,
-      "collectCoverageFrom": [
-        "**/*.{ts,tsx,js,jsx}",
-        "!**/coverage/**",
-        "!**/node_modules/**",
-        "!**/babel.config.js",
-        "!**/expo-env.d.ts",
-        "!**/.expo/**"
-      ]
-    }
+      "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/fileMock.ts"
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/*.{ts,tsx,js,jsx}",
+      "!**/coverage/**",
+      "!**/node_modules/**",
+      "!**/babel.config.js",
+      "!**/expo-env.d.ts",
+      "!**/.expo/**"
+    ]
   },
   "private": true
 }
