@@ -1,107 +1,289 @@
-import React, { useState } from 'react';
-import { ScrollView, View, Text, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Image } from 'expo-image';
-import { Ionicons } from '@expo/vector-icons';
-import UserProfileHeader from '@/components/ui/UserProfileHeader'; 
-import '../../global.css';
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  ScrollView,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Image } from "expo-image";
+import { Ionicons } from "@expo/vector-icons";
+import UserProfileHeader from "@/components/ui/UserProfileHeader";
+import "../../global.css";
+import { FloatingMenu } from "@/components/ui/FloatingMenu";
+import BlockUserWarning from "@/components/ui/BlockUserWarning";
+import ProfileTabs from "@/components/ui/ProfileTabs";
+import FeedCard from "@/components/ui/FeedCard";
+import { useAuth } from "@/context/AuthContext";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { FullProfile } from "@/services/supabase/profile/types";
+import { FeedItem } from "@/services/supabase/posts/types";
+import { getProfile } from "@/services/supabase/profile/queries";
+import { getProfileFeed } from "@/services/supabase/posts/feed";
+import { toggleFollow } from "@/services/supabase/social/social.follows";
+import {
+  blockUser,
+  unblockUser,
+} from "@/services/supabase/social/social.blocks";
+import { EditProfileModal } from "@/components/ui/EditProfileModal";
 
-import { FloatingMenu } from '@/components/ui/FloatingMenu';
-import BlockUserWarning from '@/components/ui/BlockUserWarning';
-import ProfileTabs from '@/components/ui/ProfileTabs';
-import FeedCard from '@/components/ui/FeedCard'; 
-// 1. IMPORTAMOS EL MODAL
-import CreatePostModal from '@/components/ui/create-post-modal'; 
+type TabType = "grid" | "list";
 
 export default function ProfileScreen() {
-  const [activeTab, setActiveTab] = useState<'grid' | 'list'>('grid');
-  const [isOwnProfile, setIsOwnProfile] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(true);
-  
-  // 2. AGREGAMOS EL ESTADO DEL MODAL
-  const [isCreatePostVisible, setCreatePostVisible] = useState(false);
+  const { user: currentUser } = useAuth();
+  const router = useRouter();
+  const { userId: paramUserId } = useLocalSearchParams<{ userId?: string }>();
+  const targetUserId = paramUserId ?? currentUser?.user_id ?? "";
+  const isOwnProfile = targetUserId === currentUser?.user_id;
 
-  const targetName = isOwnProfile ? "María González" : "Carlos Ramírez";
-  const userBio = "ola";
+  const [profile, setProfile] = useState<FullProfile | null>(null);
+  const [feed, setFeed] = useState<FeedItem[]>([]);
+  const [activeTab, setActiveTab] = useState<TabType>("grid");
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [loadingFeed, setLoadingFeed] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [editModalVisable, setEditModalVisible] = useState(false);
 
-  const mockPosts = [
-    { 
-      id: '1', hasImage: true, imageSource: require('../../assets/images/EjemploPost.jpg'), 
-      textContent: 'Un cafecito con los camaradas', timeAgo: 'hace 2 horas', likes: 45, comments: 12
-    },
-    { 
-      id: '2', hasImage: false, textContent: 'Una de las personas más auténticas que conozco...', 
-      timeAgo: 'hace 5 horas', likes: 79, comments: 2
-    },
-    { 
-      id: '3', hasImage: true, imageSource: { uri: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e' }, 
-      textContent: 'Puesta de sol increíble 🌅', timeAgo: 'hace 1 día', likes: 120, comments: 5
+  const handleProfileSaved = async (
+    newName: string,
+    newUsername: string,
+    newPic?: string,
+  ) => {
+    setProfile((prev) =>
+      prev
+        ? {
+            ...prev,
+            full_name: newName,
+            username: newUsername,
+            profile_pic: newPic ?? prev.profile_pic,
+          }
+        : prev,
+    );
+
+    if (newPic) {
+      await loadProfile();
     }
-  ];
+  };
+
+  const loadProfile = useCallback(async () => {
+    if (!targetUserId || !currentUser) return;
+    setLoadingProfile(true);
+
+    console.time("getProfile");
+    const { data, error } = await getProfile(targetUserId, currentUser.user_id);
+    console.timeEnd("getProfile");
+
+    if (error) {
+      Alert.alert("Error", error);
+      setLoadingProfile(false);
+      return;
+    }
+
+    setProfile(data);
+    setLoadingProfile(false);
+  }, [targetUserId, currentUser]);
+
+  const loadFeed = useCallback(async () => {
+    if (!targetUserId || !currentUser) return;
+    setLoadingFeed(true);
+
+    const { data } = await getProfileFeed(targetUserId, currentUser.user_id);
+    if (data) setFeed(data);
+
+    setLoadingFeed(false);
+  }, [targetUserId, currentUser]);
+
+  useEffect(() => {
+    loadProfile();
+    loadFeed();
+  }, [loadProfile, loadFeed]);
+
+  const handleToggleFollow = async () => {
+    if (!profile || actionLoading) return;
+    setActionLoading(true);
+
+    const { data, error } = await toggleFollow(profile.user_id);
+
+    if (error) {
+      Alert.alert("Error", error);
+    } else if (data) {
+      setProfile((prev) =>
+        prev
+          ? {
+              ...prev,
+              i_follow_them: data.following,
+              is_friend: data.is_friend,
+              stats: {
+                ...prev.stats,
+                followers_count: data.following
+                  ? prev.stats.followers_count + 1
+                  : prev.stats.followers_count - 1,
+                friends_count: data.is_friend
+                  ? prev.stats.friends_count + 1
+                  : data.following
+                    ? prev.stats.friends_count
+                    : prev.stats.friends_count - 1,
+              },
+            }
+          : prev,
+      );
+    }
+    setActionLoading(false);
+  };
+
+  const handleBlock = async () => {
+    if (!profile || actionLoading) return;
+
+    setActionLoading(true);
+
+    const { error } = await blockUser(profile.user_id);
+    setActionLoading(false);
+
+    if (error) {
+      Alert.alert("Error", error);
+    } else {
+      router.back();
+    }
+  };
+
+  const handleUnblock = async () => {
+    if (!profile || actionLoading) return;
+    setActionLoading(true);
+
+    const { error } = await unblockUser(profile.user_id);
+    setActionLoading(false);
+
+    if (error) {
+      Alert.alert("Error", error);
+    } else {
+      await loadProfile();
+    }
+  };
+
+  if (loadingProfile || !profile) {
+    return (
+      <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240] items-center justify-center">
+        <ActivityIndicator size="large" color="#30C2D9" />
+      </SafeAreaView>
+    );
+  }
+
+  if (profile.blocked_me) {
+    return (
+      <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240] items-center justify-center px-8">
+        <Text className="text-xl font-spartan-bold text-gray-900 dark:text-white text-center">
+          No puedes ver este perfil.
+        </Text>
+      </SafeAreaView>
+    );
+  }
+
+  const gridPosts = feed.filter((item) => item.type === "post");
 
   return (
-    <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240]">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-        
+    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-semidark">
+      <ScrollView
+        className="flex-1 bg-gray-50 dark:bg-background-dark"
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <UserProfileHeader
-          name={targetName}
-          username={isOwnProfile ? "maria_g" : "carlos_r"}
-          profileImageSource={require('../../assets/images/Rick.jpg')} 
-          postsCount={isOwnProfile ? 3 : 2}
-          friendsCount={2}
-          followersCount={3}
+          name={profile.full_name}
+          username={profile.username}
+          profileImageSource={
+            profile.profile_pic ?? require("../../assets/images/Rick.jpg")
+          }
+          postsCount={profile.stats.publications_count}
+          friendsCount={profile.stats.friends_count}
+          followersCount={profile.stats.followers_count}
         />
 
-        {/* Biografia y acciones */}
         <View className="px-6 pb-4 bg-background-light dark:bg-[#182240]">
-          
-          <Text className="font-spartan text-sm text-gray-800 dark:text-gray-300 mb-4">
-            {userBio}
-          </Text>
-
           {isOwnProfile ? (
             // ESCENARIO 1: Mi perfil/usuario
-            <TouchableOpacity className="w-full py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center">
+            <TouchableOpacity
+              className="w-full py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
+              onPress={() => setEditModalVisible(true)}
+            >
               <Text className="font-spartan-bold text-black dark:text-white text-base">
                 Editar Perfil
               </Text>
             </TouchableOpacity>
+          ) : profile.is_blocked ? (
+            // Yo bloquee a este usuario
+            <TouchableOpacity
+              className="w-full py-3.5 rounded-2xl bg-[#30C2D9] dark:bg-[#AA3E14] items-center"
+              onPress={handleUnblock}
+              disabled={actionLoading}
+            >
+              {actionLoading ? (
+                <ActivityIndicator color="ef4444" />
+              ) : (
+                <Text className="font-spartan-bold text-red-600 dark:text-red-300 text-base">
+                  Desbloquear
+                </Text>
+              )}
+            </TouchableOpacity>
+          ) : !profile.i_follow_them ? (
+            // No lo sigo: Seguir
+            <TouchableOpacity
+              className="w-full py-3.5 rounded-2xl bg-[#30C2D9] dark:bg-[#AA3E14] items-center"
+              onPress={handleToggleFollow}
+              disabled={actionLoading}
+            >
+              {actionLoading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="font-spartan-bold text-white text-base">
+                  Seguir
+                </Text>
+              )}
+            </TouchableOpacity>
           ) : (
-            // ESCENARIOS 2 Y 3: Otro usuario
+            // Lo sigo: Siguiendo + Mensaje
             <View>
-              {!isFollowing ? (
-                // ESCENARIO 2: No lo sigo :( — solo botón Seguir
-                <TouchableOpacity 
-                  className="w-full py-3.5 rounded-2xl bg-[#30C2D9] dark:bg-[#AA3E14] items-center"
-                  onPress={() => setIsFollowing(true)}
+              <View className="flex-row justify-between gap-3">
+                <TouchableOpacity
+                  className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
+                  onPress={handleToggleFollow}
+                  disabled={actionLoading}
                 >
-                  <Text className="font-spartan-bold text-white text-base">Seguir</Text>
+                  {actionLoading ? (
+                    <ActivityIndicator color="#6b7280" />
+                  ) : (
+                    <Text className="font-spartan-bold text-black dark:text-white text-base">
+                      {profile.is_friend ? "👥 Amigos" : "Siguiendo"}
+                    </Text>
+                  )}
                 </TouchableOpacity>
 
-              ) : (
-                // ESCENARIO 3: Si lo sigo :) — botones Siguiendo + Mensaje
-                <View className="flex-row justify-between gap-3">
-                  <TouchableOpacity 
-                    className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
-                    onPress={() => setIsFollowing(false)}
-                  >
-                    <Text className="font-spartan-bold text-black dark:text-white text-base">Siguiendo</Text>
-                  </TouchableOpacity>
-                  
-                  <TouchableOpacity className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center">
-                    <Text className="font-spartan-bold text-black dark:text-white text-base">Mensaje</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+                <TouchableOpacity
+                  className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
+                  onPress={() => {
+                    router.push({
+                      pathname: "/(tabs)/ChatInboxScreen",
+                      params: { targetUserId: profile.user_id },
+                    });
+                  }}
+                >
+                  <Text className="font-spartan-bold text-black dark:text-white text-base">
+                    Mensaje
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-              {/* Bloquear usuario */}
+              {/* Bloquear */}
               <View className="mt-3">
-                <BlockUserWarning name={isOwnProfile ? 'maria_g' : 'carlos_r'} />
+                <BlockUserWarning
+                  name={profile.username}
+                  onBlock={handleBlock}
+                />
               </View>
             </View>
           )}
-
         </View>
 
         {/* TABS */}
@@ -109,76 +291,113 @@ export default function ProfileScreen() {
 
         {/* POSTS */}
         <View className="flex-1 bg-background-light dark:bg-[#182240] pt-4 min-h-[500px] items-center">
-          <View>
-            {activeTab === 'grid' && (
-              <View className="flex-row flex-wrap gap-2">
-                {mockPosts.map((post) => (
-                  <TouchableOpacity 
-                    key={post.id} 
-                    className="w-[32%] aspect-square bg-gray-200 dark:bg-[#2A3654]"
-                    onPress={() => console.log('Post:', post.id)}
-                  >
-                    {post.hasImage ? (
-                      <Image 
-                        source={typeof post.imageSource === 'string' ? { uri: post.imageSource } : post.imageSource} 
-                        style={{ width: '100%', height: '100%' }} 
-                        contentFit="cover" 
-                      />
-                    ) : (
-                      <View className="flex-1 p-1 justify-center items-center">
-                        <Text className="font-spartan text-[10px] leading-4 text-black dark:text-white text-center" numberOfLines={5}>
-                          {post.textContent}
-                        </Text>
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
+          {loadingFeed ? (
+            <ActivityIndicator size="small" color="#30C2D9" className="mt-8" />
+          ) : feed.length === 0 ? (
+            <View className="mt-12 items-center px-8">
+              <Text className="text-gray-400 text-center font-spartan">
+                {isOwnProfile
+                  ? "Nadie ha publicado en tu perfil todavía"
+                  : "No hay publicaciones aún"}
+              </Text>
+            </View>
+          ) : (
+            <View>
+              {activeTab === "grid" && (
+                <View className="flex-row flex-wrap gap-2">
+                  {gridPosts.length === 0 ? (
+                    <View className="w-full mt-8 items-center px-8">
+                      <Text className="text-gray-400 text-center font-spartan">
+                        No hay fotos en este perfil
+                      </Text>
+                    </View>
+                  ) : (
+                    gridPosts.map((post) => (
+                      <TouchableOpacity
+                        key={post.post_id}
+                        className="w-[32%] aspect-square bg-gray-200 dark:bg-[#2A3654]"
+                        onPress={() => console.log("Post:", post.post_id)}
+                      >
+                        <Image
+                          source={{ uri: post.image }}
+                          style={{ width: "100%", height: "100%" }}
+                          contentFit="cover"
+                        />
+                      </TouchableOpacity>
+                    ))
+                  )}
+                </View>
+              )}
 
-            {activeTab === 'list' && (
-              <View className="gap-y-4 px-4">
-                {mockPosts.map((post) => (
-                  <FeedCard 
-                    key={post.id} 
-                    authorName={targetName} 
-                    authorInitials="CR" 
-                    timeAgo={post.timeAgo} 
-                    targetProfileName={targetName} 
-                    textContent={post.textContent} 
-                    imageSource={post.hasImage ? post.imageSource : undefined} 
-                    likesCount={post.likes} 
-                    commentsCount={post.comments} 
-                    isLiked={false} 
-                    comments={[]} 
-                  />
-                ))}
-              </View>
-            )}
-          </View>
+              {activeTab === "list" && (
+                <View className="gap-y-4">
+                  {feed.map((item) => (
+                    <FeedCard
+                      key={
+                        item.type === "post" ? item.post_id : item.fragment_id
+                      }
+                      authorName={item.author.full_name}
+                      authorInitials={item.author.full_name
+                        .charAt(0)
+                        .toUpperCase()}
+                      timeAgo={new Date(item.created_at).toLocaleDateString(
+                        "es-MX",
+                        {
+                          day: "numeric",
+                          month: "short",
+                        },
+                      )}
+                      targetProfileName={profile.full_name}
+                      textContent={
+                        item.type === "post"
+                          ? (item.description ?? "")
+                          : item.content
+                      }
+                      imageSource={
+                        item.type === "post" && item.image
+                          ? { uri: item.image }
+                          : undefined
+                      }
+                      likesCount={item.likes_count}
+                      commentsCount={item.comments_count}
+                      isLiked={item.liked_by_me}
+                      comments={[]}
+                    />
+                  ))}
+                </View>
+              )}
+            </View>
+          )}
         </View>
 
         {/* FloatingMenu */}
-        {!isOwnProfile && (
-          <View className="mb-40 pb-10">
-            <FloatingMenu 
-              // 3. CONECTAMOS EL BOTÓN AL ESTADO
-              onCreatePost={() => setCreatePostVisible(true)}
-              onCreateFragment={() => console.log('Crear Fragment')}
+        {/*!isOwnProfile && (
+          <View className="mb-40 pb-10 z-10">
+            <FloatingMenu
+              onCreatePost={() => console.log("Crear Post")}
+              onCreateFragment={() => console.log("Crear Fragment")}
+            />
+          </View>
+        )*/}
+        {!isOwnProfile && profile.is_friend && (
+          <View className="mb-40 pb-10 z-10">
+            <FloatingMenu
+              onCreatePost={() => console.log("Crear Post en", profile.user_id)}
+              onCreateFragment={() =>
+                console.log("Crear Fragment en", profile.user_id)
+              }
             />
           </View>
         )}
-
-        {/* 4. DIBUJAMOS EL MODAL */}
-        <CreatePostModal 
-          visible={isCreatePostVisible}
-          onClose={() => setCreatePostVisible(false)}
-          targetProfileName={targetName}
-          currentUserName="María González" 
-          currentUserInitials="MG"
-        />
-
       </ScrollView>
+
+      <EditProfileModal
+        visible={editModalVisable}
+        onClose={() => setEditModalVisible(false)}
+        currentName={profile.full_name}
+        currentUsername={profile.username}
+        onSaved={handleProfileSaved}
+      />
     </SafeAreaView>
   );
 }
