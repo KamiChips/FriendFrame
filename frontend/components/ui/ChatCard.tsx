@@ -1,57 +1,79 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { ScrollView, StatusBar, Text, TouchableOpacity, View, useColorScheme } from "react-native";
-import '../../global.css';
+import {
+  ScrollView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+  useColorScheme,
+} from "react-native";
+import "../../global.css";
 import ProfileIcon from "./ProfileIcon";
 import { router } from "expo-router";
 
 type ChatCardProps = {
-    id: number,
-    initials: string;
-    name: string;
-    message: string;
-    time: string;
-    unread: boolean;
-    isDark: boolean;
-}
+  id: number;
+  initials: string;
+  name: string;
+  message: string;
+  time: string;
+  unread: boolean;
+  isDark: boolean;
+};
 
-const ChatCard = ({ initials, name, message, time, unread, isDark }:ChatCardProps) => {
-    return (
-        <TouchableOpacity
-            className="flex-row items-center bg-background-light mx-4 mb-3 px-4 py-3 rounded-2xl dark:bg-background-semidark"
-            activeOpacity={0.7}
-            style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.06,
-                shadowRadius: 6,
-                elevation: 2,
-            }}
-            onPress={() => router.navigate("/ChatScreen")}
-        >
-            {/* Perfil de usuario */}
-            <TouchableOpacity onPress={() => router.navigate("/profile")}>
-                <View className="mr-3 relative">
-                    <ProfileIcon initials={initials} isDark={isDark} />
+const ChatCard = ({
+  initials,
+  name,
+  message,
+  time,
+  unread,
+  isDark,
+}: ChatCardProps) => {
+  return (
+    <TouchableOpacity
+      className="flex-row items-center bg-background-light mx-4 mb-3 px-4 py-3 rounded-2xl dark:bg-background-semidark"
+      activeOpacity={0.7}
+      style={{
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.06,
+        shadowRadius: 6,
+        elevation: 2,
+      }}
+      onPress={() => router.navigate("/ChatScreen")}
+    >
+      {/* Perfil de usuario */}
+      <TouchableOpacity
+        onPress={() =>
+          router.push({
+            pathname: "/(tabs)/profile",
+            params: { userId: "uuid-del-usuario" },
+          })
+        }
+      >
+        <View className="mr-3 relative">
+          <ProfileIcon initials={initials} isDark={isDark} />
 
-                    {/* Puntito de no leido */}
-                    {unread && (
-                        <View 
-                            className="absolute -top-1 -right-1 w-5 h-5 bg-primary-dark rounded-full border-2 border-background-light dark:bg-secondary-dark dark:border-background-semidark"
-                        >
-                        </View>
-                    )}
-                </View>
-            </TouchableOpacity>
-            
-            {/* Info del Chat */}
-            <View className="flex-1">
-                <Text className="font-spartan text-[#1a1a1a] mb-0.5 dark:text-background-light">{name}</Text>
-                <Text className="text-xs text-[#888] dark:text-background-light font-spartan">{message}</Text> 
-            </View>
+          {/* Puntito de no leido */}
+          {unread && (
+            <View className="absolute -top-1 -right-1 w-5 h-5 bg-primary-dark rounded-full border-2 border-background-light dark:bg-secondary-dark dark:border-background-semidark"></View>
+          )}
+        </View>
+      </TouchableOpacity>
 
-            <Text className="text-xs text-[#aaa] ml-2">{time}</Text>
-        </TouchableOpacity>
-    )
-}
+      {/* Info del Chat */}
+      <View className="flex-1">
+        <Text className="font-spartan text-[#1a1a1a] mb-0.5 dark:text-background-light">
+          {name}
+        </Text>
+        <Text className="text-xs text-[#888] dark:text-background-light font-spartan">
+          {message}
+        </Text>
+      </View>
 
-export default ChatCard
+      <Text className="text-xs text-[#aaa] ml-2">{time}</Text>
+    </TouchableOpacity>
+  );
+};
+
+export default ChatCard;
