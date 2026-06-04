@@ -4,7 +4,6 @@ import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import PostOptionsModal from "./post-options-modal";
 import CommentsModal from "./CommentsModal";
-import { useColorScheme } from 'react-native';
 import { CommentType } from "./CommentItem";
 import ProfileIcon from "./ProfileIcon";
 
@@ -44,14 +43,18 @@ export default function FeedCard({
   const [isCommentsModalVisible, setCommentsModalVisible] = useState(false);
   const [isMenuVisible, setMenuVisible] = useState(false);
 
-  const isDark = useColorScheme() === 'dark';
+  const isDark = useColorScheme() === "dark";
   return (
     <View className="mb-4 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-transparent dark:bg-background-semidark">
       {/* 1. CABECERA DE LA TARJETA */}
       <View className="flex-row items-start justify-between p-4">
         <View className="flex-row items-start flex-1">
           {/* LÓGICA DE CONSISTENCIA DEL AVATAR */}
-          <ProfileIcon initials={ authorInitials } profilePic={ authorImage } isDark={ isDark } />
+          <ProfileIcon
+            initials={authorInitials}
+            profilePic={authorImage}
+            isDark={isDark}
+          />
 
           <View className="ml-3 flex-1">
             <Text className="font-spartan-bold text-lg text-black dark:text-white">

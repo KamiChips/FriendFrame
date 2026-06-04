@@ -277,7 +277,7 @@ export default function ProfileScreen() {
                     className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
                     onPress={() => {
                       router.push({
-                        pathname: "/(tabs)/ChatInboxScreen",
+                        pathname: "/ChatScreen",
                         params: { targetUserId: profile.user_id },
                       });
                     }}

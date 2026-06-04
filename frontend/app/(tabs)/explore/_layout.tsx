@@ -8,8 +8,8 @@ export default function ExploreLayout() {
         name="[userId]"
         options={{
           headerShown: false,
-          animation: "slide_from_right", // slide in estilo Instagram
-          gestureEnabled: true, // swipe back para cerrar
+          animation: "slide_from_right",
+          gestureEnabled: true,
           gestureDirection: "horizontal",
         }}
       />
