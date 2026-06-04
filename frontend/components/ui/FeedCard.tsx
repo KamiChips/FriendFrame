@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, Modal, useColorScheme } from "react-native";
+import { View, Text, Pressable, useColorScheme } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import PostOptionsModal from "./post-options-modal";
@@ -7,7 +7,11 @@ import CommentsModal from "./CommentsModal";
 import { CommentType } from "./CommentItem";
 import ProfileIcon from "./ProfileIcon";
 
+type FeedCardPublicationType = "post" | "fragment";
+
 interface FeedCardProps {
+  publicationId?: string;
+  publicationType?: FeedCardPublicationType;
   authorName: string;
   authorInitials: string;
   authorImage?: string | null;
@@ -22,9 +26,12 @@ interface FeedCardProps {
   comments?: CommentType[];
   targetUserImage?: string | null;
   onAddComment?: (texto: string) => void;
+  onDeleted?: () => void;
 }
 
 export default function FeedCard({
+  publicationId,
+  publicationType,
   authorName,
   authorInitials,
   authorImage,
@@ -37,8 +44,8 @@ export default function FeedCard({
   isLiked = false,
   isOwnPost = false,
   comments = [],
-  targetUserImage,
   onAddComment,
+  onDeleted,
 }: FeedCardProps) {
   const [isCommentsModalVisible, setCommentsModalVisible] = useState(false);
   const [isMenuVisible, setMenuVisible] = useState(false);
@@ -144,8 +151,10 @@ export default function FeedCard({
       <PostOptionsModal
         visible={isMenuVisible}
         onClose={() => setMenuVisible(false)}
+        publicationId={publicationId}
+        publicationType={publicationType}
+        onDeleted={onDeleted}
         onEdit={() => console.log("Lógica para editar post")}
-        onDelete={() => console.log("Lógica para eliminar post")}
       />
     </View>
   );
