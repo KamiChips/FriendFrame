@@ -8,6 +8,7 @@ import { CommentType } from "./CommentItem";
 import ProfileIcon from "./ProfileIcon";
 import { toggleLikePost, toggleLikeFragment } from "@/services/supabase/interactions/likes";
 import { PublicationTarget } from "@/services/supabase/interactions/types";
+import ShareChatModal from "./share-chat-modal";
 
 type FeedCardPublicationType = "post" | "fragment";
 
@@ -53,6 +54,7 @@ export default function FeedCard({
 }: FeedCardProps) {
   const [isCommentsModalVisible, setCommentsModalVisible] = useState(false);
   const [isMenuVisible, setMenuVisible] = useState(false);
+  const [shareVisible, setShareVisible] = useState(false);
 
   const [liked, setLiked] = useState(isLiked);
   const [count, setCount] = useState(likesCount);
@@ -191,7 +193,7 @@ export default function FeedCard({
         </Pressable>
 
         {/* NUEVO: Botón Compartir */}
-        <Pressable className="ml-6 flex-row items-center">
+        <Pressable className="ml-6 flex-row items-center" onPress={() => setShareVisible(true)}>
           <Ionicons name="share-social-outline" size={22} color="#8A8A8E" />
         </Pressable>
       </View>
@@ -214,6 +216,15 @@ export default function FeedCard({
         onDeleted={onDeleted}
         onEdited={onEdited}
         onEdit={() => console.log("Lógica para editar post")}
+      />
+
+      {/* MODAL DE SHARE */}
+      <ShareChatModal 
+        visible={shareVisible}
+        onClose={() => setShareVisible(false)} target={{
+          postId: "",
+          fragmentId: undefined
+        }}        
       />
     </View>
   );
