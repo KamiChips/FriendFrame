@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -14,8 +14,14 @@ import "../global.css";
 import { Toggle } from "@/components/ui/Toggle";
 import { EditProfileModal } from "@/components/ui/EditProfileModal";
 import { signOut } from "@/services/supabase/auth/auth.sign-in";
+import { getBlockedUsers } from "@/services/supabase/social/social.blocks";
 import NotificationButton from "@/components/ui/NotificationButton";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase/client";
+import { useSettings } from "@/hooks/useSettings";
+import { Image } from "expo-image";
+import ProfileIcon from "@/components/ui/ProfileIcon";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -24,22 +30,43 @@ export default function SettingsScreen() {
   const [activeTab, setActiveTab] = useState("General");
   const [isDark, setIsDark] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const tabs = ["General", "Bloqueados", "Mis Posts", "Mis Fragments"];
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [userData, setUserData] = useState({
-    name: "María González",
-    username: "maria_g",
-  });
 
-  const handleLogOut = async () => {
-    setLoading(true);
-    const { error } = await signOut();
-    setLoading(false);
+  const { user, refreshUser } = useAuth();
 
-    if (error) Alert.alert("Error", error);
+  const tabs = ["General", "Bloqueados", "Mis Posts", "Mis Fragments"];
+
+  const {
+    blockedUsers,
+    myPosts,
+    myFragments,
+    loadingBlocked,
+    loadingPosts,
+    loadingFragments,
+    loadBlockedUsers,
+    loadMyPosts,
+    loadMyFragments,
+    handleUnblock,
+    handleLogOut,
+  } = useSettings(user?.user_id);
+
+  useEffect(() => {
+    if (activeTab === "Bloqueados") {
+      loadBlockedUsers();
+    }
+    if (activeTab === "Mis Posts") {
+      loadMyPosts();
+    }
+    if (activeTab === "Mis Fragments") {
+      loadMyFragments();
+    }
+  }, [activeTab]);
+
+  const handleProfileSaved = async (newName: string, newUsername: string) => {
+    await refreshUser();
   };
 
   const darkBell = isDark ? false : true;
@@ -109,7 +136,7 @@ export default function SettingsScreen() {
         {activeTab === "General" && (
           <View className="flex flex-col pb-10">
             {/* Notificaciones */}
-            <View className="bg-white dark:bg-background-semidark p-5 rounded-2xl border border-gray-100 dark:border-[#27345C] flex-row justify-between items-center mb-4 shadow-sm">
+            <View className="bg-white dark:bg-background-semidark p-5 rounded-2xl border-2 border-gray-100 dark:border-[#27345C] flex-row justify-between items-center mb-4 shadow-sm">
               <View className="flex-row items-center flex-1">
                 <Ionicons
                   name="notifications-outline"
@@ -138,12 +165,12 @@ export default function SettingsScreen() {
             </View>
 
             {/* Perfil */}
-            <View className="bg-white dark:bg-background-semidark p-5 rounded-2xl border border-gray-100 dark:border-[#27345C] mb-4 shadow-sm">
+            <View className="bg-white dark:bg-background-semidark p-5 rounded-2xl border-2 border-gray-100 dark:border-[#27345C] mb-4 shadow-sm">
               <Text className="text-lg font-bold text-[#1D2A4F] dark:text-white mb-1">
                 Perfil
               </Text>
               <Text className="text-gray-400 text-sm mb-4">
-                {userData.name} (@{userData.username})
+                {user?.full_name} (@{user?.username})
               </Text>
               <TouchableOpacity
                 onPress={() => setModalVisible(true)}
@@ -157,7 +184,7 @@ export default function SettingsScreen() {
 
             {/* Botón: Cerrar Sesión */}
             <TouchableOpacity
-              className="bg-white dark:bg-background-semidark p-5 rounded-2xl border border-gray-100 dark:border-[#27345C] flex-row justify-center items-center shadow-sm active:opacity-70 mt-2"
+              className="bg-white dark:bg-background-semidark p-5 rounded-2xl border-2 border-gray-100 dark:border-[#27345C] flex-row justify-center items-center shadow-sm active:opacity-70 mt-2"
               onPress={handleLogOut}
               activeOpacity={0.8}
               disabled={loading}
@@ -183,10 +210,59 @@ export default function SettingsScreen() {
 
         {/* Contenido básico de relleno para las otras pestañas */}
         {activeTab === "Bloqueados" && (
-          <View className="py-20 items-center">
-            <Text className="text-gray-400 font-medium dark:text-neutral-500">
-              Lista de usuarios bloqueados
-            </Text>
+          <View className="py-5">
+            {loadingBlocked ? (
+              <ActivityIndicator color="#34C2DD" className="mt-10" />
+            ) : blockedUsers.length === 0 ? (
+              <View className="py-20 items-center">
+                <Text className="text-gray-400 dark:text-neutral-500 text-center">
+                  No has bloqueado a ningún usuario
+                </Text>
+              </View>
+            ) : (
+              blockedUsers.map((u) => (
+                <View
+                  key={u.user_id}
+                  className="bg-background-light dark:bg-background-semidark border-b border-2 border-gray-100 dark:border-[#27345C] p-4 rounded-2xl flex-row items-center mb-3 shadow-md"
+                >
+                  {/* Avatar */}
+                  {u.profile_pic ? (
+                    <Image
+                      source={{ uri: u.profile_pic }}
+                      style={{ width: 44, height: 44, borderRadius: 22 }}
+                    />
+                  ) : (
+                    <ProfileIcon
+                      initials={u.full_name
+                        .split(" ")
+                        .map((w: string) => w[0])
+                        .slice(0, 2)
+                        .join("")
+                        .toUpperCase()}
+                      isDark={darkBell}
+                    />
+                  )}
+
+                  {/* Info */}
+                  <View className="ml-3 flex-1">
+                    <Text className="font-bold text-[#1D2A4F] dark:text-white text-base">
+                      {u.full_name}
+                    </Text>
+                    <Text className="text-gray-400 text-sm">@{u.username}</Text>
+                  </View>
+
+                  {/* Desbloquear */}
+                  <TouchableOpacity
+                    onPress={() => handleUnblock(u.user_id)}
+                    className="bg-primary-light dark:bg-tertiary-dark px-3 py-2 rounded-xl"
+                  >
+                    <Text className="text-background-light text-sm font-semibold">
+                      Desbloquear
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ))
+            )}
           </View>
         )}
 
@@ -211,12 +287,9 @@ export default function SettingsScreen() {
       <EditProfileModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        currentName={userData.name}
-        currentUsername={userData.username}
-        onSaved={(newName, newUsername) => {
-          // Al guardar en el modal, actualizamos el estado de la pantalla principal
-          setUserData({ name: newName, username: newUsername });
-        }}
+        currentName={user?.full_name ?? ""}
+        currentUsername={user?.username ?? ""}
+        onSaved={handleProfileSaved}
       />
     </SafeAreaView>
   );
