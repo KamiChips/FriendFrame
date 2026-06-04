@@ -19,8 +19,8 @@ async function createTestUser() {
         await supabaseAdmin.from("users").insert({
             user_id: data.user.id,
             email: TEST_USER.email,
-            full_name: "Integration Test",
-            username: "integration_test_signin",
+            full_name: "Integration Testing",
+            username: "integration_test_signin_2",
             profile_pic: null,
         });
     }
@@ -64,8 +64,8 @@ describe("signIn — integration", () => {
 
     it("throws error when email does not exist", async () => {
         const result = await signIn({
-            email: "tengohambre@test.com",
-            password: "yadijequetengohambreperoesquetengohambreaiuda",
+            email: "tengohambre@gmail.com",
+            password: "yadijequetengohambreperoesqueTengohambreaiuda_1",
         });
 
         expect(result.error).toBe("Email o contraseña incorrectos.");
