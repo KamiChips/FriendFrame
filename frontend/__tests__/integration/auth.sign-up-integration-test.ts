@@ -5,11 +5,17 @@ import { supabaseAdmin } from "./helpers/supabase-test-client";
 const TEST_USER = {
     email: process.env.TEST_SIGNUP_EMAIL!,
     password: "TeSt012_13",
-    full_name: "Integration Test",
-    username: "integration_test"
+    full_name: "Integration Testing",
+    username: "integration_test_2"
 };
 
 async function deleteTestUser(email: string) {
+    // HABIA QUE BORRAR TAMBIEN EL PERFIL AAAAAAAAAAAAAA
+    await supabaseAdmin
+        .from("users")
+        .delete()
+        .eq("username", TEST_USER.username);
+    
     const { data } = await supabaseAdmin.auth.admin.listUsers();
     const user = data.users.find((u) => u.email === email);
     if (user) await supabaseAdmin.auth.admin.deleteUser(user.id);
@@ -46,7 +52,7 @@ describe("signUp - Integration", () => {
 
         const result = await signUp({
             ...TEST_USER,
-            email: "otro_integration@test.com"
+            email: "otro_integration@gmail.com"
         });
 
         expect(result.error).toBe("Ese nombre de usuario ya está en uso.");
@@ -108,13 +114,13 @@ describe("signUp - Integration - Database", () => {
     it("username is stored in lowercase", async () => {
         await signUp({
             ...TEST_USER,
-            username: "INTEGRATION_TEST" 
+            username: "INTEGRATION_TEST_AAAAAAAA" 
         });
 
         const { data: profile } = await supabaseAdmin
             .from("users")
             .select("username")
-            .eq("username", "integration_test")
+            .eq("username", "integration_test_aaaaaaaa")
             .single();
 
         expect(profile).not.toBeNull();
