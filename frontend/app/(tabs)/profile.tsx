@@ -28,6 +28,7 @@ import {
   unblockUser,
 } from "@/services/supabase/social/social.blocks";
 import { EditProfileModal } from "@/components/ui/EditProfileModal";
+import BlockedUserScreen from "@/components/ui/blocked-user-screen";
 
 type TabType = "grid" | "list";
 
@@ -170,6 +171,7 @@ export default function ProfileScreen() {
     );
   }
 
+  // CASO A: El usuario objetivo me bloqueó a mí
   if (profile.blocked_me) {
     return (
       <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240] items-center justify-center px-8">
@@ -180,6 +182,18 @@ export default function ProfileScreen() {
     );
   }
 
+  // CASO B: YO BLOQUEÉ al usuario objetivo
+  if (profile.is_blocked) {
+    return (
+      <BlockedUserScreen
+        fullName={profile.full_name}
+        onUnblock={handleUnblock}
+        actionLoading={actionLoading}
+      />
+    );
+  }
+
+  // CASO C: FLUJO NORMAL DEL PERFIL ACUMULADO
   const gridPosts = feed.filter((item) => item.type === "post");
 
   return (
