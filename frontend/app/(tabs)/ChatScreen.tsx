@@ -175,6 +175,7 @@ const ChatScreen = () => {
               <ChatMessage
                 key={m.message_id}
                 message={m.content}
+                media={(m as any).media}
                 time={new Date(m.created_at).toLocaleTimeString("es-MX", {
                   hour: "2-digit",
                   minute: "2-digit",

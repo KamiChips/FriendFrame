@@ -21,6 +21,7 @@ export async function addComment(
     const currentUserId = await getAuthUser()
     const sanitized     = validateContent(content, 'comentario')
  
+    
     if (parentCommentId) {
       assertUUID(parentCommentId, 'parentCommentId')
  
