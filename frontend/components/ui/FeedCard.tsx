@@ -218,12 +218,12 @@ export default function FeedCard({
         onEdit={() => console.log("Lógica para editar post")}
       />
 
-      {/* MODAL DE SHARE */}
+    {/* MODAL DE SHARE */}
       <ShareChatModal 
         visible={shareVisible}
-        onClose={() => setShareVisible(false)} target={{
-          postId: "",
-          fragmentId: undefined
+        onClose={() => setShareVisible(false)} 
+        target={target} 
+        onShared={(shared) => {
         }}        
       />
     </View>
