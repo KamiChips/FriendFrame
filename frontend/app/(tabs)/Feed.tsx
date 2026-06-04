@@ -112,6 +112,7 @@ export default function FeedScreen() {
             authorName="Ana López" // Nombre principal del que publica
             authorInitials="AL" // Iniciales para el Avatar circular
             timeAgo="hace 5 horas" // Etiqueta de tiempo
+            authorImage="https://i.pinimg.com/736x/66/86/ae/6686ae04340f0125502a1fc08bf482da.jpg"
             targetProfileName="María González" // Perfil receptor del mensaje (El "-> en el perfil de...")
             textContent="Una de las personas más auténticas que conozco. Gracias por siempre estar ahí! 💙" // Texto principal
             likesCount={79} // Número estático de Likes
