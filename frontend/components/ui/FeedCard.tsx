@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Pressable, useColorScheme } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,6 +7,7 @@ import CommentsModal from "./CommentsModal";
 import { CommentType } from "./CommentItem";
 import ProfileIcon from "./ProfileIcon";
 import { toggleLikePost, toggleLikeFragment } from "@/services/supabase/interactions/likes";
+import { PublicationTarget } from "@/services/supabase/interactions/types";
 
 type FeedCardPublicationType = "post" | "fragment";
 
@@ -57,6 +58,11 @@ export default function FeedCard({
   const [count, setCount] = useState(likesCount);
   const [isTogglingLike, setIsTogglingLike] = useState(false);
 
+  const [commentCount, setCommentCount] = useState(commentsCount);
+
+  const target: PublicationTarget = publicationType === "fragment"
+    ? { fragmentId: publicationId! }
+    : { postId: publicationId! };
 
   // ✅ Hook siempre en el nivel superior, nunca en condicional
   const isDark = useColorScheme() === "dark";
@@ -91,6 +97,16 @@ export default function FeedCard({
 
     setIsTogglingLike(false);
   }
+
+  useEffect(() => {
+    setCommentCount(commentsCount);
+  }, [commentsCount]);
+
+  // Lo mismo para likes por consistencia:
+  useEffect(() => {
+    setLiked(isLiked);
+    setCount(likesCount);
+  }, [isLiked, likesCount]);
 
   return (
     <View className="mb-4 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-transparent dark:bg-background-semidark">
@@ -170,7 +186,7 @@ export default function FeedCard({
         >
           <Ionicons name="chatbubble-outline" size={22} color="#8A8A8E" />
           <Text className="ml-2 font-spartan text-base text-gray-500 dark:text-gray-400">
-            {commentsCount}
+            {commentCount}
           </Text>
         </Pressable>
 
@@ -184,8 +200,8 @@ export default function FeedCard({
       <CommentsModal
         isVisible={isCommentsModalVisible}
         onClose={() => setCommentsModalVisible(false)}
-        comments={comments}
-        onAddComment={onAddComment}
+        target={target}
+        onCommentAdded={() => setCommentCount(prev => prev + 1)}
       />
 
       {/* NUEVO: Modal de opciones separado */}

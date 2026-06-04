@@ -34,7 +34,7 @@ export interface CommentType {
 // Propiedades que recibe este componente desde el CommentsModal
 interface CommentItemProps {
   comment: CommentType;                    // El objeto de datos del comentario
-  onReply: (authorName: string) => void;   // Función para pre-llenar el input con el @nombre
+  onReply: (authorName: string, commentId: string) => void;   // Función para pre-llenar el input con el @nombre
 }
 
 
@@ -93,7 +93,7 @@ export default function CommentItem({ comment, onReply }: CommentItemProps) {
             </TouchableOpacity>
             
             {/* BOTÓN RESPONDER (Envía el nombre del autor principal al modal) */}
-            <TouchableOpacity className="mr-4" onPress={() => onReply(comment.authorName)}>
+            <TouchableOpacity className="mr-4" onPress={() => onReply(comment.authorName, comment.id)}>
                 <Text className="font-spartan text-xs text-gray-500 dark:text-gray-400">Responder</Text>
             </TouchableOpacity>
             
@@ -105,8 +105,6 @@ export default function CommentItem({ comment, onReply }: CommentItemProps) {
 
         </View>
       </View>
-
-
    
       {/* 4. RESPUESTAS ANIDADAS (NIVEL 1)                                      */}
       {/* Solo se dibuja esta sección si el comentario tiene el arreglo `replies`.*/}
@@ -154,7 +152,7 @@ export default function CommentItem({ comment, onReply }: CommentItemProps) {
                       </TouchableOpacity>
                       
                       {/* BOTÓN RESPONDER (Envía el nombre del autor de la respuesta al modal) */}
-                      <TouchableOpacity className="mr-4" onPress={() => onReply(reply.authorName)}>
+                      <TouchableOpacity className="mr-4" onPress={() => onReply(reply.authorName, reply.id)}>
                           <Text className="font-spartan text-xs text-gray-500 dark:text-gray-400">Responder</Text>
                       </TouchableOpacity>
                       
