@@ -53,7 +53,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="ChatInboxScreen"
+        name="ChatInbox"
         options={{
           title: "Mensajes",
           tabBarIcon: ({ color }) => (
@@ -68,6 +68,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Feather name="user" size={28} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="ChatScreen"
+        options={{
+          href: null, // ← no aparece en el tab bar
+          headerShown: false,
+          tabBarStyle: { display: "none" },
         }}
       />
     </Tabs>

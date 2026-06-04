@@ -60,7 +60,6 @@ export default function FeedCard({
   const hasImage =
     authorImage && typeof authorImage === "string" && authorImage.trim() !== "";
 
-=======
   const isDark = useColorScheme() === "dark";
   return (
     <View className="mb-4 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-transparent dark:bg-background-semidark">
