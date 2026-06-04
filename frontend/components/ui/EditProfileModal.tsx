@@ -5,7 +5,6 @@ import {
   Modal,
   TouchableOpacity,
   TextInput,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   useColorScheme,
