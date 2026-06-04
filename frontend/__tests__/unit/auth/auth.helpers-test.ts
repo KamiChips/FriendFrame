@@ -9,7 +9,7 @@ import {
 } from "@/services/supabase/auth/auth.helpers";
 
 jest.mock("@/lib/supabase/client", () => ({
-    supabase: require("../__mocks__/supabaseMock").supabase,
+    supabase: require("@/__mocks__/supabaseMock").supabase,
 }));
 
 import { mockFrom } from "@/__mocks__/supabaseMock";

@@ -21,7 +21,7 @@ describe("parseAuthError", () => {
     });
     
     it("translates 'Auth session missing'", () => {
-        expect(parseAuthError(new Error("User already registered")))
+        expect(parseAuthError(new Error("Auth session missing")))
             .toBe("No hay sesión activa.");
     });
 
@@ -47,6 +47,6 @@ describe("parseAuthError", () => {
 
     it("returns a generic error message for unknown messages.", () => {
         expect(parseAuthError(new Error("sepa que paso aqui")))
-            .toBe("Ocurrió un error insesperado.");
+            .toBe("Ocurrió un error inesperado.");
     });
 })

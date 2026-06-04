@@ -9,7 +9,10 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "jest --watchAll"
+    "test": "jest",
+    "test:unit": "jest --testPathPattern=__tests__/unit",
+    "test:components": "jest --testPathPattern=__tests__/components",
+    "test:integration": "jest --testPathPattern=__tests__/integration"
   },
   "dependencies": {
     "@expo-google-fonts/borel": "^0.4.2",
@@ -72,7 +75,8 @@
       "<rootDir>/__mocks__/setup.ts"
     ],
     "moduleNameMapper": {
-      "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/fileMock.ts"
+      "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/fileMock.ts",
+      "@react-native-async-storage/async-storage": "<rootDir>/node_modules/@react-native-async-storage/async-storage/jest/async-storage-mock"
     },
     "collectCoverage": true,
     "collectCoverageFrom": [
