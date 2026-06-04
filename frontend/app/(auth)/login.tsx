@@ -95,12 +95,14 @@ export default function LoginScreen() {
           {/* Login form */}
           <View className="mb-18">
             <TextField
+              testID="username-textfield"
               placeholder="Username"
               value={email}
               onChangeText={setEmail}
             />
 
             <TextField
+              testID="password-textfield"
               placeholder="Password"
               value={password}
               onChangeText={setPassword}
@@ -109,7 +111,7 @@ export default function LoginScreen() {
 
             {/* Remember me / Forgot Password? */}
             <View className="flex-row justify-between mb-12">
-              <Text className="dark:text-background-light">[] Remember me</Text>
+              <Text className="dark:text-background-light">[] Remember me</Text> {/* Hay que cambiar esto por un checkbox :P */}
               <Text className="font-semibold dark:text-background-light">
                 Forgot Password?
               </Text>

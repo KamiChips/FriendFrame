@@ -1,27 +1,62 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Modal, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Modal, Platform, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
+import { Image } from 'expo-image';
+
+// NUEVO: Importamos el hook que te pasaron (asegúrate de que la ruta sea correcta según tus carpetas)
+import { useCreateFragment } from '@/hooks/useCreateFragment';
 
 interface NewFragmentProps {
     isVisible: boolean;
     onClose: () => void;
-    onPublish: (text: string) => void;
+    onPublishSuccess: () => void; // NUEVO: Avisa al padre que se publicó para recargar el Feed
+    targetUserId: string;         // NUEVO: El ID del perfil donde se va a publicar (profileOwnerId)
+    targetUserName: string;       // NUEVO: Para quitar el "María González" fijo
+    targetUserInitials: string;   // NUEVO: Para quitar el "MG" fijo
+    targetUserImage?: string | null; // NUEVO: Para mostrar la imagen del usuario si existe
 }
 
-export const NewFragment = ({ isVisible, onClose, onPublish }: NewFragmentProps) => {
+export const NewFragment = ({ 
+    isVisible, 
+    onClose, 
+    onPublishSuccess, 
+    targetUserId, 
+    targetUserName, 
+    targetUserInitials, 
+    targetUserImage
+}: NewFragmentProps) => {
+    
     const [text, setText] = useState('');
     const colorScheme = useColorScheme();
     const maxChars = 280;
     
-    const handlePublish = () => {
+    // NUEVO: Inicializamos tu hook de Supabase
+    const { createFragment, isLoading, isSuccess, error, reset } = useCreateFragment();
+
+    // NUEVO: La función ahora llama a la base de datos
+    const handlePublish = async () => {
         if (text.trim().length > 0) {
-            onPublish(text);
+            await createFragment(targetUserId, text.trim());
         }
     };
+
+    // NUEVO: Un useEffect para escuchar cuando la base de datos termine con éxito o error
+    useEffect(() => {
+        if (isSuccess) {
+            setText(''); // Limpiamos la caja de texto
+            reset(); // Reseteamos el estado del hook
+            onPublishSuccess(); // Le decimos a la pantalla del perfil que recargue el feed
+            onClose(); // Cerramos el modal
+        }
+        if (error) {
+            Alert.alert("Error", "No se pudo publicar el fragment: " + error);
+            reset();
+        }
+    }, [isSuccess, error, onClose, onPublishSuccess, reset]);
 
     return (
         <Modal animationType="slide" transparent={false} visible={isVisible} onRequestClose={onClose}>
@@ -30,17 +65,14 @@ export const NewFragment = ({ isVisible, onClose, onPublish }: NewFragmentProps)
                     
                     {/* Header */}
                     <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
-                        <TouchableOpacity onPress={onClose} className="p-1">
+                        <TouchableOpacity onPress={onClose} className="p-1" disabled={isLoading}>
                             <Ionicons name="close" size={24} color={colorScheme === 'dark' ? '#E5E7EB' : '#374151'} />
                         </TouchableOpacity>
 
                         <View className="flex-row items-center space-x-1">
                             <Ionicons name="sparkles-outline" size={18} color="#f97316" />
                             <MaskedView
-                                maskElement={
-                                    
-                                    <Text className="text-lg font-bold"> Nuevo Fragment </Text>
-                                }
+                                maskElement={<Text className="text-lg font-bold"> Nuevo Fragment </Text>}
                             >
                                 <LinearGradient
                                     colors={['#f97316', '#06b6d4']}
@@ -52,32 +84,48 @@ export const NewFragment = ({ isVisible, onClose, onPublish }: NewFragmentProps)
                             </MaskedView>
                         </View>
 
-                        <TouchableOpacity onPress={handlePublish} disabled={text.length === 0}>
+                        {/* NUEVO: El botón ahora se desactiva si está cargando y muestra un spinner */}
+                        <TouchableOpacity onPress={handlePublish} disabled={text.length === 0 || isLoading}>
                             <LinearGradient
                                 colors={['#06b6d4', '#f97316']}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 1 }}
-                                className="px-5 py-2 rounded-full"
-                                style={{ opacity: text.length === 0 ? 0.5 : 1 }}
+                                className="px-5 py-2 rounded-full items-center justify-center min-w-[90px]"
+                                style={{ opacity: (text.length === 0 || isLoading) ? 0.5 : 1 }}
                             >
-                                <Text className="font-semibold text-white">Publicar</Text>
+                                {isLoading ? (
+                                    <ActivityIndicator size="small" color="#FFFFFF" />
+                                ) : (
+                                    <Text className="font-semibold text-white">Publicar</Text>
+                                )}
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
 
                     <ScrollView className="flex-1 px-5 pt-4" showsVerticalScrollIndicator={false}>
-                        {/* User Info */}
+                 {/* User Info */}
                         <View className="flex-row items-center mb-5">
-                            <View
-                                className="w-12 h-12 rounded-full items-center justify-center mr-3"
-                                style={{ backgroundColor: colorScheme === 'dark' ? '#AA3E14' : '#5EEAD4' }}  // solid teal
-                            >
-                                <Text className="text-white font-bold text-sm">MG</Text>
-                            </View>
+                            {/* NUEVO: Lógica condicional correcta para TypeScript */}
+                            {targetUserImage ? (
+                                <Image 
+                                    source={{ uri: targetUserImage }} 
+                                    style={{ width: 48, height: 48, borderRadius: 24, marginRight: 12 }} 
+                                    contentFit="cover" 
+                                />
+                            ) : (
+                                <View
+                                    className="w-12 h-12 rounded-full items-center justify-center mr-3"
+                                    style={{ backgroundColor: colorScheme === 'dark' ? '#AA3E14' : '#5EEAD4' }}
+                                >
+                                    {/* NUEVO: Usamos las iniciales dinámicas */}
+                                    <Text className="text-white font-bold text-sm">{targetUserInitials}</Text>
+                                </View>
+                            )}
 
                             <View>
-                                <Text className="text-base font-bold text-gray-800  dark:text-white"> María González</Text>
-                                <Text className="text-xs text-gray-400">Fragment para Carlos</Text>
+                                {/* NUEVO: Usamos el nombre dinámico */}
+                                <Text className="text-base font-bold text-gray-800 dark:text-white"> {targetUserName}</Text>
+                                <Text className="text-xs text-gray-400">Fragment para {targetUserName.split(' ')[0]}</Text>
                             </View>
                         </View>
 
@@ -98,13 +146,13 @@ export const NewFragment = ({ isVisible, onClose, onPublish }: NewFragmentProps)
                                 className="text-base text-gray-800 dark:text-white p-4"
                                 value={text}
                                 onChangeText={setText}
+                                editable={!isLoading} // NUEVO: Bloquea el teclado mientras carga
                             />
                         </LinearGradient>
 
                         {/* Counter and Status */}
                         <View className="flex-row justify-between items-center px-1 mb-6">
                             <View className="flex-row items-center space-x-2">
-                                {/* Teal progress circle */}
                                 <View className="w-8 h-8 rounded-full border-2 border-cyan-400 dark:border-[#f97316] dark:items-center dark:justify-center">
                                     {text.length > 0 && (
                                         <Text style={{ fontSize: 8 }} className="text-cyan-500 dark:text-[#f97316]">
@@ -136,31 +184,26 @@ export const NewFragment = ({ isVisible, onClose, onPublish }: NewFragmentProps)
                         }} className="rounded-2xl p-4 shadow-sm shadow-gray-100/40">
                             <View className="flex-row items-center space-x-2 mb-3">
                                 <Ionicons name="sparkles-outline" size={16} color={colorScheme === 'dark' ? '#f97316' : '#06b6d4'} />
-                                <Text style={{ color: colorScheme === 'dark' ? '#E2E8F0' : '#1f2937' }}
-                                className="text-sm font-bold ml-2">
+                                <Text style={{ color: colorScheme === 'dark' ? '#E2E8F0' : '#1f2937' }} className="text-sm font-bold ml-2">
                                     Tips para un gran Fragment
                                 </Text>
                             </View>
-
                             <View className="space-y-2">
                                 <View className="flex-row items-center space-x-2 mb-1">
                                     <Ionicons name="checkmark-circle" size={14} color={colorScheme === 'dark' ? '#f97316' : '#06b6d4'} />
-                                    <Text style={{ color: colorScheme === 'dark' ? '#94A3B8' : '#374151' }}
-                                        className="text-sm flex-1 ml-1">
+                                    <Text style={{ color: colorScheme === 'dark' ? '#94A3B8' : '#374151' }} className="text-sm flex-1 ml-1">
                                         Sé auténtico y genuino con tus palabras
                                     </Text>
                                 </View>
                                 <View className="flex-row items-center space-x-2 mb-1">
                                     <Ionicons name="checkmark-circle" size={14} color={colorScheme === 'dark' ? '#f97316' : '#06b6d4'} />
-                                    <Text style={{ color: colorScheme === 'dark' ? '#94A3B8' : '#374151' }}
-                                        className="text-sm flex-1 ml-1">
+                                    <Text style={{ color: colorScheme === 'dark' ? '#94A3B8' : '#374151' }} className="text-sm flex-1 ml-1">
                                         Comparte un recuerdo o momento especial
                                     </Text>
                                 </View>
                                 <View className="flex-row items-center space-x-2 mb-1">
                                     <Ionicons name="checkmark-circle" size={14} color={colorScheme === 'dark' ? '#f97316' : '#06b6d4'} />
-                                    <Text style={{ color: colorScheme === 'dark' ? '#94A3B8' : '#374151' }}
-                                        className="text-sm flex-1 ml-1">
+                                    <Text style={{ color: colorScheme === 'dark' ? '#94A3B8' : '#374151' }} className="text-sm flex-1 ml-1">
                                         Hazlo personal y significativo
                                     </Text>
                                 </View>

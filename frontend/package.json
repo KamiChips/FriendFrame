@@ -68,7 +68,9 @@
   },
   "jest": {
     "preset": "jest-expo",
-    "setupFilesAfterEnv": ["<rootDir>/__mocks__/setup.ts"],
+    "setupFilesAfterEnv": [
+      "<rootDir>/__mocks__/setup.ts"
+    ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/fileMock.ts"
     },

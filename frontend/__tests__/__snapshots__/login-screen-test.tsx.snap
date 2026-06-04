@@ -21,61 +21,19 @@ exports[`<LoginScreen /> matches snapshot 1`] = `
   <View
     className="mb-18"
   >
-    <View
-      className="w-full mb-4"
-    >
-      <Text
-        className="font-medium"
-        collapsable={false}
-        style={
-          {
-            "color": "rgba(24, 34, 64, 1)",
-            "fontSize": 16,
-            "left": 0,
-            "position": "absolute",
-            "top": 12,
-          }
-        }
-      >
-        Username
-      </Text>
-      <TextInput
-        className="py-2 text-[#1D2A4F] font-semibold border-b-2 border-[#1D2A4F] dark:text-background-light dark:border-background-light"
-        onBlur={[Function]}
-        onChangeText={[Function]}
-        onFocus={[Function]}
-        placeholder=""
-        value=""
-      />
-    </View>
-    <View
-      className="w-full mb-4"
-    >
-      <Text
-        className="font-medium"
-        collapsable={false}
-        style={
-          {
-            "color": "rgba(24, 34, 64, 1)",
-            "fontSize": 16,
-            "left": 0,
-            "position": "absolute",
-            "top": 12,
-          }
-        }
-      >
-        Password
-      </Text>
-      <TextInput
-        className="py-2 text-[#1D2A4F] font-semibold border-b-2 border-[#1D2A4F] dark:text-background-light dark:border-background-light"
-        onBlur={[Function]}
-        onChangeText={[Function]}
-        onFocus={[Function]}
-        placeholder=""
-        secureTextEntry={true}
-        value=""
-      />
-    </View>
+    <TextInput
+      onChangeText={[Function]}
+      placeholder="Username"
+      testID="username-textfield"
+      value=""
+    />
+    <TextInput
+      onChangeText={[Function]}
+      placeholder="Password"
+      secureTextEntry={true}
+      testID="password-textfield"
+      value=""
+    />
     <View
       className="flex-row justify-between mb-12"
     >
@@ -84,6 +42,7 @@ exports[`<LoginScreen /> matches snapshot 1`] = `
       >
         [] Remember me
       </Text>
+       
       <Text
         className="font-semibold dark:text-background-light"
       >

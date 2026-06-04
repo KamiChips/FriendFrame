@@ -9,6 +9,15 @@ jest.mock("@/services/supabase/auth/auth.sign-in", () => ({
     signInWithGoogle: jest.fn(),
 }));
 
+jest.mock('@/components/ui/TextField', () => {
+    const React = require('react');
+    const { TextInput } = require('react-native');
+
+    return {
+        TextField: (props: any) => <TextInput {...props} />,
+    };
+});
+
 describe('<LoginScreen />', () => {
 
     beforeEach(() => {
@@ -22,13 +31,13 @@ describe('<LoginScreen />', () => {
     });
 
     test('renders username field', () => {
-        const { getByPlaceholderText } = render(<LoginScreen />);
-        expect(getByPlaceholderText('Username')).toBeTruthy();
+        const { getByTestId } = render(<LoginScreen />);
+        expect(getByTestId('username-textfield')).toBeTruthy();
     });
 
     test('renders password field', () => {
-        const { getByPlaceholderText } = render(<LoginScreen />);
-        expect(getByPlaceholderText('Password')).toBeTruthy();
+        const { getByTestId } = render(<LoginScreen />);
+        expect(getByTestId('password-textfield')).toBeTruthy();
     });
 
     test('renders login button', () => {
@@ -61,36 +70,36 @@ describe('<LoginScreen />', () => {
 
     // Tests de Validación
     test('shows error when submitting empty fields', async () => {
-        const { getByText } = render(<LoginScreen />);
-        fireEvent.press(getByText('Iniciando Sesión'));
+        const { getByTestId, getByText } = render(<LoginScreen />);
+        fireEvent.press(getByTestId('login-button'));
         await waitFor(() => {
             expect(getByText('Completa todos los campos.')).toBeTruthy();
         });
     });
 
     test('shows error when only username is filled', async () => {
-        const { getByPlaceholderText, getByText } = render(<LoginScreen />);
-        fireEvent.changeText(getByPlaceholderText('Username'), 'nito@email.com');
+        const { getByTestId, getByText } = render(<LoginScreen />);
+        fireEvent.changeText(getByTestId('username-textfield'), 'nito@email.com');
         // password vacío
-        fireEvent.press(getByText('Iniciando Sesión'));
+        fireEvent.press(getByTestId('login-button'));
         await waitFor(() => {
             expect(getByText('Completa todos los campos.')).toBeTruthy();
         });
     });
 
     test('shows error when only password is filled', async () => {
-        const { getByPlaceholderText, getByText } = render(<LoginScreen />);
+        const { getByTestId, getByText } = render(<LoginScreen />);
         // username vacío
-        fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
-        fireEvent.press(getByText('Iniciando Sesión'));
+        fireEvent.changeText(getByTestId('password-textfield'), 'password123');
+        fireEvent.press(getByTestId('login-button'));
         await waitFor(() => {
             expect(getByText('Completa todos los campos.')).toBeTruthy();
         });
     });
 
     test('does not call signIn when fields are empty', async () => {
-        const { getByText } = render(<LoginScreen />);
-        fireEvent.press(getByText('Iniciando Sesión'));
+        const { getByTestId } = render(<LoginScreen />);
+        fireEvent.press(getByTestId('login-button'));
         await waitFor(() => {
             expect(signIn).not.toHaveBeenCalled();
         });
@@ -98,22 +107,22 @@ describe('<LoginScreen />', () => {
 
     // Tests de Interacción con campos
     test('user can type in username field', () => {
-        const { getByPlaceholderText } = render(<LoginScreen />);
-        const input = getByPlaceholderText('Username');
+        const { getByTestId } = render(<LoginScreen />);
+        const input = getByTestId('username-textfield');
         fireEvent.changeText(input, 'nitito@email.com');
         expect(input.props.value).toBe('nitito@email.com');
     });
 
     test('user can type in password field', () => {
-        const { getByPlaceholderText } = render(<LoginScreen />);
-        const input = getByPlaceholderText('Password');
+        const { getByTestId } = render(<LoginScreen />);
+        const input = getByTestId('password-textfield');
         fireEvent.changeText(input, 'tengohambre123');
         expect(input.props.value).toBe('tengohambre123');
     });
 
     test('password field has secureTextEntry enabled', () => {
-        const { getByPlaceholderText } = render(<LoginScreen />);
-        const input = getByPlaceholderText('Password');
+        const { getByTestId } = render(<LoginScreen />);
+        const input = getByTestId('password-textfield');
         expect(input.props.secureTextEntry).toBe(true);
     });
 
@@ -122,10 +131,10 @@ describe('<LoginScreen />', () => {
         // no resuelve, loading queda en true para verificar que la cosa aparezca en loading
         (signIn as jest.Mock).mockImplementation(() => new Promise(() => {}));
 
-        const { getByPlaceholderText, getByText, getByTestId } = render(<LoginScreen />);
-        fireEvent.changeText(getByPlaceholderText('Username'), 'nito@email.com');
-        fireEvent.changeText(getByPlaceholderText('Password'), 'estoylavandoropa01');
-        fireEvent.press(getByText('Iniciando Sesión'));
+        const { getByTestId } = render(<LoginScreen />);
+        fireEvent.changeText(getByTestId('username-textfield'), 'nito@email.com');
+        fireEvent.changeText(getByTestId('password-textfield'), 'estoylavandoropa01');
+        fireEvent.press(getByTestId('login-button'));
 
         await waitFor(() => {
             expect(getByTestId('loading-indicator')).toBeTruthy();
@@ -135,10 +144,10 @@ describe('<LoginScreen />', () => {
     test('calls signIn with correct credentials', async () => {
         (signIn as jest.Mock).mockResolvedValue({ data: {}, error: null });
 
-        const { getByPlaceholderText, getByText } = render(<LoginScreen />);
-        fireEvent.changeText(getByPlaceholderText('Username'), 'nito@email.com');
-        fireEvent.changeText(getByPlaceholderText('Password'), 'tengosueño123');
-        fireEvent.press(getByText('Iniciando Sesión'));
+        const { getByTestId } = render(<LoginScreen />);
+        fireEvent.changeText(getByTestId('username-textfield'), 'nito@email.com');
+        fireEvent.changeText(getByTestId('password-textfield'), 'tengosueño123');
+        fireEvent.press(getByTestId('login-button'));
 
         await waitFor(() => {
             expect(signIn).toHaveBeenCalledWith({
@@ -154,10 +163,10 @@ describe('<LoginScreen />', () => {
             error: 'invalid login credentials'
         });
 
-        const { getByPlaceholderText, getByText } = render(<LoginScreen />);
-        fireEvent.changeText(getByPlaceholderText('Username'), 'etecorreonoexiste@todomal.com');
-        fireEvent.changeText(getByPlaceholderText('Password'), 'muymuymal123');
-        fireEvent.press(getByText('Iniciando Sesión'));
+        const { getByTestId, getByText } = render(<LoginScreen />);
+        fireEvent.changeText(getByTestId('username-textfield'), 'etecorreonoexiste@todomal.com');
+        fireEvent.changeText(getByTestId('password-textfield'), 'muymuymal123');
+        fireEvent.press(getByTestId('login-button'));
 
         await waitFor(() => {
             expect(getByText('Invalid login credentials')).toBeTruthy();
@@ -170,10 +179,10 @@ describe('<LoginScreen />', () => {
             error: 'Credenciales incorrectas' 
         });
 
-        const { getByPlaceholderText, getByText } = render(<LoginScreen />);
-        fireEvent.changeText(getByPlaceholderText('Username'), 'nito@email.com');
-        fireEvent.changeText(getByPlaceholderText('Password'), 'quienestaleyendoesto');
-        fireEvent.press(getByText('Iniciando Sesión'));
+        const { getByTestId, getByText } = render(<LoginScreen />);
+        fireEvent.changeText(getByTestId('username-textfield'), 'nito@email.com');
+        fireEvent.changeText(getByTestId('password-textfield'), 'quienestaleyendoesto');
+        fireEvent.press(getByTestId('login-button'));
 
         await waitFor(() => {
             expect(getByText('Credenciales incorrectas')).toBeTruthy();
@@ -183,10 +192,10 @@ describe('<LoginScreen />', () => {
     test('Google button is disabled while login is loading', async () => {
         (signIn as jest.Mock).mockImplementation(() => new Promise(() => {}));
 
-        const { getByPlaceholderText, getByText, getByTestId } = render(<LoginScreen />);
-        fireEvent.changeText(getByPlaceholderText('Username'), 'nito@email.com');
-        fireEvent.changeText(getByPlaceholderText('Password'), 'quierocomidaaaa12');
-        fireEvent.press(getByText('Iniciando Sesión'));
+        const { getByTestId } = render(<LoginScreen />);
+        fireEvent.changeText(getByTestId('username-textfield'), 'nito@email.com');
+        fireEvent.changeText(getByTestId('password-textfield'), 'quierocomidaaaa12');
+        fireEvent.press(getByTestId('login-button'));
 
         await waitFor(() => {
             expect(getByTestId('google-signin-button').props.accessibilityState?.disabled).toBe(true);

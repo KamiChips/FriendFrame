@@ -1,36 +1,36 @@
 import { render, fireEvent } from '@testing-library/react-native';
 import { useColorScheme } from 'react-native';
-import HomeScreen from '@/app/(tabs)/home';
+import HomeScreen from '@/app/home';
 
 const mockPush = jest.fn();
 
 // Mock de expo-router
 jest.mock("expo-router", () => ({
-  Link: ({
-    href,
-    children,
-    asChild,
-  }: {
-    href: string;
-    children: React.ReactElement;
-    asChild?: boolean;
-  }) => {
-    const { TouchableOpacity } = require("react-native");
+    Link: ({
+        href,
+        children,
+        asChild,
+    }: {
+        href: string;
+        children: React.ReactElement;
+        asChild?: boolean;
+    }) => {
+        const { TouchableOpacity } = require("react-native");
 
-    if (asChild) {
-      // Clonar el hijo e inyectarle el onPress de navegación
-      const React = require("react");
-      return React.cloneElement(children, {
-        onPress: () => mockPush(href),
-      });
-    }
+        if (asChild) {
+        // Clonar el hijo e inyectarle el onPress de navegación
+        const React = require("react");
+        return React.cloneElement(children, {
+            onPress: () => mockPush(href),
+        });
+        }
 
-    return (
-      <TouchableOpacity onPress={() => mockPush(href)}>
-        {children}
-      </TouchableOpacity>
-    );
-  },
+        return (
+        <TouchableOpacity onPress={() => mockPush(href)}>
+            {children}
+        </TouchableOpacity>
+        );
+    },
 }));
 
 describe('<HomeScreen />', () => {
@@ -91,13 +91,13 @@ describe("<HomeScreen /> - Navigation", () => {
     test("'Get Started' navigates to /signup", () => {
         const { getByText } = render(<HomeScreen />);
         fireEvent.press(getByText('Get Started'));
-        expect(mockPush).toHaveBeenCalledWith('@/app/(auth)/signup');
+        expect(mockPush).toHaveBeenCalledWith('/(auth)/signup');
     });
 
     test("'Have an Account?' navigates to /login", () => {
         const { getByText } = render(<HomeScreen />);
         fireEvent.press(getByText('Have an Account?'));
-        expect(mockPush).toHaveBeenCalledWith('@/app/(auth)/login');
+        expect(mockPush).toHaveBeenCalledWith('/(auth)/login');
     });
 
     test('Buttons navigate to different routes', () => {
@@ -105,7 +105,7 @@ describe("<HomeScreen /> - Navigation", () => {
         fireEvent.press(getByText('Get Started'));
         fireEvent.press(getByText('Have an Account?'));
         expect(mockPush).toHaveBeenCalledTimes(2);
-        expect(mockPush).toHaveBeenNthCalledWith(1, '@/app/(auth)/signup');
-        expect(mockPush).toHaveBeenNthCalledWith(2, '@/app/(auth)/login');
+        expect(mockPush).toHaveBeenNthCalledWith(1, '/(auth)/signup');
+        expect(mockPush).toHaveBeenNthCalledWith(2, '/(auth)/login');
     });
 });
