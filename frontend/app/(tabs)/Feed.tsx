@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, View, useColorScheme } from "react-native";
+import { RefreshControl, ScrollView, View, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Importación de nuestros componentes personalizados de UI
@@ -10,6 +10,7 @@ import { CommentType } from "@/components/ui/CommentItem";
 export default function FeedScreen() {
   // Detecta si el celular del usuario está en modo oscuro para adaptar los colores
   const isDark = useColorScheme() === "dark";
+  const [refreshing, setRefreshing] = useState(false);
 
   // 1. GESTIÓN DE ESTADOS LOCALES (MOCK DATA)
   // Aquí almacenamos la información de los comentarios en tiempo real.
@@ -100,6 +101,15 @@ export default function FeedScreen() {
 
       {/* ScrollView permite que el usuario pueda deslizar la pantalla hacia abajo */}
       <ScrollView
+        // {refreshControl={
+        //     <RefreshControl
+        //       refreshing={refreshing}
+        //       onRefresh={async () => {
+        //         setRefreshing(true);
+        //         await loadFeed();
+        //         setRefreshing(false);
+        //       }}
+        //     />}
         className="flex-1 bg-gray-50 dark:bg-background-dark"
         showsVerticalScrollIndicator={false} // Oculta la barrita gris lateral de scroll
         contentContainerStyle={{ paddingBottom: 40 }} // Da un margen inferior para que el último post no se corte
@@ -120,7 +130,7 @@ export default function FeedScreen() {
             commentsCount={comentariosAna.length} // Cuenta automáticamente cuántos elementos hay en el estado
             comments={comentariosAna} // Pasa el arreglo de datos al modal para que los dibuje
             onAddComment={agregarComentarioAna} // Le inyecta la función para que el botón de "Enviar" sepa qué hacer
-            isOwnPost={false} 
+            isOwnPost={false}
           />
 
           {/* TARJETA 2: PUBLICACIÓN DE CARLOS RAMÍREZ */}

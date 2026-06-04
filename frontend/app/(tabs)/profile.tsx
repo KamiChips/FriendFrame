@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
@@ -45,6 +46,7 @@ export default function ProfileScreen() {
   const [loadingFeed, setLoadingFeed] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [editModalVisable, setEditModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleProfileSaved = async (
     newName: string,
@@ -185,6 +187,16 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-semidark">
       <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true);
+              await loadFeed();
+              setRefreshing(false);
+            }}
+          />
+        }
         className="flex-1 bg-gray-50 dark:bg-background-dark"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
@@ -304,8 +316,7 @@ export default function ProfileScreen() {
               </Text>
             </View>
           ) : (
-<View className="w-full px-4">
-              
+            <View className="w-full px-4">
               {activeTab === "grid" && (
                 <View className="flex-row flex-wrap gap-2">
                   {gridPosts.length === 0 ? (
@@ -376,25 +387,24 @@ export default function ProfileScreen() {
             </View>
           )}
         </View>
-
-        {!isOwnProfile && profile.is_friend && (
-          <View className="mb-40 pb-10 z-10">
-            <FloatingMenu
-              onCreatePost={() => console.log("Crear Post en", profile.user_id)}
-              onCreateFragment={() => {
-                console.log("Crear Fragment en", profile.user_id);
-                loadFeed(); // Esto recargará tu feed cuando se publique con éxito
-              }}
-              // NUEVO: Aquí le pasamos la información real del perfil a tu menú
-              targetUserId={profile.user_id}
-              targetUserName={profile.full_name}
-              targetUserInitials={profile.full_name.charAt(0).toUpperCase()}
-              targetUserImage={profile.profile_pic}
-            />
-          </View>
-        )}
       </ScrollView>
 
+      {!isOwnProfile && profile.is_friend && (
+        <View className="z-10">
+          <FloatingMenu
+            onCreatePost={() => console.log("Crear Post en", profile.user_id)}
+            onCreateFragment={() => {
+              console.log("Crear Fragment en", profile.user_id);
+              loadFeed(); // Esto recargará tu feed cuando se publique con éxito
+            }}
+            // NUEVO: Aquí le pasamos la información real del perfil a tu menú
+            targetUserId={profile.user_id}
+            targetUserName={profile.full_name}
+            targetUserInitials={profile.full_name.charAt(0).toUpperCase()}
+            targetUserImage={profile.profile_pic}
+          />
+        </View>
+      )}
       <EditProfileModal
         visible={editModalVisable}
         onClose={() => setEditModalVisible(false)}
