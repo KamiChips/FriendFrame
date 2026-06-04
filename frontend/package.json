@@ -12,7 +12,7 @@
     "test": "jest",
     "test:unit": "jest --testPathPattern=__tests__/unit",
     "test:components": "jest --testPathPattern=__tests__/components",
-    "test:integration": "jest --testPathPattern=__tests__/integration"
+    "test:integration": "jest --config jest.integration.config.js"
   },
   "dependencies": {
     "@expo-google-fonts/borel": "^0.4.2",
@@ -73,6 +73,10 @@
     "preset": "jest-expo",
     "setupFilesAfterEnv": [
       "<rootDir>/__mocks__/setup.ts"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "__tests__/integration/helpers/"
     ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/fileMock.ts",
