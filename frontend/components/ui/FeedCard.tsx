@@ -27,6 +27,7 @@ interface FeedCardProps {
   targetUserImage?: string | null;
   onAddComment?: (texto: string) => void;
   onDeleted?: () => void;
+  onEdited?: (content: string) => void;
 }
 
 export default function FeedCard({
@@ -46,6 +47,7 @@ export default function FeedCard({
   comments = [],
   onAddComment,
   onDeleted,
+  onEdited,
 }: FeedCardProps) {
   const [isCommentsModalVisible, setCommentsModalVisible] = useState(false);
   const [isMenuVisible, setMenuVisible] = useState(false);
@@ -153,7 +155,9 @@ export default function FeedCard({
         onClose={() => setMenuVisible(false)}
         publicationId={publicationId}
         publicationType={publicationType}
+        initialContent={textContent}
         onDeleted={onDeleted}
+        onEdited={onEdited}
         onEdit={() => console.log("Lógica para editar post")}
       />
     </View>

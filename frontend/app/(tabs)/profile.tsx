@@ -413,6 +413,22 @@ export default function ProfileScreen() {
                         );
                         loadProfile();
                       }}
+
+                      onEdited={(newContent) => {
+                        setFeed((prevFeed) =>
+                          prevFeed.map((feedItem) => {
+                            if (item.type === "post" && feedItem.type === "post" && feedItem.post_id === item.post_id) {
+                              // Actualizamos la descripción si es un post
+                              return { ...feedItem, description: newContent };
+                            }
+                            if (item.type === "fragment" && feedItem.type === "fragment" && feedItem.fragment_id === item.fragment_id) {
+                              // Actualizamos el contenido si es un fragment
+                              return { ...feedItem, content: newContent };
+                            }
+                            return feedItem;
+                          })
+                        );
+                      }}
                     />
                   ))}
                 </View>
