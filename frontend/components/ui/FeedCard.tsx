@@ -10,7 +10,7 @@ import ProfileIcon from "./ProfileIcon";
 interface FeedCardProps {
   authorName: string;
   authorInitials: string;
-  authorImage?: string | null; // Nuevo prop para la consistencia de fotos
+  authorImage?: string | null;
   timeAgo: string;
   targetProfileName: string;
   textContent: string;
@@ -18,7 +18,7 @@ interface FeedCardProps {
   likesCount: number;
   commentsCount: number;
   isLiked?: boolean;
-  isOwnPost?: boolean; // Prop para saber si mostrar los 3 puntos
+  isOwnPost?: boolean;
   comments?: CommentType[];
   targetUserImage?: string | null;
   onAddComment?: (texto: string) => void;
@@ -49,9 +49,24 @@ export default function FeedCard({
       {/* 1. CABECERA DE LA TARJETA */}
       <View className="flex-row items-start justify-between p-4">
         <View className="flex-row items-start flex-1">
-          {/* LÓGICA DE CONSISTENCIA DEL AVATAR */}
+           {/* LÓGICA DE CONSISTENCIA DEL AVATAR */}
           <ProfileIcon initials={ authorInitials } profilePic={ authorImage } isDark={ isDark } />
-
+          {authorImage &&
+          typeof authorImage === "string" &&
+          authorImage.trim() !== "" ? (
+            <Image
+              source={{ uri: authorImage }}
+              style={{ width: 48, height: 48, borderRadius: 24 }}
+              contentFit="cover"
+            />
+          ) : (
+            // Si no hay imagen, mostramos el ProfileIcon con las iniciales
+            <ProfileIcon
+              initials={authorInitials}
+              isDark={useColorScheme() === "dark"} // Pasa dinámicamente si es dark mode
+              size={48}
+            />
+          )}
           <View className="ml-3 flex-1">
             <Text className="font-spartan-bold text-lg text-black dark:text-white">
               {authorName}

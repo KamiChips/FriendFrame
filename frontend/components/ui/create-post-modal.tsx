@@ -1,59 +1,168 @@
-import React, { useState } from 'react';
-import { 
-  View, Text, Modal, TouchableOpacity, ScrollView, 
-  TextInput, KeyboardAvoidingView, Platform, useColorScheme 
-} from 'react-native';
-import { Image } from 'expo-image';
-import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
-import '../../global.css';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  useColorScheme,
+  ActivityIndicator,
+  Alert,
+  FlatList,
+} from "react-native";
+import { Image } from "expo-image";
+import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import * as MediaLibrary from "expo-media-library"; // NUEVA LIBRERÍA
+import * as ImageManipulator from 'expo-image-manipulator';
+import { useCreatePost } from "@/hooks/useCreatePost";
 
 interface CreatePostModalProps {
   visible: boolean;
   onClose: () => void;
-  targetProfileName: string; // Ej: "Carlos Ramírez"
-  currentUserName: string;   // Ej: "María González"
-  currentUserInitials: string; // Ej: "MG"
+  onPublishSuccess?: () => void;
+  targetUserId: string;
+  targetProfileName: string;
+  currentUserId: string;
+  currentUserName: string;
+  currentUserInitials: string;
 }
 
-// Simulamos las fotos del carrete del celular
-const mockGallery = [
-  { id: '1', uri: 'https://images.unsplash.com/photo-1682687220742-aba13b6e50ba' }, // Buzos (Como en Figma)
-  { id: '2', uri: 'https://images.unsplash.com/photo-1682687982501-1e58f81012a9' }, // Desierto
-  { id: '3', uri: 'https://images.unsplash.com/photo-1682687220063-4742bd7fd538' }, // Rocas
-  { id: '4', uri: 'https://images.unsplash.com/photo-1682687982185-531d09ec56fc' }, // Dunas
-  { id: '5', uri: 'https://images.unsplash.com/photo-1682692327050-0cecb827598c' }, // Mar
-  { id: '6', uri: 'https://images.unsplash.com/photo-1682687218147-9806132dc697' }, // Palmeras
-];
-
-export default function CreatePostModal({ 
-  visible, 
-  onClose, 
-  targetProfileName, 
-  currentUserName, 
-  currentUserInitials 
+export default function CreatePostModal({
+  visible,
+  onClose,
+  onPublishSuccess,
+  targetUserId,
+  targetProfileName,
+  currentUserId,
+  currentUserName,
+  currentUserInitials,
 }: CreatePostModalProps) {
-  
   const insets = useSafeAreaInsets();
-  const isDark = useColorScheme() === 'dark';
+  const isDark = useColorScheme() === "dark";
 
-  // Estados del modal
-  const [step, setStep] = useState<1 | 2>(1); // 1: Galería, 2: Escribir pie de foto
-  const [selectedImage, setSelectedImage] = useState<string>(mockGallery[0].uri);
-  const [caption, setCaption] = useState('');
+  const [step, setStep] = useState<1 | 2>(1);
+  const [caption, setCaption] = useState("");
 
-  // Limpia el estado y cierra el modal
+  // Estados de la Galería Integrada
+  const [photos, setPhotos] = useState<MediaLibrary.Asset[]>([]);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+
+  const {
+    selectedAsset,
+    isLoading,
+    error,
+    submit,
+    clearAsset,
+    reset,
+    setAsset, // NUESTRA NUEVA FUNCIÓN DEL HOOK
+  } = useCreatePost(currentUserId);
+
+  // Cargar fotos cuando se abre el modal
+  useEffect(() => {
+    if (visible && step === 1) {
+      loadGallery();
+    }
+  }, [visible, step]);
+
+  const loadGallery = async () => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    setHasPermission(status === "granted");
+
+    if (status === "granted") {
+      const media = await MediaLibrary.getAssetsAsync({
+        mediaType: "photo",
+        first: 40, // Cargamos las últimas 40 fotos
+        sortBy: ["creationTime"],
+      });
+      setPhotos(media.assets);
+
+      // Auto-seleccionar la primera foto si no hay ninguna seleccionada
+      if (media.assets.length > 0 && !selectedAsset) {
+        handleSelectPhoto(media.assets[0]);
+      }
+    }
+  };
+
+  // Convertimos la foto al formato exacto y seguro que espera Supabase
+  const handleSelectPhoto = async (photo: MediaLibrary.Asset) => {
+    try {
+      // MAGIA: Esto fuerza a iOS a leer la foto original (incluso si es HEIC o de iCloud),
+      // no le aplica recortes ([]), y devuelve un JPEG limpio en una ruta file://
+      const manipResult = await ImageManipulator.manipulateAsync(
+        photo.uri,
+        [], 
+        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+      );
+
+      // Le entregamos a la base de datos exactamente lo que pide
+      setAsset({
+        uri: manipResult.uri,
+        width: manipResult.width,
+        height: manipResult.height,
+        type: 'image',
+        fileName: `foto_${Date.now()}.jpg`, // Generamos un nombre único y seguro
+        mimeType: 'image/jpeg',             // Siempre será JPEG gracias al manipulador
+      });
+
+    } catch (err) {
+      console.error("Error al procesar la imagen:", err);
+      Alert.alert("Error", "No se pudo preparar la imagen para subir.");
+    }
+  };
+
   const handleClose = () => {
     setStep(1);
-    setCaption('');
+    setCaption("");
+    clearAsset();
+    reset();
     onClose();
   };
 
-  // Simula la publicación del post
-  const handleShare = () => {
-    console.log("Post creado con imagen:", selectedImage, "y texto:", caption);
-    handleClose();
+  const handleShare = async () => {
+    const post = await submit(targetUserId, caption.trim());
+    if (post) {
+      onPublishSuccess?.();
+      handleClose();
+    } else if (error) {
+      Alert.alert("Error", error);
+    }
+  };
+
+  // Componente para dibujar cada cuadrito de la galería
+  const renderGridItem = ({ item }: { item: MediaLibrary.Asset }) => {
+    const isSelected = selectedAsset?.uri === item.uri;
+
+    return (
+      <TouchableOpacity
+        onPress={() => handleSelectPhoto(item)}
+        activeOpacity={0.9}
+        style={{
+          width: "33.33%",
+          aspectRatio: 1,
+          borderWidth: 0.5,
+          borderColor: isDark ? "#182240" : "white",
+        }}
+      >
+        <Image
+          source={{ uri: item.uri }}
+          style={{ width: "100%", height: "100%" }}
+          contentFit="cover"
+        />
+        {/* Filtro oscuro para fotos no seleccionadas */}
+        {!isSelected && <View className="absolute inset-0 bg-black/40" />}
+        {/* Palomita de selección */}
+        {isSelected && (
+          <View className="absolute top-2 right-2 bg-[#AA3E14] rounded-full p-1 border border-white">
+            <Ionicons name="checkmark" size={14} color="white" />
+          </View>
+        )}
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -63,112 +172,162 @@ export default function CreatePostModal({
       visible={visible}
       onRequestClose={handleClose}
     >
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1 bg-white dark:bg-[#182240]"
       >
-        {/* Espaciado para el notch del celular */}
-        <View style={{ paddingTop: insets.top }} className="bg-white dark:bg-[#1F2B4A]">
-          
-          {/* HEADER DINÁMICO (Cambia según el Step) */}
+        <View
+          style={{ paddingTop: insets.top }}
+          className="bg-white dark:bg-[#1F2B4A]"
+        >
+          {/* HEADER DINÁMICO */}
           <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-white/5">
             {step === 1 ? (
-              // Header Paso 1: Galería
               <>
-                <TouchableOpacity onPress={handleClose} className="p-1">
-                  <Ionicons name="close" size={26} color={isDark ? "white" : "black"} />
+                <TouchableOpacity
+                  onPress={handleClose}
+                  className="p-1"
+                  disabled={isLoading}
+                >
+                  <Ionicons
+                    name="close"
+                    size={26}
+                    color={isDark ? "white" : "black"}
+                  />
                 </TouchableOpacity>
                 <Text className="font-spartan-bold text-lg text-black dark:text-white">
                   Nueva publicación
                 </Text>
-                <TouchableOpacity onPress={() => setStep(2)}>
-                  <Text className="font-spartan-bold text-[#FBA353] text-base">Siguiente</Text>
+                <TouchableOpacity
+                  onPress={() => setStep(2)}
+                  disabled={!selectedAsset || isLoading}
+                  style={{ opacity: !selectedAsset || isLoading ? 0.5 : 1 }}
+                >
+                  <Text className="font-spartan-bold text-[#FBA353] text-base">
+                    Siguiente
+                  </Text>
                 </TouchableOpacity>
               </>
             ) : (
-              // Header Paso 2: Detalles
               <>
-                <TouchableOpacity onPress={() => setStep(1)} className="p-1">
-                  <Ionicons name="chevron-back" size={26} color={isDark ? "white" : "black"} />
+                <TouchableOpacity
+                  onPress={() => setStep(1)}
+                  className="p-1"
+                  disabled={isLoading}
+                >
+                  <Ionicons
+                    name="chevron-back"
+                    size={26}
+                    color={isDark ? "white" : "black"}
+                  />
                 </TouchableOpacity>
                 <Text className="font-spartan-bold text-lg text-black dark:text-white">
                   Nuevo Post
                 </Text>
-                <TouchableOpacity onPress={handleShare}>
-                  <Text className="font-spartan-bold text-[#FBA353] text-base">Compartir</Text>
+                <TouchableOpacity
+                  onPress={handleShare}
+                  disabled={isLoading}
+                  style={{ opacity: isLoading ? 0.5 : 1 }}
+                >
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color="#FBA353" />
+                  ) : (
+                    <Text className="font-spartan-bold text-[#FBA353] text-base">
+                      Compartir
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </>
             )}
           </View>
         </View>
 
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false} bounces={false}>
-          
-          {/* PREVISUALIZACIÓN DE IMAGEN (Visible en ambos pasos) */}
-          <View className="w-full aspect-square bg-gray-100 dark:bg-black relative">
-            <Image 
-              source={{ uri: selectedImage }} 
-              style={{ width: '100%', height: '100%' }} 
-              contentFit="cover" 
-            />
-            {/* Círculo naranja de seleccionado en la imagen grande (Solo Paso 1) */}
-            {step === 1 && (
-              <View className="absolute top-4 right-4 bg-[#AA3E14] rounded-full p-1 border-2 border-white dark:border-[#182240]">
-                <Ionicons name="checkmark" size={20} color="white" />
-              </View>
-            )}
-          </View>
+        {/* --- PASO 1: GALERÍA INTEGRADA (ESTILO INSTAGRAM) --- */}
+        {step === 1 && (
+          <View className="flex-1 bg-white dark:bg-[#182240]">
+            {/* PREVISUALIZACIÓN MITAD SUPERIOR */}
+            <View className="w-full aspect-square bg-gray-100 dark:bg-black items-center justify-center overflow-hidden">
+              {selectedAsset ? (
+                <Image
+                  source={{ uri: selectedAsset.uri }}
+                  style={{ width: "100%", height: "100%" }}
+                  contentFit="contain"
+                />
+              ) : (
+                <ActivityIndicator color="#FBA353" />
+              )}
+            </View>
 
-          {/* CONTENIDO INFERIOR DINÁMICO */}
-          {step === 1 ? (
-            
-            // --- PASO 1: GALERÍA DE FOTOS ---
-            <View className="flex-1 bg-white dark:bg-[#182240]">
-              
-              {/* Barra de herramientas de galería */}
-              <View className="flex-row justify-between items-center px-4 py-3 bg-gray-50 dark:bg-[#1F2B4A]">
-                <Text className="font-spartan-bold text-base text-black dark:text-white">Recientes</Text>
-                <TouchableOpacity className="flex-row items-center">
-                  <Ionicons name="videocam-outline" size={18} color="#FBA353" />
-                  <Text className="font-spartan text-sm text-[#FBA353] ml-1">Cámara</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Grid de fotos */}
-              <View className="flex-row flex-wrap">
-                {mockGallery.map((item) => {
-                  const isSelected = selectedImage === item.uri;
-                  return (
-                    <TouchableOpacity 
-                      key={item.id} 
-                      className="w-[33.33%] aspect-square border-[0.5px] border-white dark:border-[#182240] relative"
-                      onPress={() => setSelectedImage(item.uri)}
-                      activeOpacity={0.9}
-                    >
-                      <Image source={{ uri: item.uri }} style={{ width: '100%', height: '100%' }} contentFit="cover" />
-                      {/* Efecto de selección (Oscurecer foto no seleccionada) */}
-                      {!isSelected && (
-                        <View className="absolute inset-0 bg-black/20" />
-                      )}
-                    </TouchableOpacity>
-                  );
-                })}
+            {/* BARRA DE HERRAMIENTAS */}
+            <View className="flex-row justify-between items-center px-4 py-3 bg-gray-50 dark:bg-[#1F2B4A]">
+              <Text className="font-spartan-bold text-base text-black dark:text-white">
+                Recientes
+              </Text>
+              <View className="flex-row items-center">
+                <Ionicons name="camera-outline" size={20} color="#8A8A8E" />
               </View>
             </View>
 
-          ) : (
-            
-            // --- PASO 2: ESCRIBIR DESCRIPCIÓN ---
+            {/* CUADRÍCULA DE FOTOS MITAD INFERIOR */}
+            {hasPermission === false ? (
+              <View className="flex-1 items-center justify-center p-6">
+                <Text className="text-center font-spartan text-gray-500">
+                  Necesitamos acceso a tus fotos para mostrar la galería.
+                </Text>
+              </View>
+            ) : (
+              <FlatList
+                data={photos}
+                keyExtractor={(item) => item.id}
+                numColumns={3}
+                renderItem={renderGridItem}
+                showsVerticalScrollIndicator={false}
+                bounces={false}
+              />
+            )}
+          </View>
+        )}
+
+        {/* --- PASO 2: PIE DE FOTO --- */}
+        {step === 2 && (
+          <ScrollView
+            className="flex-1"
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* MINI PREVISUALIZACIÓN */}
+            {selectedAsset && (
+              <View className="w-full aspect-video bg-black items-center justify-center">
+                <Image
+                  source={{ uri: selectedAsset.uri }}
+                  style={{ width: "100%", height: "100%" }}
+                  contentFit="contain"
+                />
+              </View>
+            )}
+
             <View className="flex-1 px-4 pt-4 pb-10 bg-white dark:bg-[#182240]">
-              
-              {/* Fila del Usuario */}
               <View className="flex-row items-center mb-4">
-                <LinearGradient 
-                  colors={isDark ? ["#182240", "#AA3E14", "#115A67"] : ["#FAFAFA", "#30C2D9", "#FF9B42"]}
-                  style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }}
-                  start={{ x: 0, y: 0 }} end={{ x: 0.7, y: 0.7 }}
+                <LinearGradient
+                  colors={
+                    isDark
+                      ? ["#182240", "#AA3E14", "#115A67"]
+                      : ["#FAFAFA", "#30C2D9", "#FF9B42"]
+                  }
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0.7, y: 0.7 }}
                 >
-                  <Text className="text-white text-xs font-bold">{currentUserInitials}</Text>
+                  <Text className="text-white text-xs font-bold">
+                    {currentUserInitials}
+                  </Text>
                 </LinearGradient>
                 <View className="ml-3">
                   <Text className="font-spartan-bold text-sm text-black dark:text-white">
@@ -180,28 +339,29 @@ export default function CreatePostModal({
                 </View>
               </View>
 
-              {/* Área de Texto */}
-              <TextInput
-                className="font-spartan text-base text-black dark:text-white min-h-[100px]"
-                placeholder="Escribe un pie de foto..."
-                placeholderTextColor="#8A8A8E"
-                multiline
-                textAlignVertical="top"
-                value={caption}
-                onChangeText={setCaption}
-              />
-
-              {/* Etiquetar Personas */}
-              <TouchableOpacity className="mt-6 flex-row items-center">
-                <Text className="font-spartan-bold text-sm text-black dark:text-white">
-                  Etiquetar personas
+              <View className="relative bg-gray-50 dark:bg-[#1F2B4A] rounded-2xl p-4 border border-gray-100 dark:border-white/5">
+                <TextInput
+                  className="font-spartan text-base text-black dark:text-white min-h-[100px] pb-6"
+                  placeholder="Escribe un pie de foto (opcional)..."
+                  placeholderTextColor="#8A8A8E"
+                  multiline
+                  maxLength={280}
+                  textAlignVertical="top"
+                  value={caption}
+                  onChangeText={setCaption}
+                  editable={!isLoading}
+                />
+                <Text
+                  className={`absolute bottom-3 right-4 text-xs font-spartan-bold ${
+                    caption.length === 280 ? "text-[#AA3E14]" : "text-gray-400"
+                  }`}
+                >
+                  {caption.length}/280
                 </Text>
-              </TouchableOpacity>
-              
+              </View>
             </View>
-          )}
-
-        </ScrollView>
+          </ScrollView>
+        )}
       </KeyboardAvoidingView>
     </Modal>
   );

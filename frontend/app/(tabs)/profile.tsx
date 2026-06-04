@@ -341,14 +341,14 @@ export default function ProfileScreen() {
                     </View>
                   ) : (
                     gridPosts.map((post) => (
-                      // ... mantén el código de tu grid exactamente igual ...
+
                       <TouchableOpacity
                         key={post.post_id}
                         className="w-[32%] aspect-square bg-gray-200 dark:bg-[#2A3654]"
                         onPress={() => console.log("Post:", post.post_id)}
                       >
                         <Image
-                          source={{ uri: post.image }}
+                          source={{ uri: post.media }}
                           style={{ width: "100%", height: "100%" }}
                           contentFit="cover"
                         />
@@ -385,8 +385,8 @@ export default function ProfileScreen() {
                           : item.content
                       }
                       imageSource={
-                        item.type === "post" && item.image
-                          ? { uri: item.image }
+                        item.type === "post" && item.media
+                          ? { uri: item.media }
                           : undefined
                       }
                       likesCount={item.likes_count}
@@ -401,24 +401,30 @@ export default function ProfileScreen() {
             </View>
           )}
         </View>
+
+        // ... (resto de tus imports igual)
+
+        {!isOwnProfile && profile.is_friend && (
+          <View className="z-10 absolute bottom-6 right-6">
+            <FloatingMenu
+              onCreatePost={() => {
+                console.log("Crear Post en", profile.user_id);
+                loadFeed(); // Recarga el feed al publicar post
+              }}
+              onCreateFragment={() => {
+                console.log("Crear Fragment en", profile.user_id);
+                loadFeed(); // Recarga el feed al publicar fragment
+              }}
+              targetUserId={profile.user_id}
+              targetUserName={profile.full_name}
+              targetUserInitials={profile.full_name.charAt(0).toUpperCase()}
+              targetUserImage={profile.profile_pic}
+              currentUserId={currentUser?.user_id}
+            />
+          </View>
+        )}
       </ScrollView>
 
-      {!isOwnProfile && profile.is_friend && (
-        <View className="z-10">
-          <FloatingMenu
-            onCreatePost={() => console.log("Crear Post en", profile.user_id)}
-            onCreateFragment={() => {
-              console.log("Crear Fragment en", profile.user_id);
-              loadFeed(); // Esto recargará tu feed cuando se publique con éxito
-            }}
-            // NUEVO: Aquí le pasamos la información real del perfil a tu menú
-            targetUserId={profile.user_id}
-            targetUserName={profile.full_name}
-            targetUserInitials={profile.full_name.charAt(0).toUpperCase()}
-            targetUserImage={profile.profile_pic}
-          />
-        </View>
-      )}
       <EditProfileModal
         visible={editModalVisable}
         onClose={() => setEditModalVisible(false)}
