@@ -108,6 +108,7 @@ export default function ExploreScreen() {
                   name={displayName}
                   username={`@${u.username}`}
                   initials={initials}
+                  profilePic={u.profile_pic}
                   onPress={() =>
                     router.push({
                       pathname: "/(tabs)/explore/[userId]",

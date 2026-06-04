@@ -48,11 +48,30 @@ export function subscribeToChatList(onUpdate: () => void): () => void {
 
   supabase.auth.getUser().then(({ data: { user } }) => {
     if (!user) return;
+
+    const channelName = `inbox-${user.id}`;
+
+    // Eliminar canal existente con ese nombre antes de crear uno nuevo
+    const existing = supabase
+      .getChannels()
+      .find((c) => c.topic === `realtime:${channelName}`);
+    if (existing) supabase.removeChannel(existing);
+
     channel = supabase
-      .channel(`inbox-${user.id}`)
+      .channel(channelName)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "messages" },
+        onUpdate,
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "chat_members",
+          filter: `user_id=eq.${user.id}`,
+        },
         onUpdate,
       )
       .subscribe();

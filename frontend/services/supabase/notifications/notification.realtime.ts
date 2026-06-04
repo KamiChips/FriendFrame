@@ -24,7 +24,6 @@ export function subscribeToNotifications(
           filter: `user_id=eq.${user.id}`,
         },
         async (payload) => {
-          // El payload no trae JOINs — hacer 1 query para obtener la notificación completa
           const { data, error } = await supabase
             .from("notifications")
             .select(NOTIFICATION_SELECT)
