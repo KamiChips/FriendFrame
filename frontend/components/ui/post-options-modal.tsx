@@ -9,9 +9,10 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { deleteFragment } from "@/services/supabase/posts/fragment";
-import { deletePost } from "@/services/supabase/posts/posts";
+import { deleteFragment, editFragment } from "@/services/supabase/posts/fragment";
+import { deletePost, editPost } from "@/services/supabase/posts/posts";
 import ConfirmActionCard from "./confirm-action-card";
+import EditPublicationCard from "./edit-publication-card";
 
 type PublicationType = "post" | "fragment";
 
@@ -22,7 +23,9 @@ interface PostOptionsModalProps {
   onDelete?: () => void;
   publicationId?: string;
   publicationType?: PublicationType;
+  initialContent?: string | null;
   onDeleted?: () => void;
+  onEdited?: (content: string) => void;
 }
 
 export default function PostOptionsModal({
@@ -32,16 +35,53 @@ export default function PostOptionsModal({
   onDelete,
   publicationId,
   publicationType,
+  initialContent = "",
   onDeleted,
+  onEdited,
 }: PostOptionsModalProps) {
   const isDark = useColorScheme() === "dark";
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const [isEditing, setIsEditing] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [showEditForm, setShowEditForm] = React.useState(false);
 
   const closeModal = () => {
-    if (isDeleting) return;
+    if (isDeleting || isEditing) return;
     setShowDeleteConfirm(false);
+    setShowEditForm(false);
     onClose();
+  };
+
+  const functionEditPostFragment = () => {
+    if (!publicationId || !publicationType) {
+      onEdit();
+      closeModal();
+      return;
+    }
+
+    setShowEditForm(true);
+  };
+
+  const confirmEditPostFragment = async (content: string) => {
+    if (!publicationId || !publicationType || isEditing) return;
+
+    setIsEditing(true);
+
+    const result =
+      publicationType === "post"
+        ? await editPost(publicationId, content)
+        : await editFragment(publicationId, content);
+
+    setIsEditing(false);
+
+    if (result.error) {
+      Alert.alert("Error", result.error);
+      return;
+    }
+
+    onEdited?.(content.trim());
+    onEdit();
+    closeModal();
   };
 
   const functionDeletePostFragment = () => {
@@ -84,10 +124,21 @@ export default function PostOptionsModal({
       onRequestClose={closeModal}
     >
       <BlurView intensity={isDark ? 40 : 15} tint="dark" style={{ flex: 1 }}>
-        {showDeleteConfirm ? (
+        {showEditForm ? (
+          <EditPublicationCard
+            initialContent={initialContent ?? ""}
+            publicationType={publicationType ?? "post"}
+            loading={isEditing}
+            onCancel={() => setShowEditForm(false)}
+            onConfirm={confirmEditPostFragment}
+          />
+        ) : showDeleteConfirm ? (
           <ConfirmActionCard
             title="Eliminar publicacion"
-            message="Esta accion no se puede deshacer. La publicacion se eliminara de este perfil."
+            message={[
+              "Esta accion no se puede deshacer.",
+              "La publicacion se eliminara de este perfil.",
+            ]}
             confirmText="Eliminar"
             iconName="trash-outline"
             loading={isDeleting}
@@ -104,10 +155,8 @@ export default function PostOptionsModal({
 
               <Pressable
                 className="flex-row items-center border-b border-gray-100 py-4 dark:border-white/10"
-                onPress={() => {
-                  onEdit();
-                  closeModal();
-                }}
+                disabled={isEditing}
+                onPress={functionEditPostFragment}
               >
                 <View className="h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
                   <Ionicons

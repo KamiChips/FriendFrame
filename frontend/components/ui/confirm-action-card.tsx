@@ -1,6 +1,7 @@
 import React from "react";
 import {
   ActivityIndicator,
+  Animated,
   Pressable,
   Text,
   useColorScheme,
@@ -12,7 +13,7 @@ type IconName = React.ComponentProps<typeof Ionicons>["name"];
 
 interface ConfirmActionCardProps {
   title: string;
-  message: string;
+  message: string | string[];
   confirmText: string;
   cancelText?: string;
   iconName: IconName;
@@ -34,41 +35,75 @@ export default function ConfirmActionCard({
   onConfirm,
 }: ConfirmActionCardProps) {
   const isDark = useColorScheme() === "dark";
+  const scaleAnim = React.useRef(new Animated.Value(0)).current;
+  const opacityAnim = React.useRef(new Animated.Value(0)).current;
   const accentColor = destructive ? "#D4183D" : "#30C2D9";
-  const darkAccentColor = destructive ? "#F87171" : "#30C2D9";
+  const darkAccentColor = destructive ? "#82181A" : "#30C2D9";
   const confirmBg = destructive && isDark ? "#82181A" : accentColor;
   const iconBg = destructive
     ? isDark
-      ? "rgba(239, 68, 68, 0.2)"
-      : "rgba(212, 24, 61, 0.1)"
+      ? "#D4183D1A"
+      : "#D4183D1A"
     : isDark
-      ? "rgba(48, 194, 217, 0.2)"
-      : "rgba(48, 194, 217, 0.1)";
+      ? "#30C2D933"
+      : "#30C2D91A";
+  const messageLines = Array.isArray(message) ? message : [message];
+
+  React.useEffect(() => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        damping: 15,
+        stiffness: 250,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacityAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [opacityAnim, scaleAnim]);
 
   return (
-    <View className="flex-1 items-center justify-center bg-black/40 px-6">
-      <View className="w-full rounded-3xl border border-[#e6e6e6] bg-background-light px-6 py-7 shadow-lg dark:border-[#404b65] dark:bg-[#1F2B4A]">
+    <Animated.View
+      style={{ opacity: opacityAnim }}
+      className="flex-1 items-center justify-center bg-black/50"
+    >
+      <Animated.View
+        style={{ transform: [{ scale: scaleAnim }] }}
+        className="flex h-[33%] w-[90%] justify-center self-center rounded-3xl border border-[#e6e6e6] bg-background-light dark:border-[#404b65] dark:bg-[#1F2B4A]"
+      >
         <View
           className="mb-4 h-20 w-20 items-center justify-center self-center rounded-full"
           style={{ backgroundColor: iconBg }}
         >
           <Ionicons
             name={iconName}
-            size={34}
+            size={32}
             color={isDark ? darkAccentColor : accentColor}
+            className="justify-center self-center"
           />
         </View>
 
         <Text className="mb-2 text-center font-spartan-bold text-xl text-[#2C2C2C] dark:text-background-light">
           {title}
         </Text>
-        <Text className="mb-6 text-center font-spartan text-base leading-6 text-[#6B6B6B] dark:text-[#A0A0A0]">
-          {message}
-        </Text>
+        {messageLines.map((line, index) => (
+          <Text
+            key={line}
+            className="text-center font-spartan text-lg text-[#6B6B6B] dark:text-[#A0A0A0]"
+            style={{
+              marginBottom: index === messageLines.length - 1 ? 16 : 0,
+            }}
+          >
+            {line}
+          </Text>
+        ))}
 
         <View className="flex-row justify-center">
           <Pressable
-            className="mr-2 w-[42%] rounded-xl bg-[#E0E0E0] p-3 dark:bg-[#2A3654]"
+            className="mr-2 w-[40%] rounded-xl bg-[#E0E0E0] p-3 px-4 dark:bg-[#2A3654]"
             disabled={loading}
             onPress={onCancel}
           >
@@ -78,7 +113,7 @@ export default function ConfirmActionCard({
           </Pressable>
 
           <Pressable
-            className="ml-2 w-[42%] rounded-xl p-3"
+            className="ml-2 w-[40%] rounded-xl p-3 px-4"
             disabled={loading}
             onPress={onConfirm}
             style={{ backgroundColor: confirmBg }}
@@ -92,7 +127,7 @@ export default function ConfirmActionCard({
             )}
           </Pressable>
         </View>
-      </View>
-    </View>
+      </Animated.View>
+    </Animated.View>
   );
 }
