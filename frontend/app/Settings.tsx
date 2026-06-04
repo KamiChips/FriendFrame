@@ -5,7 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
-  SafeAreaView,
   Alert,
   ActivityIndicator,
 } from "react-native";
@@ -15,6 +14,8 @@ import "../global.css";
 import { Toggle } from "@/components/ui/Toggle";
 import { EditProfileModal } from "@/components/ui/EditProfileModal";
 import { signOut } from "@/services/supabase/auth/auth.sign-in";
+import NotificationButton from "@/components/ui/NotificationButton";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -41,10 +42,12 @@ export default function SettingsScreen() {
     if (error) Alert.alert("Error", error);
   };
 
+  const darkBell = isDark ? false : true;
+
   return (
-    <SafeAreaView className="flex-grow bg-[#F9F9F9] dark:bg-neutral-900">
+    <SafeAreaView className="flex-grow bg-background-light dark:bg-background-semidark">
       {/* Barra Superior */}
-      <View className="flex-row justify-between items-center px-6 py-10 border-b border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-950">
+      <View className="flex-row justify-between items-center px-5 pt-2 pb-2 bg-background-light dark:bg-background-semidark border-b border-[#e6e6e6] dark:border-[#404b65]">
         {/* Este botón cierra el modal regresando a la pantalla anterior */}
         <TouchableOpacity
           onPress={() => router.back()}
@@ -52,26 +55,21 @@ export default function SettingsScreen() {
         >
           <Ionicons
             name="arrow-back"
-            size={24}
-            color="#1D2A4F"
+            size={28}
+            color={isDark ? "#1D2A4F" : "#FAFAFA"}
             className="dark:text-white"
           />
         </TouchableOpacity>
 
         {/* Icono de campana con punto de notificación */}
-        <View className="relative p-1">
-          <Ionicons
-            name="notifications-outline"
-            size={24}
-            color="#1D2A4F"
-            className="dark:text-white"
-          />
-          <View className="absolute right-1 top-1 w-2.5 h-2.5 bg-orange-500 rounded-full border border-white" />
-        </View>
+        <NotificationButton isDark={darkBell} />
       </View>
 
       {/* Contenido Principal */}
-      <ScrollView showsVerticalScrollIndicator={false} className="px-6 pt-6">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        className="px-6 pt-6 bg-background-gray dark:bg-background-dark"
+      >
         {/* Título Principal */}
         <Text className="text-3xl font-bold text-[#1D2A4F] dark:text-white mb-6">
           Configuración
@@ -93,7 +91,7 @@ export default function SettingsScreen() {
                   className={`px-5 py-2.5 rounded-full mr-3 ${
                     isActive
                       ? "bg-[#34C2DD] dark:bg-[#AA3E14]"
-                      : "bg-[#E5E5E5] dark:bg-neutral-800"
+                      : "bg-[#E5E5E5] dark:bg-background-semidark"
                   }`}
                 >
                   <Text
@@ -111,12 +109,12 @@ export default function SettingsScreen() {
         {activeTab === "General" && (
           <View className="flex flex-col pb-10">
             {/* Notificaciones */}
-            <View className="bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 flex-row w-full justify-between items-center mb-4 shadow-sm">
+            <View className="bg-white dark:bg-background-semidark p-5 rounded-2xl border border-gray-100 dark:border-[#27345C] flex-row justify-between items-center mb-4 shadow-sm">
               <View className="flex-row items-center flex-1">
                 <Ionicons
                   name="notifications-outline"
                   size={24}
-                  color={isDark ? "#F0F0F0" : "#1D2A4F"}
+                  color={isDark ? "#1D2A4F" : "#FAFAFA"}
                   className="mr-4"
                 />
                 <View>
@@ -128,14 +126,19 @@ export default function SettingsScreen() {
                   </Text>
                 </View>
               </View>
-              <Toggle
-                value={notificationsEnabled}
-                onValueChange={setNotificationsEnabled}
-              />
+              <View
+                style={{ transform: [{ translateY: 5 }] }}
+                className="items-center justify-center"
+              >
+                <Toggle
+                  value={notificationsEnabled}
+                  onValueChange={setNotificationsEnabled}
+                />
+              </View>
             </View>
 
             {/* Perfil */}
-            <View className="bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 mb-4 shadow-sm">
+            <View className="bg-white dark:bg-background-semidark p-5 rounded-2xl border border-gray-100 dark:border-[#27345C] mb-4 shadow-sm">
               <Text className="text-lg font-bold text-[#1D2A4F] dark:text-white mb-1">
                 Perfil
               </Text>
@@ -154,7 +157,7 @@ export default function SettingsScreen() {
 
             {/* Botón: Cerrar Sesión */}
             <TouchableOpacity
-              className="bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 flex-row justify-center items-center shadow-sm active:opacity-70 mt-2"
+              className="bg-white dark:bg-background-semidark p-5 rounded-2xl border border-gray-100 dark:border-[#27345C] flex-row justify-center items-center shadow-sm active:opacity-70 mt-2"
               onPress={handleLogOut}
               activeOpacity={0.8}
               disabled={loading}

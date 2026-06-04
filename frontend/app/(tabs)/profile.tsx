@@ -382,7 +382,7 @@ export default function ProfileScreen() {
           </View>
         )*/}
         {!isOwnProfile && profile.is_friend && (
-          <View className="mb-40 pb-10 z-10">
+          <View className="z-10">
             <FloatingMenu
               onCreatePost={() => console.log("Crear Post en", profile.user_id)}
               onCreateFragment={() =>
