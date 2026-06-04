@@ -4,7 +4,9 @@ import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import PostOptionsModal from "./post-options-modal";
 import CommentsModal from "./CommentsModal";
+import { useColorScheme } from 'react-native';
 import { CommentType } from "./CommentItem";
+import ProfileIcon from "./ProfileIcon"; // Importamos el nuevo componente de avatar
 
 interface FeedCardProps {
   authorName: string;
@@ -47,21 +49,21 @@ export default function FeedCard({
       {/* 1. CABECERA DE LA TARJETA */}
       <View className="flex-row items-start justify-between p-4">
         <View className="flex-row items-start flex-1">
-          {/* LÓGICA DE CONSISTENCIA DEL AVATAR */}
-          {authorImage ? (
+          {/* LÓGICA DE CONSISTENCIA DEL AVATAR CON PROFILEICON */}
+          {authorImage && typeof authorImage === "string" && authorImage.trim() !== "" ? (
             <Image
               source={{ uri: authorImage }}
               style={{ width: 48, height: 48, borderRadius: 24 }}
               contentFit="cover"
             />
           ) : (
-            <View className="h-12 w-12 items-center justify-center rounded-full bg-primary-light dark:bg-secondary-light">
-              <Text className="font-spartan-bold text-lg text-white">
-                {authorInitials}
-              </Text>
-            </View>
+            // 
+            <ProfileIcon 
+              initials={authorInitials} 
+              isDark={useColorScheme() === "dark"} // Pasa dinámicamente si es dark mode
+              size={48} 
+            />
           )}
-
           <View className="ml-3 flex-1">
             <Text className="font-spartan-bold text-lg text-black dark:text-white">
               {authorName}
