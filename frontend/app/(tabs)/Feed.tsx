@@ -120,6 +120,7 @@ export default function FeedScreen() {
             commentsCount={comentariosAna.length} // Cuenta automáticamente cuántos elementos hay en el estado
             comments={comentariosAna} // Pasa el arreglo de datos al modal para que los dibuje
             onAddComment={agregarComentarioAna} // Le inyecta la función para que el botón de "Enviar" sepa qué hacer
+            isOwnPost={false} 
           />
 
           {/* TARJETA 2: PUBLICACIÓN DE CARLOS RAMÍREZ */}
@@ -137,6 +138,7 @@ export default function FeedScreen() {
             // PROPS DINÁMICOS PARA COMENTARIOS:
             commentsCount={comentariosCarlos.length}
             comments={comentariosCarlos}
+            isOwnPost={true}
             onAddComment={agregarComentarioCarlos}
           />
         </View>
