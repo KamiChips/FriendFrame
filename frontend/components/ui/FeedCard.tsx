@@ -50,12 +50,37 @@ export default function FeedCard({
   const [isCommentsModalVisible, setCommentsModalVisible] = useState(false);
   const [isMenuVisible, setMenuVisible] = useState(false);
 
+
+  // ✅ Hook siempre en el nivel superior, nunca en condicional
+  const isDark = useColorScheme() === "dark";
+
+  // ✅ Lógica del avatar en una variable, sin duplicar el componente
+  const hasImage =
+    authorImage && typeof authorImage === "string" && authorImage.trim() !== "";
+
+=======
   const isDark = useColorScheme() === "dark";
   return (
     <View className="mb-4 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-transparent dark:bg-background-semidark">
-      {/* 1. CABECERA DE LA TARJETA */}
+      {/* 1. CABECERA */}
       <View className="flex-row items-start justify-between p-4">
         <View className="flex-row items-start flex-1">
+
+          {/* ✅ Avatar: imagen o iniciales, nunca los dos a la vez */}
+          {hasImage ? (
+            <Image
+              source={{ uri: authorImage as string }}
+              style={{ width: 48, height: 48, borderRadius: 24 }}
+              contentFit="cover"
+            />
+          ) : (
+            // Si no hay imagen, mostramos el ProfileIcon con las iniciales
+            <ProfileIcon
+              initials={authorInitials}
+              isDark={isDark}
+              size={48}
+            />
+          )}
           {/* LÓGICA DE CONSISTENCIA DEL AVATAR */}
           <ProfileIcon
             initials={authorInitials}
@@ -85,14 +110,14 @@ export default function FeedCard({
         )}
       </View>
 
-      {/* 2. CONTENIDO PRINCIPAL (Texto) */}
+      {/* 2. TEXTO */}
       <View className="px-4 pb-3">
         <Text className="font-spartan text-base leading-6 text-black dark:text-white">
           {textContent}
         </Text>
       </View>
 
-      {/* 3. IMAGEN ADJUNTA */}
+      {/* 3. IMAGEN */}
       {imageSource && (
         <View className="w-full bg-gray-50 dark:bg-gray-800/50">
           <Image
@@ -108,7 +133,7 @@ export default function FeedCard({
         </View>
       )}
 
-      {/* 4. PIE DE PÁGINA (Botones de Interacción) */}
+      {/* 4. FOOTER */}
       <View className="flex-row items-center p-4">
         {/* Like */}
         <Pressable className="mr-6 flex-row items-center">
