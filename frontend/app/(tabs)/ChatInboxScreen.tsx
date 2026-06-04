@@ -5,11 +5,23 @@ import FriendframeHeader from "@/components/ui/FriendframeHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from 'expo-router'; 
 import { Ionicons } from '@expo/vector-icons'; 
+import { useAuth } from "@/context/AuthContext";
+import { useEffect, useState } from "react";
+import ChatScreen from '../ChatScreen';
+import { Chat } from '../../services/supabase/chat/chat.types';
+import { getConversations } from "@/services/supabase/chat/chat.conversation";
 
 const ChatInboxScreen = () => {
 
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
+    const { user } = useAuth();
+
+    useEffect(() => {
+        if (!user) return;
+        getConversations();
+    }, [user]);
+    
 
     // chats de prueba
     const CHATS = [
@@ -28,6 +40,7 @@ const ChatInboxScreen = () => {
             message: 'Gracias por la recomendación!',
             time: 'hace 2 horas',
             unread: false,
+            profilePic: 'https://i.pinimg.com/736x/66/86/ae/6686ae04340f0125502a1fc08bf482da.jpg'
         },
     ];
 

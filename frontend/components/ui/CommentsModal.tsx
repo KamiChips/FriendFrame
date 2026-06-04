@@ -8,8 +8,10 @@ import {
   Platform,
   KeyboardAvoidingView,
   TextInput,
+  useColorScheme,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
 
 // Hook para respetar las "zonas seguras" del celular (notch arriba, barra de navegación abajo)
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -37,6 +39,8 @@ export default function CommentsModal({
   const insets = useSafeAreaInsets();               // Obtenemos los márgenes seguros nativos del dispositivo
   const inputRef = useRef<TextInput>(null);         // Referencia directa a la caja de texto (para forzar el teclado)
 
+  const isDark = useColorScheme() === 'dark';
+
   // Calcula dinámicamente el número total sumando comentarios principales + respuestas anidadas
   const totalComments = comments.reduce((total, comment) => {
     return total + 1 + (comment.replies ? comment.replies.length : 0);
@@ -52,17 +56,22 @@ export default function CommentsModal({
   return (
     // Modal nativo de React Native: transparente y con animación de subida
     <Modal
-      animationType="slide"
+      animationType="none"
       transparent={true}
       visible={isVisible}
       onRequestClose={onClose}
     >
+      <BlurView
+        intensity={isDark ? 40 : 15}
+        tint="dark"
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      />
       {/* KeyboardAvoidingView: En iOS usa 'padding' para que el modal suba completo junto con el teclado.
         En Android usa 'height'. Esto evita que el teclado tape la barra de escribir.
       */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1 justify-end bg-black/60" // bg-black/60 crea el fondo oscuro translúcido
+        className="flex-1 justify-end" 
       >
         
         {/* ZONA INVISIBLE DE CIERRE: Si tocas el área negra/vacía arriba del modal, se cierra */}

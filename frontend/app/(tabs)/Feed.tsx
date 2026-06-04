@@ -112,6 +112,7 @@ export default function FeedScreen() {
             authorName="Ana López" // Nombre principal del que publica
             authorInitials="AL" // Iniciales para el Avatar circular
             timeAgo="hace 5 horas" // Etiqueta de tiempo
+            authorImage="https://i.pinimg.com/736x/66/86/ae/6686ae04340f0125502a1fc08bf482da.jpg"
             targetProfileName="María González" // Perfil receptor del mensaje (El "-> en el perfil de...")
             textContent="Una de las personas más auténticas que conozco. Gracias por siempre estar ahí! 💙" // Texto principal
             likesCount={79} // Número estático de Likes
@@ -120,6 +121,7 @@ export default function FeedScreen() {
             commentsCount={comentariosAna.length} // Cuenta automáticamente cuántos elementos hay en el estado
             comments={comentariosAna} // Pasa el arreglo de datos al modal para que los dibuje
             onAddComment={agregarComentarioAna} // Le inyecta la función para que el botón de "Enviar" sepa qué hacer
+            isOwnPost={false} 
           />
 
           {/* TARJETA 2: PUBLICACIÓN DE CARLOS RAMÍREZ */}
@@ -137,6 +139,7 @@ export default function FeedScreen() {
             // PROPS DINÁMICOS PARA COMENTARIOS:
             commentsCount={comentariosCarlos.length}
             comments={comentariosCarlos}
+            isOwnPost={true}
             onAddComment={agregarComentarioCarlos}
           />
         </View>

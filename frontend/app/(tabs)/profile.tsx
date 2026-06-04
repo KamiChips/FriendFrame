@@ -28,6 +28,7 @@ import {
   unblockUser,
 } from "@/services/supabase/social/social.blocks";
 import { EditProfileModal } from "@/components/ui/EditProfileModal";
+import BlockedUserScreen from "@/components/ui/blocked-user-screen";
 
 type TabType = "grid" | "list";
 
@@ -170,6 +171,7 @@ export default function ProfileScreen() {
     );
   }
 
+  // CASO A: El usuario objetivo me bloqueó a mí
   if (profile.blocked_me) {
     return (
       <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240] items-center justify-center px-8">
@@ -180,6 +182,18 @@ export default function ProfileScreen() {
     );
   }
 
+  // CASO B: YO BLOQUEÉ al usuario objetivo
+  if (profile.is_blocked) {
+    return (
+      <BlockedUserScreen
+        fullName={profile.full_name}
+        onUnblock={handleUnblock}
+        actionLoading={actionLoading}
+      />
+    );
+  }
+
+  // CASO C: FLUJO NORMAL DEL PERFIL ACUMULADO
   const gridPosts = feed.filter((item) => item.type === "post");
 
   return (
@@ -260,19 +274,21 @@ export default function ProfileScreen() {
                   )}
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
-                  onPress={() => {
-                    router.push({
-                      pathname: "/(tabs)/ChatInboxScreen",
-                      params: { targetUserId: profile.user_id },
-                    });
-                  }}
-                >
-                  <Text className="font-spartan-bold text-black dark:text-white text-base">
-                    Mensaje
-                  </Text>
-                </TouchableOpacity>
+                {profile.is_friend && (
+                  <TouchableOpacity
+                    className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
+                    onPress={() => {
+                      router.push({
+                        pathname: "/(tabs)/ChatInboxScreen",
+                        params: { targetUserId: profile.user_id },
+                      });
+                    }}
+                  >
+                    <Text className="font-spartan-bold text-black dark:text-white text-base">
+                      Mensaje
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
               {/* Bloquear */}
@@ -302,7 +318,8 @@ export default function ProfileScreen() {
               </Text>
             </View>
           ) : (
-            <View>
+<View className="w-full px-4">
+              
               {activeTab === "grid" && (
                 <View className="flex-row flex-wrap gap-2">
                   {gridPosts.length === 0 ? (
@@ -313,6 +330,7 @@ export default function ProfileScreen() {
                     </View>
                   ) : (
                     gridPosts.map((post) => (
+                      // ... mantén el código de tu grid exactamente igual ...
                       <TouchableOpacity
                         key={post.post_id}
                         className="w-[32%] aspect-square bg-gray-200 dark:bg-[#2A3654]"
@@ -330,13 +348,15 @@ export default function ProfileScreen() {
               )}
 
               {activeTab === "list" && (
-                <View className="gap-y-4">
+                // NUEVO: Aseguramos que la lista también tome todo el ancho (w-full)
+                <View className="gap-y-4 w-full pb-10">
                   {feed.map((item) => (
                     <FeedCard
                       key={
                         item.type === "post" ? item.post_id : item.fragment_id
                       }
                       authorName={item.author.full_name}
+                      authorImage={item.author.profile_pic}
                       authorInitials={item.author.full_name
                         .charAt(0)
                         .toUpperCase()}
@@ -361,6 +381,7 @@ export default function ProfileScreen() {
                       likesCount={item.likes_count}
                       commentsCount={item.comments_count}
                       isLiked={item.liked_by_me}
+                      isOwnPost={item.author.user_id === currentUser?.user_id}
                       comments={[]}
                     />
                   ))}
@@ -370,22 +391,19 @@ export default function ProfileScreen() {
           )}
         </View>
 
-        {/* FloatingMenu */}
-        {/*!isOwnProfile && (
-          <View className="mb-40 pb-10 z-10">
-            <FloatingMenu
-              onCreatePost={() => console.log("Crear Post")}
-              onCreateFragment={() => console.log("Crear Fragment")}
-            />
-          </View>
-        )*/}
         {!isOwnProfile && profile.is_friend && (
           <View className="mb-40 pb-10 z-10">
             <FloatingMenu
               onCreatePost={() => console.log("Crear Post en", profile.user_id)}
-              onCreateFragment={() =>
-                console.log("Crear Fragment en", profile.user_id)
-              }
+              onCreateFragment={() => {
+                console.log("Crear Fragment en", profile.user_id);
+                loadFeed(); // Esto recargará tu feed cuando se publique con éxito
+              }}
+              // NUEVO: Aquí le pasamos la información real del perfil a tu menú
+              targetUserId={profile.user_id}
+              targetUserName={profile.full_name}
+              targetUserInitials={profile.full_name.charAt(0).toUpperCase()}
+              targetUserImage={profile.profile_pic}
             />
           </View>
         )}

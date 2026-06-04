@@ -22,9 +22,10 @@ export interface NotificationCardProps {
     notificationType: NotificationType
     isDark: boolean,
     comment?: string,
+    profilePic?: string | null
 }
 
-const NotificationCard = ({ name, initials, time, unread, notificationType, isDark, comment = "" }: NotificationCardProps) => {
+const NotificationCard = ({ name, initials, time, unread, notificationType, isDark, comment = "", profilePic = null }: NotificationCardProps) => {
     let message = <></>;
     let icon = <></>
     switch(notificationType) {
@@ -63,7 +64,7 @@ const NotificationCard = ({ name, initials, time, unread, notificationType, isDa
             }}
         >
             <View className="mr-3 relative">
-                <ProfileIcon initials={initials} isDark={isDark} />
+                <ProfileIcon initials={initials} isDark={isDark} profilePic={profilePic} />
 
                 {/* Icono */}
                 <View className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full border-2 border-background-light dark:border-background-semidark bg-background-light dark:bg-background-dark items-center justify-center">
