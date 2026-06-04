@@ -15,6 +15,11 @@ import { BlurView } from "expo-blur";
 interface FloatingMenuProps {
   onCreatePost?: () => void;
   onCreateFragment?: () => void;
+  // NUEVO: Agregamos las propiedades del usuario como opcionales para no romper otros archivos
+  targetUserId?: string;
+  targetUserName?: string;
+  targetUserInitials?: string;
+  targetUserImage?: string | null;
 }
 
 const TAB_BAR_HEIGHT = Platform.OS === "ios" ? 83 : 65;
@@ -22,6 +27,11 @@ const TAB_BAR_HEIGHT = Platform.OS === "ios" ? 83 : 65;
 export function FloatingMenu({
   onCreatePost,
   onCreateFragment,
+  // Asignamos valores por defecto por si algún archivo viejo no los manda
+  targetUserId = "",
+  targetUserName = "Usuario",
+  targetUserInitials = "??",
+  targetUserImage
 }: FloatingMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -31,20 +41,16 @@ export function FloatingMenu({
   const toggleMenu = () => {
     const toValue = isOpen ? 0 : 1;
 
-    // Configuración de la animación (Cerrar/Abrir)
     Animated.spring(animation, {
       toValue,
-      friction: 6, // Controla el rebote
+      friction: 6,
       tension: 40,
-      useNativeDriver: true, // Optimización de rendimiento
+      useNativeDriver: true,
     }).start();
 
     setIsOpen(!isOpen);
   };
 
-  // Interpolaciones para las animaciones
-
-  // 1. Opacidad del fondo oscuro (Overlay)
   const blurInsentity = animation.interpolate({
     inputRange: [0, 1],
     outputRange: [0, 18],
@@ -54,16 +60,15 @@ export function FloatingMenu({
     inputRange: [0, 1],
     outputRange: [0, 0.35],
   });
-  // 2. Desplazamiento vertical (Y) de los botones pequeños
+  
   const translateY = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [20, 0], // Sube 20 píxeles al abrirse
+    outputRange: [20, 0],
   });
 
-  // 3. Opacidad de los botones pequeños
   const menuOpacity = animation.interpolate({
     inputRange: [0, 0.4, 1],
-    outputRange: [0, 0, 1], // Aparece gradualmente
+    outputRange: [0, 0, 1],
   });
 
   const menuScale = animation.interpolate({
@@ -71,22 +76,13 @@ export function FloatingMenu({
     outputRange: [0.85, 1],
   });
 
-  // 4. Rotación del botón principal (para el efecto Plus -> X)
   const rotation = animation.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "90deg"],
   });
 
   const pointerEvents = isOpen ? "auto" : "none";
-
   const bottomOffset = TAB_BAR_HEIGHT + insets.bottom;
-
-  // 6. Funcion para publicar el Fragment
-  const handlePublishFragment = (text: string) => {
-    console.log("Publicando Fragment: ", text);
-    // logica de base de datos
-    setIsModalVisible(false); // Cierra el modal después de publicar
-  };
 
   const animatedStyles = {
     transform: [{ translateY }],
@@ -139,13 +135,12 @@ export function FloatingMenu({
       <View
         style={{
           position: "absolute",
-          bottom: bottomOffset + 16, // 16px de padding sobre el tab bar
+          bottom: bottomOffset + 16,
           right: 24,
           alignItems: "flex-end",
         }}
         pointerEvents="box-none"
       >
-        {/* Botones secundarios */}
         <Animated.View
           style={{
             transform: [{ translateY }, { scale: menuScale }],
@@ -155,7 +150,6 @@ export function FloatingMenu({
           }}
           pointerEvents={pointerEvents}
         >
-          {/* Crear Post */}
           <TouchableOpacity
             onPress={() => {
               toggleMenu();
@@ -190,7 +184,6 @@ export function FloatingMenu({
             </Text>
           </TouchableOpacity>
 
-          {/* Crear Fragment */}
           <TouchableOpacity
             onPress={() => {
               toggleMenu();
@@ -225,7 +218,6 @@ export function FloatingMenu({
           </TouchableOpacity>
         </Animated.View>
 
-        {/* ── Botón principal ───────────────────────────────────────────────── */}
         <TouchableOpacity
           onPress={toggleMenu}
           activeOpacity={0.9}
@@ -249,11 +241,18 @@ export function FloatingMenu({
         </TouchableOpacity>
       </View>
 
-      {/* Modal de Fragment */}
+      {/* NUEVO: El modal actualizado con sus nuevas props */}
       <NewFragment
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
-        onPublish={handlePublishFragment}
+        onPublishSuccess={() => {
+          setIsModalVisible(false);
+          onCreateFragment?.(); // Ejecuta la función de refresco del muro
+        }}
+        targetUserId={targetUserId}
+        targetUserName={targetUserName}
+        targetUserInitials={targetUserInitials}
+        targetUserImage={targetUserImage}
       />
     </View>
   );
