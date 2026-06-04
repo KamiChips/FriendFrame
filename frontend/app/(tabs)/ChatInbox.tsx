@@ -11,7 +11,12 @@ import "../../global.css";
 import ChatCard from "@/components/ui/ChatCard";
 import FriendframeHeader from "@/components/ui/FriendframeHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, router, useLocalSearchParams } from "expo-router";
+import {
+  Link,
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+} from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
 import { useCallback, useEffect, useState } from "react";
@@ -33,7 +38,14 @@ const ChatInboxScreen = () => {
 
   const loadChats = useCallback(async () => {
     const { data } = await getConversations();
-    if (data) setChats(data);
+    if (data) {
+      console.log(
+        "Chats recargados, unread_counts:",
+        data.map((c) => ({ id: c.chat_id, unread: c.unread_count })),
+      );
+
+      setChats(data);
+    }
     setLoading(false);
   }, []);
 
@@ -42,6 +54,13 @@ const ChatInboxScreen = () => {
     const unsub = subscribeToChatList(loadChats);
     return unsub;
   }, [loadChats]);
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log("Inbox ganó foco — recargando chats");
+      loadChats();
+    }, [loadChats]),
+  );
 
   useEffect(() => {
     console.log("targetUserId recibido:", targetUserId);
@@ -84,6 +103,7 @@ const ChatInboxScreen = () => {
           chatInitials,
           isGroup: String(data.is_group),
           targetUserId: otherMember?.user_id ?? "",
+          profilePic: otherMember?.profile_pic ?? "",
         },
       });
     };
@@ -208,6 +228,7 @@ const ChatInboxScreen = () => {
                         chatInitials: initials,
                         isGroup: String(chat.is_group),
                         targetUserId: targetId ?? "",
+                        profilePic: profilePic ?? "",
                       },
                     });
                   }}

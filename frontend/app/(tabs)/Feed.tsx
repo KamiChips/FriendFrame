@@ -17,6 +17,7 @@ import FeedCard from "@/components/ui/FeedCard";
 import { FeedSkeletonList } from "@/components/ui/FeedCardSkeleton";
 import { useFeed } from "@/hooks/useFeed";
 import { FeedPost } from "@/services/supabase/feed/feed.types";
+import { FeedItem } from "@/services/supabase/posts/types";
 
 //  Helpers
 function timeAgo(isoDate: string): string {
@@ -59,7 +60,13 @@ function EmptyState({ onRefresh }: { onRefresh: () => void }) {
 }
 
 //  Estado de error
-function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
+function ErrorState({
+  message,
+  onRetry,
+}: {
+  message: string;
+  onRetry: () => void;
+}) {
   return (
     <View className="flex-1 items-center justify-center px-8 py-20">
       <Ionicons name="cloud-offline-outline" size={56} color="#EF4444" />
@@ -124,48 +131,49 @@ export default function FeedScreen() {
   useFocusEffect(
     useCallback(() => {
       refresh();
-    }, [])
+    }, []),
   );
 
   // Adaptador: convierte FeedPost → props de FeedCard
-  const renderItem = useCallback(
-    ({ item }: { item: FeedPost }) => {
-      const isFragment = item.type === "fragment";
+  const renderItem = useCallback(({ item }: { item: FeedPost }) => {
+    const isFragment = item.type === "fragment";
 
-      return (
-        <FeedCard
-          // Publication
-          publicationId={item.id}                          
-          publicationType={item.type}
-          // Autor
-          authorName={item.author.full_name}
-          authorInitials={initials(item.author.full_name)}
-          authorImage={item.author.profile_pic ?? null}
-          timeAgo={timeAgo(item.created_at)}
-          // Perfil receptor
-          targetProfileName={item.account_owner.full_name}
-          targetUserImage={item.account_owner.profile_pic ?? null}
-          // Contenido — fragments usan .content, posts usan .description
-          textContent={isFragment ? (item.content ?? "") : (item.description ?? "")}
-          // Imagen solo en posts
-          imageSource={!isFragment && item.image ? item.image : undefined}
-          // Interacciones
-          likesCount={item.likes_count}
-          commentsCount={item.comments_count}
-          isLiked={item.liked_by_me}
-          // TODO: reemplazar con currentUserId desde tu contexto de auth
-          isOwnPost={false}
-          // Comentarios: por ahora vacíos hasta conectar el endpoint
-          comments={[]}
-          onAddComment={(texto) => {
-            // TODO: conectar con acción de comentar
-            console.log("comentario en", item.id, texto);
-          }}
-        />
-      );
-    },
-    []
-  );
+    return (
+      <FeedCard
+        // Publication
+        publicationId={item.id}
+        publicationType={item.type}
+        // Autor
+        authorName={item.author.full_name}
+        authorInitials={initials(item.author.full_name)}
+        authorImage={item.author.profile_pic ?? null}
+        timeAgo={timeAgo(item.created_at)}
+        // Perfil receptor
+        targetProfileName={item.account_owner.full_name}
+        targetUserImage={item.account_owner.profile_pic ?? null}
+        // Contenido — fragments usan .content, posts usan .description
+        textContent={
+          isFragment ? (item.content ?? "") : (item.description ?? "")
+        }
+        // Imagen solo en posts
+        imageSource={
+          !isFragment && item.media ? { uri: item.media } : undefined
+        }
+        // Interacciones
+        likesCount={item.likes_count}
+        commentsCount={item.comments_count}
+        isLiked={item.liked_by_me}
+        // TODO: reemplazar con currentUserId desde tu contexto de auth
+        isOwnPost={false}
+        // Comentarios: por ahora vacíos hasta conectar el endpoint
+        comments={[]}
+        onAddComment={(texto) => {
+          // TODO: conectar con acción de comentar
+          console.log("comentario en", item.id, texto);
+        }}
+      />
+    );
+  }, []);
 
   const keyExtractor = useCallback((item: FeedPost) => item.id, []);
 
@@ -221,7 +229,7 @@ export default function FeedScreen() {
           paddingHorizontal: 16,
           paddingTop: 16,
           paddingBottom: 40,
-          maxWidth: 672,        // equivale a max-w-2xl
+          maxWidth: 672, // equivale a max-w-2xl
           alignSelf: "center",
           width: "100%",
         }}

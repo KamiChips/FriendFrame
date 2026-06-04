@@ -340,7 +340,6 @@ export default function ProfileScreen() {
                     </View>
                   ) : (
                     gridPosts.map((post) => (
-
                       <TouchableOpacity
                         key={post.post_id}
                         className="w-[32%] aspect-square bg-gray-200 dark:bg-[#2A3654]"
@@ -413,20 +412,27 @@ export default function ProfileScreen() {
                         );
                         loadProfile();
                       }}
-
                       onEdited={(newContent) => {
                         setFeed((prevFeed) =>
                           prevFeed.map((feedItem) => {
-                            if (item.type === "post" && feedItem.type === "post" && feedItem.post_id === item.post_id) {
+                            if (
+                              item.type === "post" &&
+                              feedItem.type === "post" &&
+                              feedItem.post_id === item.post_id
+                            ) {
                               // Actualizamos la descripción si es un post
                               return { ...feedItem, description: newContent };
                             }
-                            if (item.type === "fragment" && feedItem.type === "fragment" && feedItem.fragment_id === item.fragment_id) {
+                            if (
+                              item.type === "fragment" &&
+                              feedItem.type === "fragment" &&
+                              feedItem.fragment_id === item.fragment_id
+                            ) {
                               // Actualizamos el contenido si es un fragment
                               return { ...feedItem, content: newContent };
                             }
                             return feedItem;
-                          })
+                          }),
                         );
                       }}
                     />
@@ -436,27 +442,27 @@ export default function ProfileScreen() {
             </View>
           )}
         </View>
-
-        {!isOwnProfile && profile.is_friend && (
-          <View className="z-10 absolute bottom-6 right-6">
-            <FloatingMenu
-              onCreatePost={() => {
-                console.log("Crear Post en", profile.user_id);
-                loadFeed(); // Recarga el feed al publicar post
-              }}
-              onCreateFragment={() => {
-                console.log("Crear Fragment en", profile.user_id);
-                loadFeed(); // Recarga el feed al publicar fragment
-              }}
-              targetUserId={profile.user_id}
-              targetUserName={profile.full_name}
-              targetUserInitials={profile.full_name.charAt(0).toUpperCase()}
-              targetUserImage={profile.profile_pic}
-              currentUserId={currentUser?.user_id}
-            />
-          </View>
-        )}
       </ScrollView>
+
+      {!isOwnProfile && profile.is_friend && (
+        <View className="z-10 absolute bottom-6 right-6">
+          <FloatingMenu
+            onCreatePost={() => {
+              console.log("Crear Post en", profile.user_id);
+              loadFeed(); // Recarga el feed al publicar post
+            }}
+            onCreateFragment={() => {
+              console.log("Crear Fragment en", profile.user_id);
+              loadFeed(); // Recarga el feed al publicar fragment
+            }}
+            targetUserId={profile.user_id}
+            targetUserName={profile.full_name}
+            targetUserInitials={profile.full_name.charAt(0).toUpperCase()}
+            targetUserImage={profile.profile_pic}
+            currentUserId={currentUser?.user_id}
+          />
+        </View>
+      )}
 
       <EditProfileModal
         visible={editModalVisable}

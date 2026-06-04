@@ -14,7 +14,7 @@ export function mapRow(row: any): FeedPost {
     type: row.pub_type,
     author_id: row.author_id,
     account_owner_id: row.account_owner_id,
-    image: row.image ?? null,
+    media: row.media ?? null,
     media_type: row.media_type ?? null,
     description: row.description ?? null,
     content: row.content ?? null,

@@ -4,7 +4,7 @@ export interface FeedPost {
   author_id: string;
   account_owner_id: string;
   // Solo en posts:
-  image?: string | null;
+  media?: string | null;
   media_type?: "image" | "video";
   description?: string | null;
   // Solo en fragments:

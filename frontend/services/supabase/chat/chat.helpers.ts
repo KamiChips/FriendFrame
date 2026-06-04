@@ -190,15 +190,16 @@ export function notifyMembers(
     .catch(() => {});
 }
 
-export function markMessagesAsRead(chatId: string, userId: string): void {
-  Promise.resolve(
-    supabase
-      .from("messages")
-      .update({ is_read: true })
-      .eq("chat_id", chatId)
-      .eq("is_read", false)
-      .neq("sender_id", userId),
-  )
-    .then(() => {})
-    .catch(() => {});
+export async function markMessagesAsRead(
+  chatId: string,
+  userId: string,
+): Promise<void> {
+  const { error, count } = await supabase
+    .from("messages")
+    .update({ is_read: true }, { count: "exact" })
+    .eq("chat_id", chatId)
+    .eq("is_read", false)
+    .neq("sender_id", userId);
+
+  console.log("markMessagesAsRead:", { chatId, userId, error, count });
 }
