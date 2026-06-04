@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
-import { Ionicons } from "@expo/vector-icons";
 import UserProfileHeader from "@/components/ui/UserProfileHeader";
 import "../../global.css";
 import { FloatingMenu } from "@/components/ui/FloatingMenu";
@@ -29,6 +28,7 @@ import {
   unblockUser,
 } from "@/services/supabase/social/social.blocks";
 import { EditProfileModal } from "@/components/ui/EditProfileModal";
+import BlockedUserScreen from "@/components/ui/blocked-user-screen";
 
 type TabType = "grid" | "list";
 
@@ -172,6 +172,7 @@ export default function ProfileScreen() {
     );
   }
 
+  // CASO A: El usuario objetivo me bloqueó a mí
   if (profile.blocked_me) {
     return (
       <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240] items-center justify-center px-8">
@@ -182,6 +183,18 @@ export default function ProfileScreen() {
     );
   }
 
+  // CASO B: YO BLOQUEÉ al usuario objetivo
+  if (profile.is_blocked) {
+    return (
+      <BlockedUserScreen
+        fullName={profile.full_name}
+        onUnblock={handleUnblock}
+        actionLoading={actionLoading}
+      />
+    );
+  }
+
+  // CASO C: FLUJO NORMAL DEL PERFIL ACUMULADO
   const gridPosts = feed.filter((item) => item.type === "post");
 
   return (
@@ -327,14 +340,14 @@ export default function ProfileScreen() {
                     </View>
                   ) : (
                     gridPosts.map((post) => (
-                      // ... mantén el código de tu grid exactamente igual ...
+
                       <TouchableOpacity
                         key={post.post_id}
                         className="w-[32%] aspect-square bg-gray-200 dark:bg-[#2A3654]"
                         onPress={() => console.log("Post:", post.post_id)}
                       >
                         <Image
-                          source={{ uri: post.image }}
+                          source={{ uri: post.media }}
                           style={{ width: "100%", height: "100%" }}
                           contentFit="cover"
                         />
@@ -353,6 +366,10 @@ export default function ProfileScreen() {
                         item.type === "post" ? item.post_id : item.fragment_id
                       }
                       authorName={item.author.full_name}
+                      publicationId={
+                        item.type === "post" ? item.post_id : item.fragment_id
+                      }
+                      publicationType={item.type}
                       authorImage={item.author.profile_pic}
                       authorInitials={item.author.full_name
                         .charAt(0)
@@ -371,8 +388,8 @@ export default function ProfileScreen() {
                           : item.content
                       }
                       imageSource={
-                        item.type === "post" && item.image
-                          ? { uri: item.image }
+                        item.type === "post" && item.media
+                          ? { uri: item.media }
                           : undefined
                       }
                       likesCount={item.likes_count}
@@ -380,6 +397,38 @@ export default function ProfileScreen() {
                       isLiked={item.liked_by_me}
                       isOwnPost={item.author.user_id === currentUser?.user_id}
                       comments={[]}
+                      onDeleted={() => {
+                        setFeed((prev) =>
+                          prev.filter((feedItem) =>
+                            item.type === "post"
+                              ? !(
+                                  feedItem.type === "post" &&
+                                  feedItem.post_id === item.post_id
+                                )
+                              : !(
+                                  feedItem.type === "fragment" &&
+                                  feedItem.fragment_id === item.fragment_id
+                                ),
+                          ),
+                        );
+                        loadProfile();
+                      }}
+
+                      onEdited={(newContent) => {
+                        setFeed((prevFeed) =>
+                          prevFeed.map((feedItem) => {
+                            if (item.type === "post" && feedItem.type === "post" && feedItem.post_id === item.post_id) {
+                              // Actualizamos la descripción si es un post
+                              return { ...feedItem, description: newContent };
+                            }
+                            if (item.type === "fragment" && feedItem.type === "fragment" && feedItem.fragment_id === item.fragment_id) {
+                              // Actualizamos el contenido si es un fragment
+                              return { ...feedItem, content: newContent };
+                            }
+                            return feedItem;
+                          })
+                        );
+                      }}
                     />
                   ))}
                 </View>
@@ -387,24 +436,28 @@ export default function ProfileScreen() {
             </View>
           )}
         </View>
+
+        {!isOwnProfile && profile.is_friend && (
+          <View className="z-10 absolute bottom-6 right-6">
+            <FloatingMenu
+              onCreatePost={() => {
+                console.log("Crear Post en", profile.user_id);
+                loadFeed(); // Recarga el feed al publicar post
+              }}
+              onCreateFragment={() => {
+                console.log("Crear Fragment en", profile.user_id);
+                loadFeed(); // Recarga el feed al publicar fragment
+              }}
+              targetUserId={profile.user_id}
+              targetUserName={profile.full_name}
+              targetUserInitials={profile.full_name.charAt(0).toUpperCase()}
+              targetUserImage={profile.profile_pic}
+              currentUserId={currentUser?.user_id}
+            />
+          </View>
+        )}
       </ScrollView>
 
-      {!isOwnProfile && profile.is_friend && (
-        <View className="z-10">
-          <FloatingMenu
-            onCreatePost={() => console.log("Crear Post en", profile.user_id)}
-            onCreateFragment={() => {
-              console.log("Crear Fragment en", profile.user_id);
-              loadFeed(); // Esto recargará tu feed cuando se publique con éxito
-            }}
-            // NUEVO: Aquí le pasamos la información real del perfil a tu menú
-            targetUserId={profile.user_id}
-            targetUserName={profile.full_name}
-            targetUserInitials={profile.full_name.charAt(0).toUpperCase()}
-            targetUserImage={profile.profile_pic}
-          />
-        </View>
-      )}
       <EditProfileModal
         visible={editModalVisable}
         onClose={() => setEditModalVisible(false)}

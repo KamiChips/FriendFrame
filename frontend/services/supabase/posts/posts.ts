@@ -7,13 +7,13 @@ import {
   notifyNewPublication,
   parseError,
   sanitizeDescription,
-  uploadMediaFile,
 } from "./helpers";
 import { Post, PostResult, PostWithCounts } from "./types";
-import * as ImagePicker from "expo-image-picker";
 
 export async function createPost(
   profileOwnerId: string,
+  mediaUrl: string,    
+  mediaType: string,    
   description?: string,
 ): Promise<PostResult<Post>> {
   try {
@@ -22,22 +22,6 @@ export async function createPost(
     const currentUserId = await getAuthUser();
 
     await assertFriendship(currentUserId, profileOwnerId);
-
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted")
-      throw new Error("Se necesita permiso para acceder a la galería.");
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images", "videos", "livePhotos"],
-      allowsEditing: false,
-      quality: 0.85,
-    });
-
-    if (result.canceled) return { data: null, error: null };
-
-    const asset = result.assets[0];
-    const mediaType = asset.type === "video" ? "video" : "image";
-    const mediaUrl = await uploadMediaFile(currentUserId, asset.uri, mediaType);
 
     const { data, error } = await supabase
       .from("posts")
@@ -69,6 +53,7 @@ export async function createPost(
 
     return { data: data as Post, error: null };
   } catch (err) {
+    console.log("🔴 ERROR REAL DE SUPABASE EN CREATE POST:", err); 
     return { data: null, error: parseError(err) };
   }
 }
@@ -184,7 +169,7 @@ export const getUserPosts = async (userId: string) => {
     .select(
       `
       post_id,
-      media,
+      media,              
       description,
       account_owner_id,
       created_at,

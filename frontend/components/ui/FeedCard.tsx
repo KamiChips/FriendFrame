@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, Modal, useColorScheme } from "react-native";
+import { View, Text, Pressable, useColorScheme } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import PostOptionsModal from "./post-options-modal";
@@ -7,10 +7,14 @@ import CommentsModal from "./CommentsModal";
 import { CommentType } from "./CommentItem";
 import ProfileIcon from "./ProfileIcon";
 
+type FeedCardPublicationType = "post" | "fragment";
+
 interface FeedCardProps {
+  publicationId?: string;
+  publicationType?: FeedCardPublicationType;
   authorName: string;
   authorInitials: string;
-  authorImage?: string | null; // Nuevo prop para la consistencia de fotos
+  authorImage?: string | null;
   timeAgo: string;
   targetProfileName: string;
   textContent: string;
@@ -18,13 +22,17 @@ interface FeedCardProps {
   likesCount: number;
   commentsCount: number;
   isLiked?: boolean;
-  isOwnPost?: boolean; // Prop para saber si mostrar los 3 puntos
+  isOwnPost?: boolean;
   comments?: CommentType[];
   targetUserImage?: string | null;
   onAddComment?: (texto: string) => void;
+  onDeleted?: () => void;
+  onEdited?: (content: string) => void;
 }
 
 export default function FeedCard({
+  publicationId,
+  publicationType,
   authorName,
   authorInitials,
   authorImage,
@@ -37,25 +45,50 @@ export default function FeedCard({
   isLiked = false,
   isOwnPost = false,
   comments = [],
-  targetUserImage,
   onAddComment,
+  onDeleted,
+  onEdited,
 }: FeedCardProps) {
   const [isCommentsModalVisible, setCommentsModalVisible] = useState(false);
   const [isMenuVisible, setMenuVisible] = useState(false);
 
+
+  // ✅ Hook siempre en el nivel superior, nunca en condicional
+  const isDark = useColorScheme() === "dark";
+
+  // ✅ Lógica del avatar en una variable, sin duplicar el componente
+  const hasImage =
+    authorImage && typeof authorImage === "string" && authorImage.trim() !== "";
+
   const isDark = useColorScheme() === "dark";
   return (
     <View className="mb-4 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-transparent dark:bg-background-semidark">
-      {/* 1. CABECERA DE LA TARJETA */}
+      {/* 1. CABECERA */}
       <View className="flex-row items-start justify-between p-4">
         <View className="flex-row items-start flex-1">
+
+          {/* ✅ Avatar: imagen o iniciales, nunca los dos a la vez */}
+          {hasImage ? (
+            <Image
+              source={{ uri: authorImage as string }}
+              style={{ width: 48, height: 48, borderRadius: 24 }}
+              contentFit="cover"
+            />
+          ) : (
+            // Si no hay imagen, mostramos el ProfileIcon con las iniciales
+            <ProfileIcon
+              initials={authorInitials}
+              isDark={isDark}
+              size={48}
+            />
+          )}
           {/* LÓGICA DE CONSISTENCIA DEL AVATAR */}
           <ProfileIcon
             initials={authorInitials}
             profilePic={authorImage}
             isDark={isDark}
+            size={48}
           />
-
           <View className="ml-3 flex-1">
             <Text className="font-spartan-bold text-lg text-black dark:text-white">
               {authorName}
@@ -78,14 +111,14 @@ export default function FeedCard({
         )}
       </View>
 
-      {/* 2. CONTENIDO PRINCIPAL (Texto) */}
+      {/* 2. TEXTO */}
       <View className="px-4 pb-3">
         <Text className="font-spartan text-base leading-6 text-black dark:text-white">
           {textContent}
         </Text>
       </View>
 
-      {/* 3. IMAGEN ADJUNTA */}
+      {/* 3. IMAGEN */}
       {imageSource && (
         <View className="w-full bg-gray-50 dark:bg-gray-800/50">
           <Image
@@ -101,7 +134,7 @@ export default function FeedCard({
         </View>
       )}
 
-      {/* 4. PIE DE PÁGINA (Botones de Interacción) */}
+      {/* 4. FOOTER */}
       <View className="flex-row items-center p-4">
         {/* Like */}
         <Pressable className="mr-6 flex-row items-center">
@@ -144,8 +177,12 @@ export default function FeedCard({
       <PostOptionsModal
         visible={isMenuVisible}
         onClose={() => setMenuVisible(false)}
+        publicationId={publicationId}
+        publicationType={publicationType}
+        initialContent={textContent}
+        onDeleted={onDeleted}
+        onEdited={onEdited}
         onEdit={() => console.log("Lógica para editar post")}
-        onDelete={() => console.log("Lógica para eliminar post")}
       />
     </View>
   );

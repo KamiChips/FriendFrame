@@ -11,15 +11,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { NewFragment } from "./NewFragment";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
+import CreatePostModal from "./create-post-modal";
 
 interface FloatingMenuProps {
   onCreatePost?: () => void;
   onCreateFragment?: () => void;
-  // NUEVO: Agregamos las propiedades del usuario como opcionales para no romper otros archivos
   targetUserId?: string;
   targetUserName?: string;
   targetUserInitials?: string;
   targetUserImage?: string | null;
+  currentUserId?: string;
 }
 
 const TAB_BAR_HEIGHT = Platform.OS === "ios" ? 83 : 65;
@@ -27,14 +28,16 @@ const TAB_BAR_HEIGHT = Platform.OS === "ios" ? 83 : 65;
 export function FloatingMenu({
   onCreatePost,
   onCreateFragment,
-  // Asignamos valores por defecto por si algún archivo viejo no los manda
   targetUserId = "",
   targetUserName = "Usuario",
   targetUserInitials = "??",
-  targetUserImage
+  targetUserImage,
+  currentUserId,
 }: FloatingMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isPostModalVisible, setIsPostModalVisible] = useState(false);
+
   const animation = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
 
@@ -51,16 +54,11 @@ export function FloatingMenu({
     setIsOpen(!isOpen);
   };
 
-  const blurInsentity = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 18],
-  });
-
   const overlayOpacity = animation.interpolate({
     inputRange: [0, 1],
     outputRange: [0, 0.35],
   });
-  
+
   const translateY = animation.interpolate({
     inputRange: [0, 1],
     outputRange: [20, 0],
@@ -83,11 +81,6 @@ export function FloatingMenu({
 
   const pointerEvents = isOpen ? "auto" : "none";
   const bottomOffset = TAB_BAR_HEIGHT + insets.bottom;
-
-  const animatedStyles = {
-    transform: [{ translateY }],
-    opacity: menuOpacity,
-  };
 
   return (
     <View
@@ -150,10 +143,11 @@ export function FloatingMenu({
           }}
           pointerEvents={pointerEvents}
         >
+          {/* BOTÓN CREAR POST */}
           <TouchableOpacity
             onPress={() => {
               toggleMenu();
-              onCreatePost?.();
+              setIsPostModalVisible(true); // Abre el nuevo modal
             }}
             activeOpacity={0.85}
             style={{
@@ -184,6 +178,7 @@ export function FloatingMenu({
             </Text>
           </TouchableOpacity>
 
+          {/* BOTÓN CREAR FRAGMENT */}
           <TouchableOpacity
             onPress={() => {
               toggleMenu();
@@ -241,18 +236,33 @@ export function FloatingMenu({
         </TouchableOpacity>
       </View>
 
-      {/* NUEVO: El modal actualizado con sus nuevas props */}
+      {/* Modal de Fragment */}
       <NewFragment
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
         onPublishSuccess={() => {
           setIsModalVisible(false);
-          onCreateFragment?.(); // Ejecuta la función de refresco del muro
+          onCreateFragment?.();
         }}
         targetUserId={targetUserId}
         targetUserName={targetUserName}
         targetUserInitials={targetUserInitials}
         targetUserImage={targetUserImage}
+      />
+
+      {/* NUEVO: Modal de Crear Post */}
+      <CreatePostModal
+        visible={isPostModalVisible}
+        onClose={() => setIsPostModalVisible(false)}
+        onPublishSuccess={() => {
+          setIsPostModalVisible(false);
+          onCreatePost?.()
+        }}
+        targetUserId={targetUserId}
+        targetProfileName={targetUserName}
+        currentUserId={currentUserId ?? ""}
+        currentUserName={targetUserName}
+        currentUserInitials={targetUserInitials}
       />
     </View>
   );
