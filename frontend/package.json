@@ -12,7 +12,7 @@
     "test": "jest",
     "test:unit": "jest --testPathPattern=__tests__/unit",
     "test:components": "jest --testPathPattern=__tests__/components",
-    "test:integration": "jest --config jest.integration.config.js"
+    "test:integration": "jest --config jest.integration.config.js --runInBand"
   },
   "dependencies": {
     "@expo-google-fonts/borel": "^0.4.2",
@@ -68,6 +68,7 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "react-test-renderer": "^19.1.0",
+    "supabase": "^2.105.0",
     "typescript": "~5.9.2"
   },
   "jest": {
