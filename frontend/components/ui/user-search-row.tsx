@@ -25,7 +25,8 @@ export default function UserSearchRow({
       className="flex-row items-center border border-gray-300 dark:border-[#2A3654] bg-white dark:bg-[#1D2A4F] rounded-2xl p-4 mb-3"
     >
       {/* Avatar con Gradiente */}
-      <ProfileIcon initials={ initials } isDark={ isDark } /> {/* falta que se le pase una imagen */}
+      <ProfileIcon initials={ initials } isDark={ isDark } /> 
+      {/* falta que se le pase una imagen */}
 
       {/* Información del Usuario */}
       <View className="ml-4 flex-1">

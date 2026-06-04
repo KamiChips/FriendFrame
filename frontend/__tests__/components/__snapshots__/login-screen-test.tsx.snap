@@ -1,0 +1,161 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<LoginScreen /> matches snapshot 1`] = `
+<View
+  className="w-3/4 self-center"
+>
+  <View
+    className="mb-20"
+  >
+    <Text
+      className="text-background-dark dark:text-background-light text-4xl font-bold"
+    >
+      Welcome Back!
+    </Text>
+    <Text
+      className="text-background-dark dark:text-background-light text-xl"
+    >
+      See what your friends shared about you
+    </Text>
+  </View>
+  <View
+    className="mb-18"
+  >
+    <TextInput
+      onChangeText={[Function]}
+      placeholder="Username"
+      testID="username-textfield"
+      value=""
+    />
+    <TextInput
+      onChangeText={[Function]}
+      placeholder="Password"
+      secureTextEntry={true}
+      testID="password-textfield"
+      value=""
+    />
+    <View
+      className="flex-row justify-between mb-12"
+    >
+      <Text
+        className="dark:text-background-light"
+      >
+        [] Remember me
+      </Text>
+       
+      <Text
+        className="font-semibold dark:text-background-light"
+      >
+        Forgot Password?
+      </Text>
+    </View>
+    <View
+      className="items-center mb-18 mt-12"
+    >
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": false,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "opacity": 1,
+          }
+        }
+        testID="login-button"
+      >
+        <Text>
+          Iniciando Sesión
+        </Text>
+      </View>
+    </View>
+  </View>
+  <View
+    className="items-center mb-4 mt-8"
+  >
+    <Text
+      className="dark:text-background-light mb-10"
+    >
+      Log in with
+    </Text>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": false,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "opacity": 1,
+        }
+      }
+      testID="google-signin-button"
+    >
+      <Image
+        source={
+          {
+            "testUri": "../../../assets/images/google-logo.png",
+          }
+        }
+      />
+    </View>
+    <Text
+      className="dark:text-background-light mt-10"
+    >
+      Don't have an account?
+       
+      <Text
+        className="font-semibold dark:text-background-light"
+        onPress={[Function]}
+      >
+        Sign up
+      </Text>
+    </Text>
+  </View>
+</View>
+`;

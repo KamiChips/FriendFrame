@@ -7,7 +7,11 @@ import CommentsModal from "./CommentsModal";
 import { CommentType } from "./CommentItem";
 import ProfileIcon from "./ProfileIcon";
 
+type FeedCardPublicationType = "post" | "fragment";
+
 interface FeedCardProps {
+  publicationId?: string;
+  publicationType?: FeedCardPublicationType;
   authorName: string;
   authorInitials: string;
   authorImage?: string | null;
@@ -22,9 +26,12 @@ interface FeedCardProps {
   comments?: CommentType[];
   targetUserImage?: string | null;
   onAddComment?: (texto: string) => void;
+  onDeleted?: () => void;
 }
 
 export default function FeedCard({
+  publicationId,
+  publicationType,
   authorName,
   authorInitials,
   authorImage,
@@ -37,11 +44,12 @@ export default function FeedCard({
   isLiked = false,
   isOwnPost = false,
   comments = [],
-  targetUserImage,
   onAddComment,
+  onDeleted,
 }: FeedCardProps) {
   const [isCommentsModalVisible, setCommentsModalVisible] = useState(false);
   const [isMenuVisible, setMenuVisible] = useState(false);
+
 
   // ✅ Hook siempre en el nivel superior, nunca en condicional
   const isDark = useColorScheme() === "dark";
@@ -50,6 +58,8 @@ export default function FeedCard({
   const hasImage =
     authorImage && typeof authorImage === "string" && authorImage.trim() !== "";
 
+=======
+  const isDark = useColorScheme() === "dark";
   return (
     <View className="mb-4 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-transparent dark:bg-background-semidark">
       {/* 1. CABECERA */}
@@ -71,7 +81,13 @@ export default function FeedCard({
               size={48}
             />
           )}
-
+          {/* LÓGICA DE CONSISTENCIA DEL AVATAR */}
+          <ProfileIcon
+            initials={authorInitials}
+            profilePic={authorImage}
+            isDark={isDark}
+            size={48}
+          />
           <View className="ml-3 flex-1">
             <Text className="font-spartan-bold text-lg text-black dark:text-white">
               {authorName}
@@ -160,8 +176,10 @@ export default function FeedCard({
       <PostOptionsModal
         visible={isMenuVisible}
         onClose={() => setMenuVisible(false)}
+        publicationId={publicationId}
+        publicationType={publicationType}
+        onDeleted={onDeleted}
         onEdit={() => console.log("Lógica para editar post")}
-        onDelete={() => console.log("Lógica para eliminar post")}
       />
     </View>
   );

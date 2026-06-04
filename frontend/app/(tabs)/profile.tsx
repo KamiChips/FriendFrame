@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
-import { Ionicons } from "@expo/vector-icons";
 import UserProfileHeader from "@/components/ui/UserProfileHeader";
 import "../../global.css";
 import { FloatingMenu } from "@/components/ui/FloatingMenu";
@@ -367,6 +366,10 @@ export default function ProfileScreen() {
                         item.type === "post" ? item.post_id : item.fragment_id
                       }
                       authorName={item.author.full_name}
+                      publicationId={
+                        item.type === "post" ? item.post_id : item.fragment_id
+                      }
+                      publicationType={item.type}
                       authorImage={item.author.profile_pic}
                       authorInitials={item.author.full_name
                         .charAt(0)
@@ -394,6 +397,22 @@ export default function ProfileScreen() {
                       isLiked={item.liked_by_me}
                       isOwnPost={item.author.user_id === currentUser?.user_id}
                       comments={[]}
+                      onDeleted={() => {
+                        setFeed((prev) =>
+                          prev.filter((feedItem) =>
+                            item.type === "post"
+                              ? !(
+                                  feedItem.type === "post" &&
+                                  feedItem.post_id === item.post_id
+                                )
+                              : !(
+                                  feedItem.type === "fragment" &&
+                                  feedItem.fragment_id === item.fragment_id
+                                ),
+                          ),
+                        );
+                        loadProfile();
+                      }}
                     />
                   ))}
                 </View>
@@ -401,8 +420,6 @@ export default function ProfileScreen() {
             </View>
           )}
         </View>
-
-        // ... (resto de tus imports igual)
 
         {!isOwnProfile && profile.is_friend && (
           <View className="z-10 absolute bottom-6 right-6">
