@@ -44,7 +44,7 @@ export async function createPost(
       .insert({
         author_id: currentUserId,
         account_owner_id: profileOwnerId,
-        image: mediaUrl,
+        media: mediaUrl,
         media_type: mediaType,
         description: sanitized,
       })
@@ -113,7 +113,7 @@ export async function deletePost(postId: string): Promise<PostResult> {
 
     const { data: existing, error: fetchError } = await supabase
       .from("posts")
-      .select("image")
+      .select("media")
       .eq("post_id", postId)
       .eq("author_id", currentUserId)
       .single();
@@ -129,7 +129,7 @@ export async function deletePost(postId: string): Promise<PostResult> {
 
     if (error) throw error;
 
-    deleteMediaFile(existing.image); // fire-and-forget
+    deleteMediaFile(existing.media); // fire-and-forget
 
     return { data: null, error: null };
   } catch (err) {
@@ -184,7 +184,7 @@ export const getUserPosts = async (userId: string) => {
     .select(
       `
       post_id,
-      image,
+      media,
       description,
       account_owner_id,
       created_at,
