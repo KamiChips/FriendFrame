@@ -1,7 +1,6 @@
-import React from "react";
-import { View, Text, TouchableOpacity, useColorScheme } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import ProfileIcon from "./ProfileIcon";
+import React from 'react';
+import { View, Text, TouchableOpacity, useColorScheme } from 'react-native';
+import ProfileIcon from './ProfileIcon';
 
 interface UserSearchRowProps {
   name: string;
@@ -18,11 +17,6 @@ export default function UserSearchRow({
 }: UserSearchRowProps) {
   const isDark = useColorScheme() === "dark";
 
-  // Gradiente idéntico al mockup (Naranja quemado a Azul oscuro)
-  const gradientColors = isDark
-    ? (["#182240", "#AA3E14", "#115A67"] as const)
-    : (["#FF9B42", "#30C2D9"] as const);
-
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -31,7 +25,7 @@ export default function UserSearchRow({
       className="flex-row items-center border border-gray-300 dark:border-[#2A3654] bg-white dark:bg-[#1D2A4F] rounded-2xl p-4 mb-3"
     >
       {/* Avatar con Gradiente */}
-      <ProfileIcon initials={initials} isDark={isDark} />
+      <ProfileIcon initials={ initials } isDark={ isDark } /> {/* falta que se le pase una imagen */}
 
       {/* Información del Usuario */}
       <View className="ml-4 flex-1">

@@ -19,6 +19,7 @@ type ChatCardProps = {
   time: string;
   unread: boolean;
   isDark: boolean;
+  profilePic?: string | null,
 };
 
 const ChatCard = ({
@@ -28,6 +29,7 @@ const ChatCard = ({
   time,
   unread,
   isDark,
+  profilePic = null
 }: ChatCardProps) => {
   return (
     <TouchableOpacity
@@ -52,7 +54,7 @@ const ChatCard = ({
         }
       >
         <View className="mr-3 relative">
-          <ProfileIcon initials={initials} isDark={isDark} />
+          <ProfileIcon initials={initials} isDark={isDark} profilePic={profilePic} />
 
           {/* Puntito de no leido */}
           {unread && (

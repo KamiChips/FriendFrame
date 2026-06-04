@@ -15,7 +15,7 @@ export function RouteGuard() {
     if (!user && !isAuthGroup) {
       router.replace("/(auth)/login");
     } else if (user && isAuthGroup) {
-      router.replace("/home");
+      router.replace("/(tabs)/Feed");
     }
   }, [user, loading, segments]);
   return null;

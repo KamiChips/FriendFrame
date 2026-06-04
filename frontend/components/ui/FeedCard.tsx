@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, Modal } from "react-native";
+import { View, Text, Pressable, Modal, useColorScheme } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import PostOptionsModal from "./post-options-modal";
 import CommentsModal from "./CommentsModal";
 import { useColorScheme } from 'react-native';
 import { CommentType } from "./CommentItem";
-import ProfileIcon from "./ProfileIcon"; // Importamos el nuevo componente de avatar
+import ProfileIcon from "./ProfileIcon";
 
 interface FeedCardProps {
   authorName: string;
@@ -44,26 +44,15 @@ export default function FeedCard({
   const [isCommentsModalVisible, setCommentsModalVisible] = useState(false);
   const [isMenuVisible, setMenuVisible] = useState(false);
 
+  const isDark = useColorScheme() === 'dark';
   return (
     <View className="mb-4 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-transparent dark:bg-background-semidark">
       {/* 1. CABECERA DE LA TARJETA */}
       <View className="flex-row items-start justify-between p-4">
         <View className="flex-row items-start flex-1">
-          {/* LÓGICA DE CONSISTENCIA DEL AVATAR CON PROFILEICON */}
-          {authorImage && typeof authorImage === "string" && authorImage.trim() !== "" ? (
-            <Image
-              source={{ uri: authorImage }}
-              style={{ width: 48, height: 48, borderRadius: 24 }}
-              contentFit="cover"
-            />
-          ) : (
-            // 
-            <ProfileIcon 
-              initials={authorInitials} 
-              isDark={useColorScheme() === "dark"} // Pasa dinámicamente si es dark mode
-              size={48} 
-            />
-          )}
+          {/* LÓGICA DE CONSISTENCIA DEL AVATAR */}
+          <ProfileIcon initials={ authorInitials } profilePic={ authorImage } isDark={ isDark } />
+
           <View className="ml-3 flex-1">
             <Text className="font-spartan-bold text-lg text-black dark:text-white">
               {authorName}
