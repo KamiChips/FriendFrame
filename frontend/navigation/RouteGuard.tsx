@@ -10,12 +10,12 @@ export function RouteGuard() {
   useEffect(() => {
     if (loading) return;
 
-    const isAuthGroup = segments[0] == "(auth)";
+    const isAuthGroup = segments[0] === "(auth)";
 
     if (!user && !isAuthGroup) {
       router.replace("/(auth)/login");
     } else if (user && isAuthGroup) {
-      router.replace("/home");
+      router.replace("/(tabs)/Feed");
     }
   }, [user, loading, segments]);
   return null;

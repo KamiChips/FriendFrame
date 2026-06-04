@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
@@ -28,6 +29,7 @@ import {
   unblockUser,
 } from "@/services/supabase/social/social.blocks";
 import { EditProfileModal } from "@/components/ui/EditProfileModal";
+import BlockedUserScreen from "@/components/ui/blocked-user-screen";
 
 type TabType = "grid" | "list";
 
@@ -45,6 +47,7 @@ export default function ProfileScreen() {
   const [loadingFeed, setLoadingFeed] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [editModalVisable, setEditModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleProfileSaved = async (
     newName: string,
@@ -170,6 +173,7 @@ export default function ProfileScreen() {
     );
   }
 
+  // CASO A: El usuario objetivo me bloqueó a mí
   if (profile.blocked_me) {
     return (
       <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240] items-center justify-center px-8">
@@ -180,11 +184,33 @@ export default function ProfileScreen() {
     );
   }
 
+  // CASO B: YO BLOQUEÉ al usuario objetivo
+  if (profile.is_blocked) {
+    return (
+      <BlockedUserScreen
+        fullName={profile.full_name}
+        onUnblock={handleUnblock}
+        actionLoading={actionLoading}
+      />
+    );
+  }
+
+  // CASO C: FLUJO NORMAL DEL PERFIL ACUMULADO
   const gridPosts = feed.filter((item) => item.type === "post");
 
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-semidark">
       <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true);
+              await loadFeed();
+              setRefreshing(false);
+            }}
+          />
+        }
         className="flex-1 bg-gray-50 dark:bg-background-dark"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
@@ -376,18 +402,19 @@ export default function ProfileScreen() {
           )}
         </View>
 
+        // ... (resto de tus imports igual)
+
         {!isOwnProfile && profile.is_friend && (
-          <View className="mb-40 pb-10 z-10">
+          <View className="z-10 absolute bottom-6 right-6">
             <FloatingMenu
               onCreatePost={() => {
                 console.log("Crear Post en", profile.user_id);
-                loadFeed(); // <--- ¡FALTABA ESTA LÍNEA PARA RECARGAR LOS POSTS!
+                loadFeed(); // Recarga el feed al publicar post
               }}
               onCreateFragment={() => {
                 console.log("Crear Fragment en", profile.user_id);
-                loadFeed();
+                loadFeed(); // Recarga el feed al publicar fragment
               }}
-              // NUEVO: Aquí le pasamos la información real del perfil a tu menú
               targetUserId={profile.user_id}
               targetUserName={profile.full_name}
               targetUserInitials={profile.full_name.charAt(0).toUpperCase()}

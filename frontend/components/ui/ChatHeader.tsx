@@ -1,5 +1,5 @@
 import { View, TouchableOpacity, Text } from "react-native";
-import ProfileIcon from "./ProfileIcon";
+import ProfileIcon from './ProfileIcon';
 import GoBackButton from "./GoBackButton";
 
 interface ChatHeaderProps {
@@ -7,9 +7,10 @@ interface ChatHeaderProps {
     username: string,
     initials: string,
     lastActive: string,
+    profilePic?: string | null
 }
 
-const ChatHeader = ({isDark, username, initials, lastActive} : ChatHeaderProps) => {
+const ChatHeader = ({isDark, username, initials, lastActive, profilePic = null } : ChatHeaderProps) => {
     return (
         <View className="opacity-85 flex-row pl-1 pb-2 dark:bg-background-dark dark:opacity-100 border-b border-[#e6e6e6] dark:border-[#404b65]">
             <GoBackButton isDark={isDark} />
@@ -17,7 +18,7 @@ const ChatHeader = ({isDark, username, initials, lastActive} : ChatHeaderProps) 
             <View className="">
                 <TouchableOpacity className="flex-row justify-center">
                     <View className="mr-3 relative">
-                        <ProfileIcon initials={initials} isDark={isDark} />
+                        <ProfileIcon initials={initials} isDark={isDark} profilePic={profilePic} />
                     </View>
 
                     <View>
