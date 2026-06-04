@@ -4,7 +4,6 @@ import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import PostOptionsModal from "./post-options-modal";
 import CommentsModal from "./CommentsModal";
-import { useColorScheme } from 'react-native';
 import { CommentType } from "./CommentItem";
 import ProfileIcon from "./ProfileIcon";
 
