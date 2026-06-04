@@ -6,18 +6,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { Image } from 'expo-image';
-
-// NUEVO: Importamos el hook que te pasaron (asegúrate de que la ruta sea correcta según tus carpetas)
 import { useCreateFragment } from '@/hooks/useCreateFragment';
 
 interface NewFragmentProps {
     isVisible: boolean;
     onClose: () => void;
-    onPublishSuccess: () => void; // NUEVO: Avisa al padre que se publicó para recargar el Feed
-    targetUserId: string;         // NUEVO: El ID del perfil donde se va a publicar (profileOwnerId)
-    targetUserName: string;       // NUEVO: Para quitar el "María González" fijo
-    targetUserInitials: string;   // NUEVO: Para quitar el "MG" fijo
-    targetUserImage?: string | null; // NUEVO: Para mostrar la imagen del usuario si existe
+    onPublishSuccess: () => void; // Avisa al padre que se publicó para recargar el Feed
+    targetUserId: string;         // El ID del perfil donde se va a publicar (profileOwnerId)
+    targetUserName: string;       // Para quitar el "María González" fijo
+    targetUserInitials: string;   // Para quitar el "MG" fijo
+    targetUserImage?: string | null; // Para mostrar la imagen del usuario si existe
 }
 
 export const NewFragment = ({ 
@@ -34,17 +32,17 @@ export const NewFragment = ({
     const colorScheme = useColorScheme();
     const maxChars = 280;
     
-    // NUEVO: Inicializamos tu hook de Supabase
+    //Inicializamos el hook de Supabase
     const { createFragment, isLoading, isSuccess, error, reset } = useCreateFragment();
 
-    // NUEVO: La función ahora llama a la base de datos
+    // La función llama a la base de datos
     const handlePublish = async () => {
         if (text.trim().length > 0) {
             await createFragment(targetUserId, text.trim());
         }
     };
 
-    // NUEVO: Un useEffect para escuchar cuando la base de datos termine con éxito o error
+    // Un useEffect para escuchar cuando la base de datos termine con éxito o error
     useEffect(() => {
         if (isSuccess) {
             setText(''); // Limpiamos la caja de texto
@@ -84,7 +82,7 @@ export const NewFragment = ({
                             </MaskedView>
                         </View>
 
-                        {/* NUEVO: El botón ahora se desactiva si está cargando y muestra un spinner */}
+                        {/* El botón ahora se desactiva si está cargando y muestra un spinner */}
                         <TouchableOpacity onPress={handlePublish} disabled={text.length === 0 || isLoading}>
                             <LinearGradient
                                 colors={['#06b6d4', '#f97316']}
@@ -105,7 +103,6 @@ export const NewFragment = ({
                     <ScrollView className="flex-1 px-5 pt-4" showsVerticalScrollIndicator={false}>
                  {/* User Info */}
                         <View className="flex-row items-center mb-5">
-                            {/* NUEVO: Lógica condicional correcta para TypeScript */}
                             {targetUserImage ? (
                                 <Image 
                                     source={{ uri: targetUserImage }} 
@@ -117,13 +114,13 @@ export const NewFragment = ({
                                     className="w-12 h-12 rounded-full items-center justify-center mr-3"
                                     style={{ backgroundColor: colorScheme === 'dark' ? '#AA3E14' : '#5EEAD4' }}
                                 >
-                                    {/* NUEVO: Usamos las iniciales dinámicas */}
+                                    {/* Usamos las iniciales dinámicas */}
                                     <Text className="text-white font-bold text-sm">{targetUserInitials}</Text>
                                 </View>
                             )}
 
                             <View>
-                                {/* NUEVO: Usamos el nombre dinámico */}
+                                {/* Usamos el nombre dinámico */}
                                 <Text className="text-base font-bold text-gray-800 dark:text-white"> {targetUserName}</Text>
                                 <Text className="text-xs text-gray-400">Fragment para {targetUserName.split(' ')[0]}</Text>
                             </View>
@@ -146,7 +143,7 @@ export const NewFragment = ({
                                 className="text-base text-gray-800 dark:text-white p-4"
                                 value={text}
                                 onChangeText={setText}
-                                editable={!isLoading} // NUEVO: Bloquea el teclado mientras carga
+                                editable={!isLoading} // Bloquea el teclado mientras carga
                             />
                         </LinearGradient>
 

@@ -7,13 +7,13 @@ import {
   notifyNewPublication,
   parseError,
   sanitizeDescription,
-  uploadMediaFile,
 } from "./helpers";
 import { Post, PostResult, PostWithCounts } from "./types";
-import * as ImagePicker from "expo-image-picker";
 
 export async function createPost(
   profileOwnerId: string,
+  mediaUrl: string,    
+  mediaType: string,    
   description?: string,
 ): Promise<PostResult<Post>> {
   try {
@@ -23,28 +23,12 @@ export async function createPost(
 
     await assertFriendship(currentUserId, profileOwnerId);
 
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted")
-      throw new Error("Se necesita permiso para acceder a la galería.");
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images", "videos", "livePhotos"],
-      allowsEditing: false,
-      quality: 0.85,
-    });
-
-    if (result.canceled) return { data: null, error: null };
-
-    const asset = result.assets[0];
-    const mediaType = asset.type === "video" ? "video" : "image";
-    const mediaUrl = await uploadMediaFile(currentUserId, asset.uri, mediaType);
-
     const { data, error } = await supabase
       .from("posts")
       .insert({
         author_id: currentUserId,
         account_owner_id: profileOwnerId,
-        image: mediaUrl,
+        media: mediaUrl,       // <-- ACTUALIZADO: "image" a "media"
         media_type: mediaType,
         description: sanitized,
       })
@@ -69,6 +53,7 @@ export async function createPost(
 
     return { data: data as Post, error: null };
   } catch (err) {
+    console.log("🔴 ERROR REAL DE SUPABASE EN CREATE POST:", err); 
     return { data: null, error: parseError(err) };
   }
 }
@@ -113,7 +98,7 @@ export async function deletePost(postId: string): Promise<PostResult> {
 
     const { data: existing, error: fetchError } = await supabase
       .from("posts")
-      .select("image")
+      .select("media") // <-- ACTUALIZADO: "image" a "media"
       .eq("post_id", postId)
       .eq("author_id", currentUserId)
       .single();
@@ -129,7 +114,7 @@ export async function deletePost(postId: string): Promise<PostResult> {
 
     if (error) throw error;
 
-    deleteMediaFile(existing.image); // fire-and-forget
+    deleteMediaFile(existing.media); // <-- ACTUALIZADO: "existing.image" a "existing.media"
 
     return { data: null, error: null };
   } catch (err) {
@@ -184,7 +169,7 @@ export const getUserPosts = async (userId: string) => {
     .select(
       `
       post_id,
-      image,
+      media,              
       description,
       account_owner_id,
       created_at,

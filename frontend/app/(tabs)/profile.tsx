@@ -304,8 +304,7 @@ export default function ProfileScreen() {
               </Text>
             </View>
           ) : (
-<View className="w-full px-4">
-              
+            <View className="w-full px-4">
               {activeTab === "grid" && (
                 <View className="flex-row flex-wrap gap-2">
                   {gridPosts.length === 0 ? (
@@ -316,14 +315,14 @@ export default function ProfileScreen() {
                     </View>
                   ) : (
                     gridPosts.map((post) => (
-                      // ... mantén el código de tu grid exactamente igual ...
+
                       <TouchableOpacity
                         key={post.post_id}
                         className="w-[32%] aspect-square bg-gray-200 dark:bg-[#2A3654]"
                         onPress={() => console.log("Post:", post.post_id)}
                       >
                         <Image
-                          source={{ uri: post.image }}
+                          source={{ uri: post.media }}
                           style={{ width: "100%", height: "100%" }}
                           contentFit="cover"
                         />
@@ -360,8 +359,8 @@ export default function ProfileScreen() {
                           : item.content
                       }
                       imageSource={
-                        item.type === "post" && item.image
-                          ? { uri: item.image }
+                        item.type === "post" && item.media
+                          ? { uri: item.media }
                           : undefined
                       }
                       likesCount={item.likes_count}
@@ -380,16 +379,20 @@ export default function ProfileScreen() {
         {!isOwnProfile && profile.is_friend && (
           <View className="mb-40 pb-10 z-10">
             <FloatingMenu
-              onCreatePost={() => console.log("Crear Post en", profile.user_id)}
+              onCreatePost={() => {
+                console.log("Crear Post en", profile.user_id);
+                loadFeed(); // <--- ¡FALTABA ESTA LÍNEA PARA RECARGAR LOS POSTS!
+              }}
               onCreateFragment={() => {
                 console.log("Crear Fragment en", profile.user_id);
-                loadFeed(); // Esto recargará tu feed cuando se publique con éxito
+                loadFeed();
               }}
               // NUEVO: Aquí le pasamos la información real del perfil a tu menú
               targetUserId={profile.user_id}
               targetUserName={profile.full_name}
               targetUserInitials={profile.full_name.charAt(0).toUpperCase()}
               targetUserImage={profile.profile_pic}
+              currentUserId={currentUser?.user_id}
             />
           </View>
         )}

@@ -2,7 +2,7 @@ export interface Post {
   post_id: string;
   author_id: string;
   account_owner_id: string;
-  image: string;
+  media: string;
   media_type: "image" | "video";
   description: string | null;
   created_at: string;
