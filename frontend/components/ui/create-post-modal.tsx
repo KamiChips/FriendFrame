@@ -18,7 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import * as MediaLibrary from "expo-media-library"; // NUEVA LIBRERÍA
-import * as ImageManipulator from 'expo-image-manipulator';
+import * as ImageManipulator from "expo-image-manipulator";
 import { useCreatePost } from "@/hooks/useCreatePost";
 
 interface CreatePostModalProps {
@@ -76,7 +76,7 @@ export default function CreatePostModal({
     if (status === "granted") {
       const media = await MediaLibrary.getAssetsAsync({
         mediaType: "photo",
-        first: 40, // Cargamos las últimas 40 fotos
+        first: 200, // Cargamos las últimas 40 fotos
         sortBy: ["creationTime"],
       });
       setPhotos(media.assets);
@@ -95,8 +95,8 @@ export default function CreatePostModal({
       // no le aplica recortes ([]), y devuelve un JPEG limpio en una ruta file://
       const manipResult = await ImageManipulator.manipulateAsync(
         photo.uri,
-        [], 
-        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+        [],
+        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG },
       );
 
       // Le entregamos a la base de datos exactamente lo que pide
@@ -104,11 +104,10 @@ export default function CreatePostModal({
         uri: manipResult.uri,
         width: manipResult.width,
         height: manipResult.height,
-        type: 'image',
+        type: "image",
         fileName: `foto_${Date.now()}.jpg`, // Generamos un nombre único y seguro
-        mimeType: 'image/jpeg',             // Siempre será JPEG gracias al manipulador
+        mimeType: "image/jpeg", // Siempre será JPEG gracias al manipulador
       });
-
     } catch (err) {
       console.error("Error al procesar la imagen:", err);
       Alert.alert("Error", "No se pudo preparar la imagen para subir.");

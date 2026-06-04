@@ -19,19 +19,21 @@ import {
   sendMessage,
 } from "@/services/supabase/chat/chat.messages";
 import { subscribeToMessages } from "@/services/supabase/chat/chat.realtime";
+import { markMessagesAsRead } from "@/services/supabase/chat/chat.helpers";
 
 const ChatScreen = () => {
   const isDark = useColorScheme() === "dark";
   const scrollRef = useRef<ScrollView>(null);
   const { user } = useAuth();
 
-  const { chatId, chatName, chatInitials, isGroup, targetUserId } =
+  const { chatId, chatName, chatInitials, isGroup, targetUserId, profilePic } =
     useLocalSearchParams<{
       chatId: string;
       chatName: string;
       chatInitials: string;
       isGroup: string;
       targetUserId?: string;
+      profilePic?: string;
     }>();
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -41,7 +43,7 @@ const ChatScreen = () => {
   const pageRef = useRef(0);
 
   useEffect(() => {
-    if (!chatId) return;
+    if (!chatId || !user?.user_id) return;
 
     const load = async () => {
       setLoading(true);
@@ -56,6 +58,11 @@ const ChatScreen = () => {
         () => scrollRef.current?.scrollToEnd({ animated: false }),
         100,
       );
+
+      console.log("Ejecutando markMessagesAsRead...");
+
+      await markMessagesAsRead(chatId, user?.user_id);
+      console.log("markMessagesAsRead completado");
     };
 
     load();
@@ -140,6 +147,7 @@ const ChatScreen = () => {
         username={chatName ?? "Chat"}
         initials={chatInitials ?? ""}
         lastActive="En línea"
+        profilePic={profilePic}
       />
 
       <View className="flex-1 bg-gray-50 pt-5 pb-3 dark:bg-background-semidark">
@@ -175,6 +183,7 @@ const ChatScreen = () => {
                 sender={m.sender_id === user?.user_id ? "me" : "other"}
                 initials={m.sender.full_name?.charAt(0).toUpperCase() ?? "?"}
                 isDark={isDark}
+                profilePic={profilePic}
               />
             ))}
           </ScrollView>
