@@ -1,4 +1,5 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 import {
   View,
   Text,
@@ -120,11 +121,11 @@ export default function FeedScreen() {
     fetchMore,
   } = useFeed();
 
-  // Carga inicial
-  useEffect(() => {
-    refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [])
+  );
 
   // Adaptador: convierte FeedPost → props de FeedCard
   const renderItem = useCallback(
@@ -133,6 +134,9 @@ export default function FeedScreen() {
 
       return (
         <FeedCard
+          // Publication
+          publicationId={item.id}                          
+          publicationType={item.type}
           // Autor
           authorName={item.author.full_name}
           authorInitials={initials(item.author.full_name)}
