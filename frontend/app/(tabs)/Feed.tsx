@@ -1,159 +1,243 @@
-import React, { useState } from "react";
-import { RefreshControl, ScrollView, View, useColorScheme } from "react-native";
+import React, { useEffect, useCallback } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  Pressable,
+  useColorScheme,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 
 // Importación de nuestros componentes personalizados de UI
-import FeedCard from "@/components/ui/FeedCard";
 import FriendframeHeader from "@/components/ui/FriendframeHeader";
-import { CommentType } from "@/components/ui/CommentItem";
+import FeedCard from "@/components/ui/FeedCard";
+import { FeedSkeletonList } from "@/components/ui/FeedCardSkeleton";
+import { useFeed } from "@/hooks/useFeed";
+import { FeedPost } from "@/services/supabase/feed/feed.types";
 
+//  Helpers
+function timeAgo(isoDate: string): string {
+  const diff = Date.now() - new Date(isoDate).getTime();
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return "ahora mismo";
+  if (mins < 60) return `hace ${mins} min`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `hace ${hrs} h`;
+  return `hace ${Math.floor(hrs / 24)} d`;
+}
+
+function initials(fullName: string): string {
+  return fullName
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+//  Estado vacío
+function EmptyState({ onRefresh }: { onRefresh: () => void }) {
+  return (
+    <View className="flex-1 items-center justify-center px-8 py-20">
+      <Ionicons name="newspaper-outline" size={56} color="#9CA3AF" />
+      <Text className="mt-4 font-spartan-bold text-xl text-gray-700 dark:text-gray-300 text-center">
+        Tu feed está vacío
+      </Text>
+      <Text className="mt-2 font-spartan text-sm text-gray-500 dark:text-gray-400 text-center leading-5">
+        Sigue a personas para ver sus publicaciones y fragmentos aquí.
+      </Text>
+      <Pressable
+        onPress={onRefresh}
+        className="mt-6 rounded-full bg-cyan-500 px-6 py-3"
+      >
+        <Text className="font-spartan-bold text-white text-sm">Actualizar</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+//  Estado de error
+function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <View className="flex-1 items-center justify-center px-8 py-20">
+      <Ionicons name="cloud-offline-outline" size={56} color="#EF4444" />
+      <Text className="mt-4 font-spartan-bold text-xl text-gray-700 dark:text-gray-300 text-center">
+        Algo salió mal
+      </Text>
+      <Text className="mt-2 font-spartan text-sm text-gray-500 dark:text-gray-400 text-center leading-5">
+        {message}
+      </Text>
+      <Pressable
+        onPress={onRetry}
+        className="mt-6 rounded-full bg-cyan-500 px-6 py-3"
+      >
+        <Text className="font-spartan-bold text-white text-sm">Reintentar</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+//  Footer: spinner de paginación / fin de lista
+function ListFooter({
+  isFetchingMore,
+  hasMore,
+}: {
+  isFetchingMore: boolean;
+  hasMore: boolean;
+}) {
+  if (isFetchingMore) {
+    return (
+      <View className="items-center py-6">
+        <ActivityIndicator size="small" color="#30C2D9" />
+      </View>
+    );
+  }
+  if (!hasMore) {
+    return (
+      <View className="items-center py-8">
+        <Text className="font-spartan text-sm text-gray-400 dark:text-gray-500">
+          Has llegado al final 🎉
+        </Text>
+      </View>
+    );
+  }
+  return null;
+}
+
+//  Pantalla principal
 export default function FeedScreen() {
   // Detecta si el celular del usuario está en modo oscuro para adaptar los colores
   const isDark = useColorScheme() === "dark";
-  const [refreshing, setRefreshing] = useState(false);
 
-  // 1. GESTIÓN DE ESTADOS LOCALES (MOCK DATA)
-  // Aquí almacenamos la información de los comentarios en tiempo real.
-  // Al usar useState, React actualizará la pantalla automáticamente si estos cambian.
+  const {
+    items,
+    isLoading,
+    isFetchingMore,
+    error,
+    hasMore,
+    refresh,
+    fetchMore,
+  } = useFeed();
 
-  // Estado que guarda la lista de comentarios exclusivos de la publicación de Ana.
-  const [comentariosAna, setComentariosAna] = useState<CommentType[]>([
-    {
-      id: "1",
-      authorName: "María González",
-      authorInitials: "MG",
-      content: "Para bailar la bamba se necesita una poca de gracia",
-      likesCount: 2,
-      timeAgo: "hace 5 min",
+  // Carga inicial
+  useEffect(() => {
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Adaptador: convierte FeedPost → props de FeedCard
+  const renderItem = useCallback(
+    ({ item }: { item: FeedPost }) => {
+      const isFragment = item.type === "fragment";
+
+      return (
+        <FeedCard
+          // Autor
+          authorName={item.author.full_name}
+          authorInitials={initials(item.author.full_name)}
+          authorImage={item.author.profile_pic ?? null}
+          timeAgo={timeAgo(item.created_at)}
+          // Perfil receptor
+          targetProfileName={item.account_owner.full_name}
+          targetUserImage={item.account_owner.profile_pic ?? null}
+          // Contenido — fragments usan .content, posts usan .description
+          textContent={isFragment ? (item.content ?? "") : (item.description ?? "")}
+          // Imagen solo en posts
+          imageSource={!isFragment && item.image ? item.image : undefined}
+          // Interacciones
+          likesCount={item.likes_count}
+          commentsCount={item.comments_count}
+          isLiked={item.liked_by_me}
+          // TODO: reemplazar con currentUserId desde tu contexto de auth
+          isOwnPost={false}
+          // Comentarios: por ahora vacíos hasta conectar el endpoint
+          comments={[]}
+          onAddComment={(texto) => {
+            // TODO: conectar con acción de comentar
+            console.log("comentario en", item.id, texto);
+          }}
+        />
+      );
     },
-  ]);
+    []
+  );
 
-  // Estado que guarda la lista de comentarios exclusivos de la publicación de Carlos.
-  // Incluye un ejemplo de cómo se estructura una "respuesta" anidada (replies).
-  const [comentariosCarlos, setComentariosCarlos] = useState<CommentType[]>([
-    {
-      id: "2",
-      authorName: "María González",
-      authorInitials: "MG",
-      content: "Si pero, agua de horchata o jamaica?",
-      likesCount: 1,
-      timeAgo: "hace 1 hora",
-      replies: [
-        {
-          id: "2-1",
-          authorName: "Carlos Ramírez",
-          authorInitials: "CR",
-          content: "Horchata hasta la muerte",
-          likesCount: 1,
-          timeAgo: "hace 45 min",
-        },
-      ],
-    },
-    {
-      id: "3",
-      authorName: "Ana López",
-      authorInitials: "AL",
-      content: "¡Qué buena foto!",
-      likesCount: 3,
-      timeAgo: "hace 30 min",
-    },
-  ]);
+  const keyExtractor = useCallback((item: FeedPost) => item.id, []);
 
-  // 2. FUNCIONES DE INTERACCIÓN
-  // Estas funciones simulan lo que hará el Backend en el futuro.
-  // Reciben el texto escrito por el usuario en el modal y lo inyectan en la UI.
+  const handleEndReached = useCallback(() => {
+    if (!isFetchingMore && hasMore) fetchMore();
+  }, [isFetchingMore, hasMore, fetchMore]);
 
-  // Agrega un nuevo comentario al final de la lista del post de Ana
-  const agregarComentarioAna = (texto: string) => {
-    // 1. Creamos el objeto del nuevo comentario con datos del usuario actual
-    const nuevoComentario: CommentType = {
-      id: Date.now().toString(), // Genera un ID temporal usando la hora exacta
-      authorName: "El guapo",
-      authorInitials: "EG",
-      content: texto,
-      likesCount: 0,
-      timeAgo: "justo ahora",
-    };
-    // 2. Tomamos el arreglo anterior y le sumamos el nuevo comentario al final
-    setComentariosAna([...comentariosAna, nuevoComentario]);
-  };
+  // Carga inicial → Skeletons
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 bg-background-light dark:bg-background-semidark">
+        <FriendframeHeader isDark={isDark} />
+        <View className="flex-1 bg-gray-50 dark:bg-background-dark px-4 pt-4">
+          <FeedSkeletonList count={4} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
-  // Agrega un nuevo comentario al final de la lista del post de Carlos
-  const agregarComentarioCarlos = (texto: string) => {
-    const nuevoComentario: CommentType = {
-      id: Date.now().toString(),
-      authorName: "El guapote",
-      authorInitials: "EG",
-      content: texto,
-      likesCount: 0,
-      timeAgo: "justo ahora",
-    };
-    setComentariosCarlos([...comentariosCarlos, nuevoComentario]);
-  };
+  // Error sin datos
+  if (error && items.length === 0) {
+    return (
+      <SafeAreaView className="flex-1 bg-background-light dark:bg-background-semidark">
+        <FriendframeHeader isDark={isDark} />
+        <ErrorState message={error} onRetry={refresh} />
+      </SafeAreaView>
+    );
+  }
 
-  // 3. RENDERIZADO DE LA VISTA (INTERFAZ DE USUARIO)
+  // Feed vacío
+  if (items.length === 0) {
+    return (
+      <SafeAreaView className="flex-1 bg-background-light dark:bg-background-semidark">
+        <FriendframeHeader isDark={isDark} />
+        <EmptyState onRefresh={refresh} />
+      </SafeAreaView>
+    );
+  }
 
+  // Feed con datos
   return (
     // SafeAreaView protege el contenido para que no quede debajo de la muesca del iPhone o la barra de estado
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-semidark">
       {/* Componente que muestra el logo de FriendFrame en la parte superior */}
       <FriendframeHeader isDark={isDark} />
 
-      {/* ScrollView permite que el usuario pueda deslizar la pantalla hacia abajo */}
-      <ScrollView
-        // {refreshControl={
-        //     <RefreshControl
-        //       refreshing={refreshing}
-        //       onRefresh={async () => {
-        //         setRefreshing(true);
-        //         await loadFeed();
-        //         setRefreshing(false);
-        //       }}
-        //     />}
+      <FlatList
+        data={items}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
         className="flex-1 bg-gray-50 dark:bg-background-dark"
-        showsVerticalScrollIndicator={false} // Oculta la barrita gris lateral de scroll
-        contentContainerStyle={{ paddingBottom: 40 }} // Da un margen inferior para que el último post no se corte
-      >
-        {/* Contenedor centralizado para limitar el ancho máximo en pantallas grandes (Tablets/Web) */}
-        <View className="w-full max-w-2xl mx-auto px-4 mt-4 gap-6">
-          {/* TARJETA 1: PUBLICACIÓN DE ANA LÓPEZ */}
-
-          <FeedCard
-            authorName="Ana López" // Nombre principal del que publica
-            authorInitials="AL" // Iniciales para el Avatar circular
-            timeAgo="hace 5 horas" // Etiqueta de tiempo
-            authorImage="https://i.pinimg.com/736x/66/86/ae/6686ae04340f0125502a1fc08bf482da.jpg"
-            targetProfileName="María González" // Perfil receptor del mensaje (El "-> en el perfil de...")
-            textContent="Una de las personas más auténticas que conozco. Gracias por siempre estar ahí! 💙" // Texto principal
-            likesCount={79} // Número estático de Likes
-            isLiked={true} // Define si el corazón está coloreado o gris
-            // PROPS DINÁMICOS PARA COMENTARIOS:
-            commentsCount={comentariosAna.length} // Cuenta automáticamente cuántos elementos hay en el estado
-            comments={comentariosAna} // Pasa el arreglo de datos al modal para que los dibuje
-            onAddComment={agregarComentarioAna} // Le inyecta la función para que el botón de "Enviar" sepa qué hacer
-            isOwnPost={false}
-          />
-
-          {/* TARJETA 2: PUBLICACIÓN DE CARLOS RAMÍREZ */}
-
-          <FeedCard
-            authorName="Carlos Ramírez"
-            authorInitials="CR"
-            timeAgo="hace 2 horas"
-            targetProfileName="María González"
-            textContent="Un cafecito con los camaradas"
-            // Prop exclusivo de esta tarjeta: Renderiza una imagen debajo del texto
-            imageSource={require("../../assets/images/EjemploPost.jpg")}
-            likesCount={46}
-            isLiked={false}
-            // PROPS DINÁMICOS PARA COMENTARIOS:
-            commentsCount={comentariosCarlos.length}
-            comments={comentariosCarlos}
-            isOwnPost={true}
-            onAddComment={agregarComentarioCarlos}
-          />
-        </View>
-      </ScrollView>
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingTop: 16,
+          paddingBottom: 40,
+          maxWidth: 672,        // equivale a max-w-2xl
+          alignSelf: "center",
+          width: "100%",
+        }}
+        showsVerticalScrollIndicator={false}
+        // Pull-to-refresh
+        onRefresh={refresh}
+        refreshing={isLoading}
+        // Infinite scroll
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.4}
+        // Footer
+        ListFooterComponent={
+          <ListFooter isFetchingMore={isFetchingMore} hasMore={hasMore} />
+        }
+        // Rendimiento
+        removeClippedSubviews
+        maxToRenderPerBatch={8}
+        windowSize={10}
+        initialNumToRender={6}
+      />
     </SafeAreaView>
   );
 }

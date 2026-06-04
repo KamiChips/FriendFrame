@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, Modal, useColorScheme } from "react-native";
+import { View, Text, Pressable, useColorScheme } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import PostOptionsModal from "./post-options-modal";
@@ -43,19 +43,23 @@ export default function FeedCard({
   const [isCommentsModalVisible, setCommentsModalVisible] = useState(false);
   const [isMenuVisible, setMenuVisible] = useState(false);
 
-  const isDark = useColorScheme() === 'dark';
+  // ✅ Hook siempre en el nivel superior, nunca en condicional
+  const isDark = useColorScheme() === "dark";
+
+  // ✅ Lógica del avatar en una variable, sin duplicar el componente
+  const hasImage =
+    authorImage && typeof authorImage === "string" && authorImage.trim() !== "";
+
   return (
     <View className="mb-4 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-transparent dark:bg-background-semidark">
-      {/* 1. CABECERA DE LA TARJETA */}
+      {/* 1. CABECERA */}
       <View className="flex-row items-start justify-between p-4">
         <View className="flex-row items-start flex-1">
-           {/* LÓGICA DE CONSISTENCIA DEL AVATAR */}
-          <ProfileIcon initials={ authorInitials } profilePic={ authorImage } isDark={ isDark } />
-          {authorImage &&
-          typeof authorImage === "string" &&
-          authorImage.trim() !== "" ? (
+
+          {/* ✅ Avatar: imagen o iniciales, nunca los dos a la vez */}
+          {hasImage ? (
             <Image
-              source={{ uri: authorImage }}
+              source={{ uri: authorImage as string }}
               style={{ width: 48, height: 48, borderRadius: 24 }}
               contentFit="cover"
             />
@@ -63,10 +67,11 @@ export default function FeedCard({
             // Si no hay imagen, mostramos el ProfileIcon con las iniciales
             <ProfileIcon
               initials={authorInitials}
-              isDark={useColorScheme() === "dark"} // Pasa dinámicamente si es dark mode
+              isDark={isDark}
               size={48}
             />
           )}
+
           <View className="ml-3 flex-1">
             <Text className="font-spartan-bold text-lg text-black dark:text-white">
               {authorName}
@@ -89,14 +94,14 @@ export default function FeedCard({
         )}
       </View>
 
-      {/* 2. CONTENIDO PRINCIPAL (Texto) */}
+      {/* 2. TEXTO */}
       <View className="px-4 pb-3">
         <Text className="font-spartan text-base leading-6 text-black dark:text-white">
           {textContent}
         </Text>
       </View>
 
-      {/* 3. IMAGEN ADJUNTA */}
+      {/* 3. IMAGEN */}
       {imageSource && (
         <View className="w-full bg-gray-50 dark:bg-gray-800/50">
           <Image
@@ -112,7 +117,7 @@ export default function FeedCard({
         </View>
       )}
 
-      {/* 4. PIE DE PÁGINA (Botones de Interacción) */}
+      {/* 4. FOOTER */}
       <View className="flex-row items-center p-4">
         {/* Like */}
         <Pressable className="mr-6 flex-row items-center">
