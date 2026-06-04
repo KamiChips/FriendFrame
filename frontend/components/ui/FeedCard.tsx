@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import PostOptionsModal from "./post-options-modal";
 import CommentsModal from "./CommentsModal";
+import { useColorScheme } from 'react-native';
 import { CommentType } from "./CommentItem";
 import ProfileIcon from "./ProfileIcon";
 
@@ -20,6 +21,7 @@ interface FeedCardProps {
   isLiked?: boolean;
   isOwnPost?: boolean; // Prop para saber si mostrar los 3 puntos
   comments?: CommentType[];
+  targetUserImage?: string | null;
   onAddComment?: (texto: string) => void;
 }
 
@@ -36,6 +38,7 @@ export default function FeedCard({
   isLiked = false,
   isOwnPost = false,
   comments = [],
+  targetUserImage,
   onAddComment,
 }: FeedCardProps) {
   const [isCommentsModalVisible, setCommentsModalVisible] = useState(false);

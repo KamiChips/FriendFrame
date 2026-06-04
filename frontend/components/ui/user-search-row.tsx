@@ -9,11 +9,16 @@ interface UserSearchRowProps {
   onPress?: () => void;
 }
 
-export default function UserSearchRow({ name, username, initials, onPress }: UserSearchRowProps) {
-  const isDark = useColorScheme() === 'dark';
+export default function UserSearchRow({
+  name,
+  username,
+  initials,
+  onPress,
+}: UserSearchRowProps) {
+  const isDark = useColorScheme() === "dark";
 
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
       // Fondo oscuro y borde idéntico al diseño de Figma

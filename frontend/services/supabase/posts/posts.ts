@@ -177,3 +177,23 @@ export async function getPostWithCounts(
     return { data: null, error: parseError(err) };
   }
 }
+
+export const getUserPosts = async (userId: string) => {
+  return supabase
+    .from("posts")
+    .select(
+      `
+      post_id,
+      image,
+      description,
+      account_owner_id,
+      created_at,
+      account_owner:users!account_owner_id (
+        username,
+        profile_pic
+      )
+    `,
+    )
+    .eq("author_id", userId)
+    .order("created_at", { ascending: false });
+};
