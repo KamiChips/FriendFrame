@@ -1,5 +1,4 @@
 import {
-  toggleLike,
   toggleLikePost,
   toggleLikeFragment,
   likePost,
@@ -10,42 +9,16 @@ import {
 } from "@/services/supabase/interactions/likes";
 import { signIn, signOut } from "@/services/supabase/auth/auth.sign-in";
 import { supabaseAdmin } from "./helpers/supabase-test-client";
-
-// ─── Usuarios de prueba ────────────────────────────────────────────────────────
-const TEST_USER_A = {
-  email: process.env.TEST_USER_EMAIL!,
-  password: process.env.TEST_USER_PASSWORD!,
-  full_name: "Integration Likes A",
-  username: "integration_likes_a",
-};
-
-const TEST_USER_B = {
-  email: process.env.TEST_USER_B_EMAIL!,
-  password: process.env.TEST_USER_B_PASSWORD!,
-  full_name: "Integration Likes B",
-  username: "integration_likes_b",
-};
+import {
+  USER_A,
+  USER_B,
+  setupFriends,
+  cleanupFriends,
+} from "./helpers/posts-test-setup";
 
 // ─── IDs compartidos ──────────────────────────────────────────────────────────
 let testPostId: string;
 let testFragmentId: string;
-let userAId: string;
-let userBId: string;
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-async function getSupabaseUserId(email: string): Promise<string | null> {
-  const { data } = await supabaseAdmin.auth.admin.listUsers();
-  return (
-    data.users.find((u) => u.email?.toLowerCase() === email.toLowerCase())?.id ??
-    null
-  );
-}
-
-async function cleanupUser(email: string) {
-  await supabaseAdmin.from("users").delete().eq("email", email);
-  const id = await getSupabaseUserId(email);
-  if (id) await supabaseAdmin.auth.admin.deleteUser(id);
-}
 
 async function deleteAllLikes() {
   if (testPostId)
@@ -56,37 +29,15 @@ async function deleteAllLikes() {
 
 // ─── Setup global ─────────────────────────────────────────────────────────────
 beforeAll(async () => {
-  await cleanupUser(TEST_USER_A.email);
-  await cleanupUser(TEST_USER_B.email);
+  await setupFriends();
 
-  const { data: authA, error: errA } = await supabaseAdmin.auth.admin.createUser({
-    email: TEST_USER_A.email,
-    password: TEST_USER_A.password,
-    email_confirm: true,
-    user_metadata: {
-      full_name: TEST_USER_A.full_name,
-      username: TEST_USER_A.username,
-    },
-  });
-  if (errA) throw new Error(`No se pudo crear usuario A: ${errA.message}`);
-  userAId = authA.user.id;
-
-  const { data: authB, error: errB } = await supabaseAdmin.auth.admin.createUser({
-    email: TEST_USER_B.email,
-    password: TEST_USER_B.password,
-    email_confirm: true,
-    user_metadata: {
-      full_name: TEST_USER_B.full_name,
-      username: TEST_USER_B.username,
-    },
-  });
-  if (errB) throw new Error(`No se pudo crear usuario B: ${errB.message}`);
-  userBId = authB.user.id;
-
-  // Crear post y fragment con admin para evitar restricciones de RLS
   const { data: post, error: postErr } = await supabaseAdmin
     .from("posts")
-    .insert({ user_id: userAId, content: "Post de prueba para likes" })
+    .insert({
+      author_id: USER_A.user_id,
+      account_owner_id: USER_B.user_id,
+      description: "Post de prueba para likes",
+    })
     .select("post_id")
     .single();
   if (postErr) throw new Error(`No se pudo crear post: ${postErr.message}`);
@@ -94,7 +45,11 @@ beforeAll(async () => {
 
   const { data: fragment, error: fragErr } = await supabaseAdmin
     .from("fragments")
-    .insert({ user_id: userAId, content: "Fragmento de prueba para likes" })
+    .insert({
+      author_id: USER_A.user_id,
+      account_owner_id: USER_B.user_id,
+      content: "Fragmento de prueba para likes",
+    })
     .select("fragment_id")
     .single();
   if (fragErr) throw new Error(`No se pudo crear fragmento: ${fragErr.message}`);
@@ -104,14 +59,11 @@ beforeAll(async () => {
 afterAll(async () => {
   await signOut();
   await deleteAllLikes();
-
   if (testPostId)
     await supabaseAdmin.from("posts").delete().eq("post_id", testPostId);
   if (testFragmentId)
     await supabaseAdmin.from("fragments").delete().eq("fragment_id", testFragmentId);
-
-  await cleanupUser(TEST_USER_A.email);
-  await cleanupUser(TEST_USER_B.email);
+  await cleanupFriends();
 });
 
 beforeEach(async () => {
@@ -126,7 +78,7 @@ afterEach(async () => {
 // ─── toggleLike ───────────────────────────────────────────────────────────────
 describe("toggleLike — integración", () => {
   it("da like a un post (primera llamada)", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
 
     const result = await toggleLikePost(testPostId);
 
@@ -136,10 +88,10 @@ describe("toggleLike — integración", () => {
   });
 
   it("quita el like a un post (segunda llamada, toggle)", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
 
-    await toggleLikePost(testPostId); // dar like
-    const result = await toggleLikePost(testPostId); // quitar like
+    await toggleLikePost(testPostId);
+    const result = await toggleLikePost(testPostId);
 
     expect(result.error).toBeNull();
     expect(result.data?.liked).toBe(false);
@@ -147,7 +99,7 @@ describe("toggleLike — integración", () => {
   });
 
   it("da like a un fragmento correctamente", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
 
     const result = await toggleLikeFragment(testFragmentId);
 
@@ -156,7 +108,7 @@ describe("toggleLike — integración", () => {
   });
 
   it("quita el like a un fragmento (toggle)", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
 
     await toggleLikeFragment(testFragmentId);
     const result = await toggleLikeFragment(testFragmentId);
@@ -167,13 +119,11 @@ describe("toggleLike — integración", () => {
   });
 
   it("el conteo refleja likes de múltiples usuarios", async () => {
-    // Usuario A da like
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
     await toggleLikePost(testPostId);
     await signOut();
 
-    // Usuario B da like
-    await signIn({ email: TEST_USER_B.email, password: TEST_USER_B.password });
+    await signIn({ email: USER_B.email, password: USER_B.password });
     const result = await toggleLikePost(testPostId);
 
     expect(result.error).toBeNull();
@@ -191,54 +141,53 @@ describe("toggleLike — integración", () => {
 // ─── likePost / unlikePost ────────────────────────────────────────────────────
 describe("likePost / unlikePost — integración", () => {
   it("inserta un like a un post correctamente", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
 
     const result = await likePost(testPostId);
 
     expect(result.error).toBeNull();
     expect(result.data).toMatchObject({
       post_id: testPostId,
-      user_id: userAId,
+      user_id: USER_A.user_id,
     });
   });
 
   it("retorna error si se intenta dar like dos veces al mismo post", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
 
     await likePost(testPostId);
-    const result = await likePost(testPostId); // duplicado
+    const result = await likePost(testPostId);
 
     expect(result.error).not.toBeNull();
     expect(result.data).toBeNull();
   });
 
   it("elimina el like de un post correctamente", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
 
     await likePost(testPostId);
     const result = await unlikePost(testPostId);
 
     expect(result.error).toBeNull();
 
-    // Verificar que el like ya no existe
     const { data } = await supabaseAdmin
       .from("likes")
       .select("like_id")
       .eq("post_id", testPostId)
-      .eq("user_id", userAId)
+      .eq("user_id", USER_A.user_id)
       .maybeSingle();
     expect(data).toBeNull();
   });
 
   it("unlikePost no lanza error si el like no existía", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
 
     const result = await unlikePost(testPostId);
     expect(result.error).toBeNull();
   });
 
   it("retorna error con postId inválido", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
 
     const result = await likePost("no-es-uuid");
 
@@ -250,19 +199,19 @@ describe("likePost / unlikePost — integración", () => {
 // ─── likeFragment / unlikeFragment ───────────────────────────────────────────
 describe("likeFragment / unlikeFragment — integración", () => {
   it("inserta un like a un fragmento correctamente", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
 
     const result = await likeFragment(testFragmentId);
 
     expect(result.error).toBeNull();
     expect(result.data).toMatchObject({
       fragment_id: testFragmentId,
-      user_id: userAId,
+      user_id: USER_A.user_id,
     });
   });
 
   it("elimina el like de un fragmento correctamente", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
 
     await likeFragment(testFragmentId);
     const result = await unlikeFragment(testFragmentId);
@@ -273,13 +222,13 @@ describe("likeFragment / unlikeFragment — integración", () => {
       .from("likes")
       .select("like_id")
       .eq("fragment_id", testFragmentId)
-      .eq("user_id", userAId)
+      .eq("user_id", USER_A.user_id)
       .maybeSingle();
     expect(data).toBeNull();
   });
 
   it("retorna error con fragmentId inválido", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
 
     const result = await likeFragment("no-es-uuid");
 
@@ -298,13 +247,11 @@ describe("getLikers — integración", () => {
   });
 
   it("devuelve los usuarios que dieron like a un post", async () => {
-    // A da like
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
     await likePost(testPostId);
     await signOut();
 
-    // B da like
-    await signIn({ email: TEST_USER_B.email, password: TEST_USER_B.password });
+    await signIn({ email: USER_B.email, password: USER_B.password });
     await likePost(testPostId);
     await signOut();
 
@@ -323,7 +270,7 @@ describe("getLikers — integración", () => {
   });
 
   it("devuelve los usuarios que dieron like a un fragmento", async () => {
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
     await likeFragment(testFragmentId);
     await signOut();
 
@@ -334,11 +281,11 @@ describe("getLikers — integración", () => {
   });
 
   it("respeta el límite de resultados", async () => {
-    // A y B dan like
-    await signIn({ email: TEST_USER_A.email, password: TEST_USER_A.password });
+    await signIn({ email: USER_A.email, password: USER_A.password });
     await likePost(testPostId);
     await signOut();
-    await signIn({ email: TEST_USER_B.email, password: TEST_USER_B.password });
+
+    await signIn({ email: USER_B.email, password: USER_B.password });
     await likePost(testPostId);
     await signOut();
 

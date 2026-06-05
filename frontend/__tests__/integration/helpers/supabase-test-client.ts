@@ -1,4 +1,4 @@
-import "../../../__tests__/integration/helpers/setup";
+
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.SUPABASE_URL!;
