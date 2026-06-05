@@ -26,6 +26,7 @@ async function createTestPost(): Promise<string> {
       author_id: USER_A.user_id,
       account_owner_id: USER_B.user_id,
       description: "Post de prueba para comentarios",
+      media: "https://via.placeholder.com/150",
     })
     .select("post_id")
     .single();
