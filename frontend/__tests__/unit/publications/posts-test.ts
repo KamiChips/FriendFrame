@@ -27,6 +27,7 @@ jest.mock("@/services/supabase/posts/helpers", () => ({
 
 const mockGetAuthUser = getAuthUser as jest.Mock;
 const mockAssertFriendship = assertFriendship as jest.Mock;
+const mockAttachCountsBatch = attachCountsBatch as jest.Mock;
 
 const currentUserId =
     "550e8400-e29b-41d4-a716-446655440000";
@@ -534,19 +535,19 @@ describe("get post with counts", () => {
             select,
         });
 
-        (attachCountsBatch as jest.Mock).mockResolvedValue({
-            postsMap: new Map([
-                [
-                    "post-1",
-                    {
-                        likes_count: 10,
-                        comments_count: 5,
-                        shares_count: 1,
-                        liked_by_me: true,
-                    },
-                ],
-            ]),
-        });
+        mockAttachCountsBatch.mockResolvedValue({
+        postsMap: new Map([
+            [
+                "550e8400-e29b-41d4-a716-446655440010", // ← este, no "post-1"
+                {
+                    likes_count: 10,
+                    comments_count: 5,
+                    shares_count: 1,
+                    liked_by_me: true,
+                },
+            ],
+        ]),
+});
 
         const result = await getPostWithCounts(
             "550e8400-e29b-41d4-a716-446655440010",

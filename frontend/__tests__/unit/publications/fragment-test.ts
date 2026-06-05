@@ -35,7 +35,7 @@ const currentUserId = "550e8400-e29b-41d4-a716-446655440000";
 const profileOwnerId = "550e8400-e29b-41d4-a716-446655440001";
 
 const fragment = {
-    fragment_id: "fragment-1",
+    fragment_id: "550e8400-e29b-41d4-a716-446655440020",
     content: "nuevo contenido",
 };
 
