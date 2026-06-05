@@ -31,7 +31,7 @@ export const NOTIFICATION_SELECT = `
     user_id, username, full_name, profile_pic
   ),
   post:posts!post_id (
-    post_id, image, description
+    post_id, media, description
   ),
   fragment:fragments!fragment_id (
     fragment_id, content

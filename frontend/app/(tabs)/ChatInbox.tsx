@@ -26,6 +26,7 @@ import {
 } from "@/services/supabase/chat/chat.conversation";
 import { subscribeToChatList } from "@/services/supabase/chat/chat.realtime";
 import { Chat } from "@/services/supabase/chat/chat.types";
+import { useChatBadge } from "@/context/ChatContext";
 
 const ChatInboxScreen = () => {
   const colorScheme = useColorScheme();
@@ -35,6 +36,7 @@ const ChatInboxScreen = () => {
   const { targetUserId } = useLocalSearchParams<{ targetUserId?: string }>();
   const [chats, setChats] = useState<Chat[]>([]);
   const [loading, setLoading] = useState(true);
+  const { refreshBadge } = useChatBadge();
 
   const loadChats = useCallback(async () => {
     const { data } = await getConversations();
@@ -59,6 +61,7 @@ const ChatInboxScreen = () => {
     useCallback(() => {
       console.log("Inbox ganó foco — recargando chats");
       loadChats();
+      refreshBadge();
     }, [loadChats]),
   );
 

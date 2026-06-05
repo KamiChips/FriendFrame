@@ -12,6 +12,8 @@ import SplashScreen from "@/components/ui/SplashScreen";
 import { useFonts } from "expo-font"; // <-- Importamos useFonts
 import { AuthProvider } from "@/context/AuthContext";
 import { RouteGuard } from "@/navigation/RouteGuard";
+import { NotificationsBadgeProvider } from "@/context/NotificationContext";
+import { ChatBadgeProvider } from "@/context/ChatContext";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -47,35 +49,44 @@ export default function RootLayout() {
   // cuando carga, renderizamos la navegación de los temas
   return (
     <AuthProvider>
-      <RouteGuard />
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="NotificationInbox"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="ChatScreen" options={{ headerShown: false }} />
-          <Stack.Screen name="Settings" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="modal"
-            options={{ presentation: "modal", title: "Modal" }}
-          />
+      <NotificationsBadgeProvider>
+        <ChatBadgeProvider>
+          <RouteGuard />
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="NotificationInbox"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="ChatScreen"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="Settings" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="modal"
+                options={{ presentation: "modal", title: "Modal" }}
+              />
 
-          {/* Pantalla de Crear Grupo */}
-          <Stack.Screen
-            name="CreateGroup"
-            options={{
-              presentation: "transparentModal",
-              headerShown: false,
-              animation: "slide_from_bottom",
-            }}
-          />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+              {/* Pantalla de Crear Grupo */}
+              <Stack.Screen
+                name="CreateGroup"
+                options={{
+                  presentation: "transparentModal",
+                  headerShown: false,
+                  animation: "slide_from_bottom",
+                }}
+              />
+            </Stack>
+            <StatusBar style="auto" />
+          </ThemeProvider>
+        </ChatBadgeProvider>
+      </NotificationsBadgeProvider>
     </AuthProvider>
   );
 }
