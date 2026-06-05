@@ -4,8 +4,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Switch,
-  Alert,
   ActivityIndicator,
   useColorScheme,
 } from "react-native";
@@ -14,12 +12,8 @@ import { useRouter } from "expo-router";
 import "../global.css";
 import { Toggle } from "@/components/ui/Toggle";
 import { EditProfileModal } from "@/components/ui/EditProfileModal";
-import { signOut } from "@/services/supabase/auth/auth.sign-in";
-import { getBlockedUsers } from "@/services/supabase/social/social.blocks";
-import NotificationButton from "@/components/ui/NotificationButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/lib/supabase/client";
 import { useSettings } from "@/hooks/useSettings";
 import { Image } from "expo-image";
 import ProfileIcon from "@/components/ui/ProfileIcon";
@@ -31,11 +25,9 @@ export default function SettingsScreen() {
   const systemColorScheme = useColorScheme();
   const isSystemDark = systemColorScheme === "dark";
 
-  // Estado para controlar la pestaña activa (Fiel a image_a19276.png)
   const [activeTab, setActiveTab] = useState("General");
   const [isDark, setIsDark] = useState(isSystemDark);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [myTabFragments, setMyFragments] = useState<any[]>([]);
   const [myTabPosts, setMyPosts] = useState<any[]>([]);
@@ -43,16 +35,11 @@ export default function SettingsScreen() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const { user, refreshUser } = useAuth();
-
   const tabs = ["General", "Bloqueados", "Mis Posts", "Mis Fragments"];
 
   const {
     blockedUsers,
-    myPosts,
-    myFragments,
     loadingBlocked,
-    loadingPosts,
-    loadingFragments,
     loadBlockedUsers,
     loadMyPosts,
     loadMyFragments,
@@ -61,15 +48,9 @@ export default function SettingsScreen() {
   } = useSettings(user?.user_id);
 
   useEffect(() => {
-    if (activeTab === "Bloqueados") {
-      loadBlockedUsers();
-    }
-    if (activeTab === "Mis Posts") {
-      loadMyPosts();
-    }
-    if (activeTab === "Mis Fragments") {
-      loadMyFragments();
-    }
+    if (activeTab === "Bloqueados") loadBlockedUsers();
+    if (activeTab === "Mis Posts") loadMyPosts();
+    if (activeTab === "Mis Fragments") loadMyFragments();
   }, [activeTab]);
 
   const handleProfileSaved = async (newName: string, newUsername: string) => {
@@ -80,11 +61,11 @@ export default function SettingsScreen() {
     <SafeAreaView className="flex-grow bg-background-light dark:bg-background-semidark">
       {/* Barra Superior */}
       <View className="flex-row justify-between items-center px-5 pt-2 pb-2 bg-background-light dark:bg-background-semidark border-b border-[#e6e6e6] dark:border-[#404b65]">
-        {/* Este botón cierra el modal regresando a la pantalla anterior */}
         <TouchableOpacity
           onPress={() => router.back()}
           className="p-1 active:opacity-60"
         >
+          {/* CORRECCIÓN: Color dinámico. Oscuro en light mode, Blanco en dark mode */}
           <Ionicons
             name="arrow-back"
             size={28}
@@ -109,11 +90,7 @@ export default function SettingsScreen() {
 
         {/* Pestañas Horizontales */}
         <View className="mb-6">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="flex-row"
-          >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
             {tabs.map((tab) => {
               const isActive = activeTab === tab;
               return (
@@ -127,7 +104,9 @@ export default function SettingsScreen() {
                   }`}
                 >
                   <Text
-                    className={`font-semibold ${isActive ? "text-white" : "text-gray-500 dark:text-neutral-400"}`}
+                    className={`font-semibold ${
+                      isActive ? "text-white" : "text-gray-500 dark:text-neutral-400"
+                    }`}
                   >
                     {tab}
                   </Text>
@@ -158,10 +137,7 @@ export default function SettingsScreen() {
                   </Text>
                 </View>
               </View>
-              <View
-                style={{ transform: [{ translateY: 5 }] }}
-                className="items-center justify-center"
-              >
+              <View style={{ transform: [{ translateY: 5 }] }} className="items-center justify-center">
                 <Toggle
                   value={notificationsEnabled}
                   onValueChange={setNotificationsEnabled}
@@ -177,10 +153,7 @@ export default function SettingsScreen() {
               <Text className="text-gray-400 text-sm mb-4">
                 {user?.full_name} (@{user?.username})
               </Text>
-              <TouchableOpacity
-                onPress={() => setModalVisible(true)}
-                className="active:opacity-60"
-              >
+              <TouchableOpacity onPress={() => setModalVisible(true)} className="active:opacity-60">
                 <Text className="text-[#34C2DD] font-semibold text-base">
                   Editar perfil
                 </Text>
@@ -202,7 +175,7 @@ export default function SettingsScreen() {
                     name="logout"
                     size={20}
                     color="#DC2626"
-                    className="mr-2"
+                    style={{ marginRight: 8 }}
                   />
                   <Text className="text-red-600 font-semibold text-base">
                     Cerrar sesión
@@ -213,11 +186,11 @@ export default function SettingsScreen() {
           </View>
         )}
 
-        {/* Contenido básico de relleno para las otras pestañas */}
+        {/* Contenido de pestaña Bloqueados */}
         {activeTab === "Bloqueados" && (
           <View className="py-5">
             {loadingBlocked ? (
-              <ActivityIndicator color="#34C2DD" className="mt-10" />
+              <ActivityIndicator color="#c4cdcf" className="mt-10" />
             ) : blockedUsers.length === 0 ? (
               <View className="py-20 items-center">
                 <Text className="text-gray-400 dark:text-neutral-500 text-center">
@@ -228,9 +201,8 @@ export default function SettingsScreen() {
               blockedUsers.map((u) => (
                 <View
                   key={u.user_id}
-                  className="bg-background-light dark:bg-background-semidark border-b border-2 border-gray-100 dark:border-[#27345C] p-4 rounded-2xl flex-row items-center mb-3 shadow-md"
+                  className="bg-white dark:bg-background-semidark border-2 border-gray-100 dark:border-[#27345C] p-4 rounded-2xl flex-row items-center mb-3 shadow-md"
                 >
-                  {/* Avatar */}
                   {u.profile_pic ? (
                     <Image
                       source={{ uri: u.profile_pic }}
@@ -248,7 +220,6 @@ export default function SettingsScreen() {
                     />
                   )}
 
-                  {/* Info */}
                   <View className="ml-3 flex-1">
                     <Text className="font-bold text-[#1D2A4F] dark:text-white text-base">
                       {u.full_name}
@@ -256,7 +227,6 @@ export default function SettingsScreen() {
                     <Text className="text-gray-400 text-sm">@{u.username}</Text>
                   </View>
 
-                  {/* Desbloquear */}
                   <TouchableOpacity
                     onPress={() => handleUnblock(u.user_id)}
                     className="bg-primary-light dark:bg-tertiary-dark px-3 py-2 rounded-xl"
@@ -373,7 +343,6 @@ export default function SettingsScreen() {
         )}
       </ScrollView>
 
-      {/* Modal para editar perfil */}
       <EditProfileModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
