@@ -1,14 +1,26 @@
 import "../../../__tests__/integration/helpers/setup";
 import { createClient } from "@supabase/supabase-js";
 
+const supabaseUrl = process.env.SUPABASE_URL!;
+
 export const supabaseTest = createClient(
-    process.env.EXPO_PUBLIC_SUPABASE_URL!,
-    process.env.EXPO_PUBLIC_SUPABASE_KEY!
+    supabaseUrl,
+    process.env.SUPABASE_ANON_KEY!,
+    {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+        },
+    }
 );
 
-// Cliente admin para limpiar datos
 export const supabaseAdmin = createClient(
-    process.env.EXPO_PUBLIC_SUPABASE_URL!,
-    process.env.EXPO_PUBLIC_SUPABASE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
+    supabaseUrl,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+        },
+    }
 );

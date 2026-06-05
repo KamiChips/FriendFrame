@@ -1,56 +1,66 @@
-// __tests__/integration/auth.signin.integration.test.ts
-import { signIn, signOut, getCurrentUser } from "@/services/supabase/auth/auth.sign-in";
+import { signIn, signOut, getCurrentUser, } from "@/services/supabase/auth/auth.sign-in";
+import { signUp } from "@/services/supabase/auth/auth.sign-up";
 import { supabaseAdmin } from "./helpers/supabase-test-client";
 
 const TEST_USER = {
     email: process.env.TEST_USER_EMAIL!,
     password: process.env.TEST_USER_PASSWORD!,
+    full_name: "Integration Testing",
+    username: "integration_test_signin_2",
 };
 
-
 async function createTestUser() {
-    const { data } = await supabaseAdmin.auth.admin.createUser({
-        email: TEST_USER.email,
-        password: TEST_USER.password,
-        email_confirm: true,
-    });
+    const result = await signUp(TEST_USER);
 
-    if (data.user) {
-        await supabaseAdmin.from("users").insert({
-            user_id: data.user.id,
-            email: TEST_USER.email,
-            full_name: "Integration Testing",
-            username: "integration_test_signin_2",
-            profile_pic: null,
-        });
+    if (result.error) {
+        throw new Error(
+            `Failed to create test user: ${result.error}`
+        );
     }
 }
 
 async function deleteTestUser() {
+    await supabaseAdmin
+        .from("users")
+        .delete()
+        .eq("email", TEST_USER.email);
+
     const { data } = await supabaseAdmin.auth.admin.listUsers();
-    const user = data.users.find((u) => u.email === TEST_USER.email);
-    if (user) await supabaseAdmin.auth.admin.deleteUser(user.id);
+
+    const user = data.users.find(
+        (u) => u.email?.toLowerCase() === TEST_USER.email.toLowerCase()
+    );
+
+    if (user) {
+        await supabaseAdmin.auth.admin.deleteUser(user.id);
+    }
 }
 
-beforeAll(async () => {
+beforeEach(async () => {
+    await signOut(); 
     await deleteTestUser();
     await createTestUser();
-});
-
-afterAll(async () => {
-    await deleteTestUser();
 });
 
 afterEach(async () => {
     await signOut();
 });
 
+afterAll(async () => {
+    await deleteTestUser();
+});
+
 describe("signIn — integration", () => {
     it("logs in with correct credentials", async () => {
-        const result = await signIn(TEST_USER);
+        const result = await signIn({
+            email: TEST_USER.email,
+            password: TEST_USER.password,
+        });
 
         expect(result.error).toBeNull();
-        expect(result.data?.email).toBe(TEST_USER.email);
+        expect(result.data?.email.toLowerCase()).toBe(
+            TEST_USER.email.toLowerCase()
+        );
     });
 
     it("throws error when password is invalid", async () => {
@@ -59,26 +69,36 @@ describe("signIn — integration", () => {
             password: "estanoes",
         });
 
-        expect(result.error).toBe("Email o contraseña incorrectos.");
+        expect(result.error).toBe(
+            "Email o contraseña incorrectos."
+        );
     });
 
     it("throws error when email does not exist", async () => {
         const result = await signIn({
             email: "tengohambre@gmail.com",
-            password: "yadijequetengohambreperoesqueTengohambreaiuda_1",
+            password:
+                "yadijequetengohambreperoesqueTengohambreaiuda_1",
         });
 
-        expect(result.error).toBe("Email o contraseña incorrectos.");
+        expect(result.error).toBe(
+            "Email o contraseña incorrectos."
+        );
     });
 
     it("returned profile contains all expected fields", async () => {
-        const result = await signIn(TEST_USER);
+        const result = await signIn({
+            email: TEST_USER.email,
+            password: TEST_USER.password,
+        });
+
+        expect(result.error).toBeNull();
 
         expect(result.data).toMatchObject({
             email: TEST_USER.email,
             user_id: expect.any(String),
-            username: expect.any(String),
-            full_name: expect.any(String),
+            username: TEST_USER.username,
+            full_name: TEST_USER.full_name,
             created_at: expect.any(String),
             updated_at: expect.any(String),
         });
@@ -88,53 +108,85 @@ describe("signIn — integration", () => {
 
     it("does not allow login after user is deleted", async () => {
         await deleteTestUser();
-        try {
-            const result = await signIn(TEST_USER);
-            expect(result.error).toBe("Email o contraseña incorrectos.");
-        } finally {
-            await createTestUser();
-        }
+
+        const result = await signIn({
+            email: TEST_USER.email,
+            password: TEST_USER.password,
+        });
+
+        expect(result.error).toBe(
+            "Email o contraseña incorrectos."
+        );
     });
 });
 
 describe("signOut — integration", () => {
     it("signs out successfully", async () => {
-        await signIn(TEST_USER);
+        await signIn({
+            email: TEST_USER.email,
+            password: TEST_USER.password,
+        });
 
         const result = await signOut();
+
         expect(result.error).toBeNull();
     });
 
     it("getCurrentUser returns null after signOut", async () => {
-        await signIn(TEST_USER);
+        await signIn({
+            email: TEST_USER.email,
+            password: TEST_USER.password,
+        });
+
         await signOut();
 
         const result = await getCurrentUser();
-        expect(result).toEqual({ data: null, error: null });
+
+        expect(result).toEqual({
+            data: null,
+            error: null,
+        });
     });
 
     it("calling signOut without active session does not throw", async () => {
         const result = await signOut();
+
         expect(result.error).toBeNull();
     });
 });
 
-describe("getCurrentUser — integración", () => {
+describe("getCurrentUser — integration", () => {
     it("returns null if there is no active session", async () => {
+        await signOut();
+
         const result = await getCurrentUser();
-        expect(result).toEqual({ data: null, error: null });
+
+        expect(result).toEqual({
+            data: null,
+            error: null,
+        });
     });
 
     it("returns the user if there is an active session", async () => {
-        await signIn(TEST_USER);
+        await signIn({
+            email: TEST_USER.email,
+            password: TEST_USER.password,
+        });
+
         const result = await getCurrentUser();
 
         expect(result.error).toBeNull();
-        expect(result.data?.email).toBe(TEST_USER.email);
+        expect(result.data?.email.toLowerCase()).toBe(
+            TEST_USER.email.toLowerCase()
+        );
     });
 
     it("profile data matches what is in the BD", async () => {
-        await signIn(TEST_USER);
+        await signIn({
+            email: TEST_USER.email,
+            password: TEST_USER.password,
+        });
+
         const result = await getCurrentUser();
 
         const { data: profile } = await supabaseAdmin
@@ -143,7 +195,10 @@ describe("getCurrentUser — integración", () => {
             .eq("email", TEST_USER.email)
             .single();
 
+        expect(profile).not.toBeNull();
+
         expect(result.data?.user_id).toBe(profile.user_id);
         expect(result.data?.username).toBe(profile.username);
+        expect(result.data?.email).toBe(profile.email);
     });
 });

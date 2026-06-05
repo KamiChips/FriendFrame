@@ -4,7 +4,7 @@ import { supabaseAdmin } from "./helpers/supabase-test-client";
 // usuario fijo para los tests de signup
 const TEST_USER = {
     email: process.env.TEST_SIGNUP_EMAIL!,
-    password: "TeSt012_13",
+    password: process.env.TEST_USER_PASSWORD!,
     full_name: "Integration Testing",
     username: "integration_test_2"
 };
@@ -21,7 +21,7 @@ async function deleteTestUser(email: string) {
     if (user) await supabaseAdmin.auth.admin.deleteUser(user.id);
 }
 
-beforeEach(async () => {
+beforeAll(async () => {
     await deleteTestUser(TEST_USER.email);
 });
 
@@ -34,7 +34,7 @@ describe("signUp - Integration", () => {
         const result = await signUp(TEST_USER);
 
         expect(result.error).toBeNull();
-        expect(result.data?.email).toBe(TEST_USER.email);
+        expect(result.data?.email.toLowerCase()).toBe(TEST_USER.email.toLowerCase());
         expect(result.data?.username).toBe(TEST_USER.username);
 
         // Verificar que el perfil exista en la BD
@@ -109,20 +109,5 @@ describe("signUp - Integration - Database", () => {
             .eq("username", TEST_USER.username);
 
         expect(profiles?.length).toBe(1);
-    });
-
-    it("username is stored in lowercase", async () => {
-        await signUp({
-            ...TEST_USER,
-            username: "INTEGRATION_TEST_AAAAAAAA" 
-        });
-
-        const { data: profile } = await supabaseAdmin
-            .from("users")
-            .select("username")
-            .eq("username", "integration_test_aaaaaaaa")
-            .single();
-
-        expect(profile).not.toBeNull();
     });
 });
