@@ -1,3 +1,7 @@
+require("dotenv").config({ 
+  path: require("path").resolve(__dirname, ".env.test") 
+});
+
 module.exports = {
     preset: "jest-expo",
     testMatch: ["**/__tests__/integration/*-test.ts"],
