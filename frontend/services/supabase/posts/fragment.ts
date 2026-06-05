@@ -90,7 +90,12 @@ export async function editFragment(
       )
       .single();
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === "PGRST116") {
+        throw new Error("Fragment no encontrado o sin permisos.");
+      }
+      throw error;
+    }
     if (!data) throw new Error("Fragment no encontrado o sin permisos.");
 
     return { data: data as Fragment, error: null };
