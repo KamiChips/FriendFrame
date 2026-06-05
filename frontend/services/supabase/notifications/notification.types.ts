@@ -18,7 +18,7 @@ export interface AppNotification {
   };
   post?: {
     post_id: string;
-    image: string;
+    media: string;
     description: string | null;
   } | null;
   fragment?: {

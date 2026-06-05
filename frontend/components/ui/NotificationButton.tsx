@@ -1,31 +1,33 @@
-import { TouchableOpacity, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import '../../global.css';
-import { router } from 'expo-router';
+import { TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import "../../global.css";
+import { router } from "expo-router";
+import { useNotificationsBadge } from "@/context/NotificationContext";
 
 interface NotificationButtonProps {
-    hasUnreadNotifications?: boolean,
-    isDark: boolean,
+  isDark: boolean;
 }
 
-const NotificationButton = ({ isDark, hasUnreadNotifications = true }: NotificationButtonProps) => {
-    return(
-        <TouchableOpacity className='relative' onPress={() => router.navigate("/NotificationInbox")}>
-            <Ionicons
-                name='notifications-outline'
-                size={28}
-                color={isDark ? '#fafafa' : ' #000000'}
-            />
+const NotificationButton = ({ isDark }: NotificationButtonProps) => {
+  const { counts } = useNotificationsBadge();
+  const hasUnread = counts.total > 0;
+  return (
+    <TouchableOpacity
+      className="relative"
+      onPress={() => router.navigate("/NotificationInbox")}
+    >
+      <Ionicons
+        name="notifications-outline"
+        size={28}
+        color={isDark ? "#fafafa" : " #000000"}
+      />
 
-            {/* Puntito de no leido */}
-            {hasUnreadNotifications && (
-                <View 
-                    className="absolute -top-1 -right-1 w-4 h-4 bg-primary-dark rounded-full  dark:bg-secondary-dark"
-                >
-                </View>
-            )}
-        </TouchableOpacity>
-    );
-}
+      {/* Puntito de no leido */}
+      {hasUnread && (
+        <View className="absolute -top-1 -right-1 w-4 h-4 bg-primary-dark rounded-full  dark:bg-secondary-dark"></View>
+      )}
+    </TouchableOpacity>
+  );
+};
 
 export default NotificationButton;
