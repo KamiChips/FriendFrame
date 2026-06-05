@@ -7,6 +7,7 @@ import {
   Switch,
   Alert,
   ActivityIndicator,
+  useColorScheme,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -22,16 +23,22 @@ import { supabase } from "@/lib/supabase/client";
 import { useSettings } from "@/hooks/useSettings";
 import { Image } from "expo-image";
 import ProfileIcon from "@/components/ui/ProfileIcon";
+import { MyPost } from "@/types/settings.types";
+import FeedCard from "@/components/ui/FeedCard";
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const systemColorScheme = useColorScheme();
+  const isSystemDark = systemColorScheme === "dark";
 
   // Estado para controlar la pestaña activa (Fiel a image_a19276.png)
   const [activeTab, setActiveTab] = useState("General");
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(isSystemDark);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [myTabFragments, setMyFragments] = useState<any[]>([]);
+  const [myTabPosts, setMyPosts] = useState<any[]>([]);
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -69,8 +76,6 @@ export default function SettingsScreen() {
     await refreshUser();
   };
 
-  const darkBell = isDark ? false : true;
-
   return (
     <SafeAreaView className="flex-grow bg-background-light dark:bg-background-semidark">
       {/* Barra Superior */}
@@ -83,13 +88,13 @@ export default function SettingsScreen() {
           <Ionicons
             name="arrow-back"
             size={28}
-            color={isDark ? "#1D2A4F" : "#FAFAFA"}
+            color={isDark ? "#FAFAFA" : "#1D2A4F"}
             className="dark:text-white"
           />
         </TouchableOpacity>
 
         {/* Icono de campana con punto de notificación */}
-        <NotificationButton isDark={darkBell} />
+        <NotificationButton isDark={isDark} />
       </View>
 
       {/* Contenido Principal */}
@@ -141,7 +146,7 @@ export default function SettingsScreen() {
                 <Ionicons
                   name="notifications-outline"
                   size={24}
-                  color={isDark ? "#1D2A4F" : "#FAFAFA"}
+                  color={isDark ? "#FAFAFA" : "#1D2A4F"}
                   className="mr-4"
                 />
                 <View>
@@ -239,7 +244,7 @@ export default function SettingsScreen() {
                         .slice(0, 2)
                         .join("")
                         .toUpperCase()}
-                      isDark={darkBell}
+                      isDark={isDark}
                     />
                   )}
 
@@ -267,18 +272,103 @@ export default function SettingsScreen() {
         )}
 
         {activeTab === "Mis Posts" && (
-          <View className="py-20 items-center">
-            <Text className="text-gray-400 font-medium dark:text-neutral-500">
-              Historial de tus publicaciones
-            </Text>
+          <View className="items-center w-full">
+            {loadingPosts ? (
+              <ActivityIndicator color="34C2DD" className="mt-10" />
+            ) : myPosts.length === 0 ? (
+              <Text className="text-gray-400 font-medium dark:text-neutral-500">
+                No has publicado ningún post todavía.
+              </Text>
+            ) : (
+              myPosts.map((post) => (
+                <View className="w-full">
+                  <FeedCard
+                    key={post.post_id}
+                    publicationId={post.post_id}
+                    publicationType="post"
+                    authorName={user?.full_name ?? ""}
+                    authorInitials={
+                      user?.full_name?.charAt(0).toUpperCase() ?? ""
+                    }
+                    authorImage={user?.profile_pic ?? null}
+                    imageSource={post.media ? { uri: post.media } : undefined}
+                    timeAgo={new Date(post.created_at).toLocaleDateString(
+                      "es-MX",
+                      {
+                        day: "numeric",
+                        month: "short",
+                      },
+                    )}
+                    targetProfileName={(post.account_owner as any)?.full_name}
+                    textContent={post.description ?? ""}
+                    likesCount={post.likes_count ?? 0}
+                    commentsCount={post.comments_count}
+                    isLiked={post.liked_by_me ?? false}
+                    isOwnPost={true}
+                    comments={[]}
+                    onDeleted={() =>
+                      setMyPosts((prev) =>
+                        prev.filter((p) => p.post_id !== post.post_id),
+                      )
+                    }
+                  />
+                </View>
+              ))
+            )}
           </View>
         )}
 
         {activeTab === "Mis Fragments" && (
-          <View className="py-20 items-center">
-            <Text className="text-gray-400 font-medium dark:text-neutral-500">
-              Aquí verás todos tus posts de solo texto
-            </Text>
+          <View className="items-center w-full">
+            {loadingFragments ? (
+              <ActivityIndicator color="#34C2DD" className="mt-10" />
+            ) : myFragments.length === 0 ? (
+              <View className="py-20 items-center">
+                <Text className="text-gray-400 dark:text-neutral-500 text-center">
+                  No has publicado ningún fragment todavía
+                </Text>
+              </View>
+            ) : (
+              myFragments.map((fragment) => (
+                <View className="w-full">
+                  <FeedCard
+                    key={fragment.fragment_id}
+                    publicationId={fragment.fragment_id}
+                    publicationType="fragment"
+                    authorName={user?.full_name ?? ""}
+                    authorInitials={
+                      user?.full_name?.charAt(0).toUpperCase() ?? ""
+                    }
+                    authorImage={user?.profile_pic ?? null}
+                    timeAgo={new Date(fragment.created_at).toLocaleDateString(
+                      "es-MX",
+                      {
+                        day: "numeric",
+                        month: "short",
+                      },
+                    )}
+                    targetProfileName={
+                      (fragment.account_owner as any)?.full_name ??
+                      fragment.account_owner_id
+                    }
+                    textContent={fragment.content}
+                    imageSource={undefined}
+                    likesCount={fragment.likes_count}
+                    commentsCount={fragment.comments_count}
+                    isLiked={fragment.liked_by_me ?? false}
+                    isOwnPost={true}
+                    comments={[]}
+                    onDeleted={() =>
+                      setMyFragments((prev) =>
+                        prev.filter(
+                          (f) => f.fragment_id !== fragment.fragment_id,
+                        ),
+                      )
+                    }
+                  />
+                </View>
+              ))
+            )}
           </View>
         )}
       </ScrollView>

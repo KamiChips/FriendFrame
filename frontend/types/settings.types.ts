@@ -8,14 +8,21 @@ export interface BlockedUser {
 
 export interface MyPost {
   post_id: string;
-  image: string;
+  media: string;
   description: string | null;
   account_owner_id: string;
   created_at: string;
   account_owner: {
+    user_id: string;
     username: string;
+    full_name: string; // ← añadir
     profile_pic: string | null;
   };
+  // Conteos reales
+  likes_count: number;
+  comments_count: number;
+  shares_count: number;
+  liked_by_me: boolean;
 }
 
 export interface MyFragment {
@@ -24,7 +31,13 @@ export interface MyFragment {
   account_owner_id: string;
   created_at: string;
   account_owner: {
+    user_id: string;
     username: string;
+    full_name: string;
     profile_pic: string | null;
   };
+  likes_count: number;
+  comments_count: number;
+  shares_count: number;
+  liked_by_me: boolean;
 }
