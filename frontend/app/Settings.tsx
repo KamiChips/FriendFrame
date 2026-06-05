@@ -19,6 +19,7 @@ import { Image } from "expo-image";
 import ProfileIcon from "@/components/ui/ProfileIcon";
 import { MyPost } from "@/types/settings.types";
 import FeedCard from "@/components/ui/FeedCard";
+import NotificationButton from "@/components/ui/NotificationButton";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -43,7 +44,11 @@ export default function SettingsScreen() {
     loadBlockedUsers,
     loadMyPosts,
     loadMyFragments,
+    loadingFragments,
+    loadingPosts,
     handleUnblock,
+    myPosts,
+    myFragments,
     handleLogOut,
   } = useSettings(user?.user_id);
 
@@ -90,7 +95,11 @@ export default function SettingsScreen() {
 
         {/* Pestañas Horizontales */}
         <View className="mb-6">
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="flex-row"
+          >
             {tabs.map((tab) => {
               const isActive = activeTab === tab;
               return (
@@ -105,7 +114,9 @@ export default function SettingsScreen() {
                 >
                   <Text
                     className={`font-semibold ${
-                      isActive ? "text-white" : "text-gray-500 dark:text-neutral-400"
+                      isActive
+                        ? "text-white"
+                        : "text-gray-500 dark:text-neutral-400"
                     }`}
                   >
                     {tab}
@@ -137,7 +148,10 @@ export default function SettingsScreen() {
                   </Text>
                 </View>
               </View>
-              <View style={{ transform: [{ translateY: 5 }] }} className="items-center justify-center">
+              <View
+                style={{ transform: [{ translateY: 5 }] }}
+                className="items-center justify-center"
+              >
                 <Toggle
                   value={notificationsEnabled}
                   onValueChange={setNotificationsEnabled}
@@ -153,7 +167,10 @@ export default function SettingsScreen() {
               <Text className="text-gray-400 text-sm mb-4">
                 {user?.full_name} (@{user?.username})
               </Text>
-              <TouchableOpacity onPress={() => setModalVisible(true)} className="active:opacity-60">
+              <TouchableOpacity
+                onPress={() => setModalVisible(true)}
+                className="active:opacity-60"
+              >
                 <Text className="text-[#34C2DD] font-semibold text-base">
                   Editar perfil
                 </Text>
