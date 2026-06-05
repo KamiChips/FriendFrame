@@ -12,8 +12,8 @@ import { Post, PostResult, PostWithCounts } from "./types";
 
 export async function createPost(
   profileOwnerId: string,
-  mediaUrl: string,    
-  mediaType: string,    
+  mediaUrl: string,
+  mediaType: string,
   description?: string,
 ): Promise<PostResult<Post>> {
   try {
@@ -53,7 +53,7 @@ export async function createPost(
 
     return { data: data as Post, error: null };
   } catch (err) {
-    console.log("🔴 ERROR REAL DE SUPABASE EN CREATE POST:", err); 
+    console.log("🔴 ERROR REAL DE SUPABASE EN CREATE POST:", err);
     return { data: null, error: parseError(err) };
   }
 }
@@ -169,12 +169,14 @@ export const getUserPosts = async (userId: string) => {
     .select(
       `
       post_id,
-      media,              
+      media,
       description,
       account_owner_id,
       created_at,
       account_owner:users!account_owner_id (
+        user_id,
         username,
+        full_name,
         profile_pic
       )
     `,

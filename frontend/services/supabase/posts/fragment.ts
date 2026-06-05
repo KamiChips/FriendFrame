@@ -168,7 +168,9 @@ export const getUserFragments = async (userId: string) => {
       account_owner_id,
       created_at,
       account_owner:users!account_owner_id (
+        user_id,
         username,
+        full_name,
         profile_pic
       )
     `,
