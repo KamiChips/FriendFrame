@@ -77,4 +77,62 @@ describe("signUp", () => {
         const result = await signUp(validParams);
         expect(result.error).toBe("Ya existe una cuenta con ese email.");
     });
+
+    it("throws error if password is too short or empty", async () => {
+        const result = await signUp({ ...validParams, password: "" });
+        expect(result.error).toBeTruthy();
+    });
+
+    it("throws error if full_name is invalid", async () => {
+        const result = await signUp({ ...validParams, full_name: "" });
+        expect(result.error).toBeTruthy();
+    });
+
+    it("throws error if username is invalid", async () => {
+        const result = await signUp({ ...validParams, username: "" });
+        expect(result.error).toBeTruthy();
+    });
+
+    it("throws error if username lookup query fails", async () => {
+        const maybeSingle = jest.fn().mockResolvedValue({
+            data: null, error: new Error("DB error"),
+        });
+        const eq = jest.fn().mockReturnValue({ maybeSingle });
+        const select = jest.fn().mockReturnValue({ eq });
+        mockFrom.mockReturnValue({ select });
+
+        const result = await signUp(validParams);
+        expect(result.error).toBeTruthy();
+    });
+
+    it("throws error if auth returns no user and no error", async () => {
+        const maybeSingle = jest.fn().mockResolvedValue({ data: null, error: null });
+        const eq = jest.fn().mockReturnValue({ maybeSingle });
+        const select = jest.fn().mockReturnValue({ eq });
+        mockFrom.mockReturnValue({ select });
+
+        mockAuth.signUp.mockResolvedValue({
+            data: { user: null },
+            error: null,
+        });
+
+        const result = await signUp(validParams);
+        expect(result.error).toBeTruthy();
+    });
+
+    it("throws error if waitForProfile rejects", async () => {
+        const maybeSingle = jest.fn().mockResolvedValue({ data: null, error: null });
+        const eq = jest.fn().mockReturnValue({ maybeSingle });
+        const select = jest.fn().mockReturnValue({ eq });
+        mockFrom.mockReturnValue({ select });
+
+        mockAuth.signUp.mockResolvedValue({
+            data: { user: { id: "uid-1" } },
+            error: null,
+        });
+        mockWaitForProfile.mockRejectedValue(new Error("Timeout waiting for profile"));
+
+        const result = await signUp(validParams);
+        expect(result.error).toBeTruthy();
+    });
 });

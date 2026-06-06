@@ -1,4 +1,5 @@
 export const mockFrom = jest.fn();
+export const mockStorageFrom = jest.fn();
 
 export const mockAuth = {
     signUp: jest.fn(),
@@ -15,9 +16,6 @@ export const supabase = {
     auth: mockAuth,
     from: mockFrom,
     storage: {
-        from: jest.fn().mockReturnValue({
-        upload: jest.fn(),
-        getPublicUrl: jest.fn(),
-        }),
+        from: (...args: any[]) => mockStorageFrom(...args),
     },
 };

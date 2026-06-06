@@ -1,12 +1,13 @@
 import { supabase } from "@/lib/supabase/client";
 import { Platform } from "react-native";
 import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
 
 export async function registerDeviceToken(userId: string): Promise<void> {
   if (!Device.isDevice || !userId) return;
 
   try {
-    const Notifications = await import("expo-notifications");
+    // const Notifications = await import("expo-notifications");
 
     const { status: existing } = await Notifications.getPermissionsAsync();
     let finalStatus = existing;
@@ -33,7 +34,7 @@ export async function registerDeviceToken(userId: string): Promise<void> {
 export async function _removeCurrentDeviceToken(userId: string): Promise<void> {
   if (!userId) return;
   try {
-    const Notifications = await import("expo-notifications");
+    // const Notifications = await import("expo-notifications");
     const token = (await Notifications.getExpoPushTokenAsync()).data;
     if (!token) return;
 
