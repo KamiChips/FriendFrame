@@ -171,7 +171,7 @@ describe("assertMembership", () => {
   });
 });
 
-// ─── findExistingDirectChat ───────────────────────────────────────────────────
+// findExistingDirectChat
 
 describe("findExistingDirectChat", () => {
   it("devuelve el chat_id si existe un chat directo", async () => {
@@ -196,7 +196,7 @@ describe("findExistingDirectChat", () => {
   });
 });
 
-// ─── getChatById ──────────────────────────────────────────────────────────────
+// getChatById 
 
 describe("getChatById", () => {
   const mockChatData = {
