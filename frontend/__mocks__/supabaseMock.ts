@@ -12,9 +12,12 @@ export const mockAuth = {
     onAuthStateChange: jest.fn(),
 };
 
+export const mockRpc = jest.fn();
+
 export const supabase = {
     auth: mockAuth,
     from: mockFrom,
+    rpc: (...args: any[]) => mockRpc(...args),
     storage: {
         from: (...args: any[]) => mockStorageFrom(...args),
     },

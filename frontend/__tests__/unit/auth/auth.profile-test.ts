@@ -2,8 +2,6 @@ import { updateProfilePic, editUsername, editFullName } from "@/services/supabas
 import { mockFrom, mockStorageFrom } from "@/__mocks__/supabaseMock";
 import * as ImagePicker from "expo-image-picker";
 import { getAuthUser } from "@/services/supabase/helpers/validation";
-const { supabase } = require("@/lib/supabase/client");
-console.log("supabase.storage.from === mockStorageFrom?", supabase.storage.from === mockStorageFrom);
 
 jest.mock("@/lib/supabase/client", () => ({
     supabase: require("@/__mocks__/supabaseMock").supabase,
@@ -76,7 +74,6 @@ describe("updateProfilePic", () => {
         try {
             const fd = new FormData();
             fd.append("file", { uri: "file://photo.jpg", name: "uid-1.jpg", type: "image/jpeg" } as any);
-            console.log("FormData.append works:", true);
         } catch(e) {
             console.log("FormData.append error:", e);
         }
@@ -100,9 +97,6 @@ describe("updateProfilePic", () => {
         });
 
         const result = await updateProfilePic("uid-1");
-        console.log("result completo:", JSON.stringify(result));
-        console.log("storageFrom calls:", mockStorageFrom.mock.calls.length);
-        console.log("mockFrom calls:", mockFrom.mock.calls.length);
         expect(result.error).toBeNull();
         expect(result.data).toContain("https://cdn.example.com/uid-1.jpg");
     });
