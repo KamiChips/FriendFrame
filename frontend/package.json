@@ -11,6 +11,8 @@
     "lint": "expo lint",
     "test": "jest",
     "test:unit": "jest --testPathPattern=__tests__/unit",
+    "test:unit:auth": "jest --testPathPattern=__tests__/unit/auth",
+    "test:unit:publications": "jest --testPathPattern=__tests__/unit/publications",
     "test:components": "jest --testPathPattern=__tests__/components",
     "test:integration": "jest --config jest.integration.config.js --runInBand"
   },

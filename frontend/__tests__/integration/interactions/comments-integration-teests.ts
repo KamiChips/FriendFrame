@@ -6,13 +6,13 @@ import {
   getReplies,
 } from "@/services/supabase/interactions/comments";
 import { signIn, signOut } from "@/services/supabase/auth/auth.sign-in";
-import { supabaseAdmin } from "./helpers/supabase-test-client";
+import { supabaseAdmin } from "../helpers/supabase-test-client";
 import {
   USER_A,
   USER_B,
   setupFriends,
   cleanupFriends,
-} from "./helpers/posts-test-setup";
+} from "../helpers/posts-test-setup";
 
 // ─── IDs compartidos entre tests ──────────────────────────────────────────────
 let testPostId: string;
