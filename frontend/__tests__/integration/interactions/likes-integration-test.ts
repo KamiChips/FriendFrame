@@ -8,13 +8,13 @@ import {
   getLikers,
 } from "@/services/supabase/interactions/likes";
 import { signIn, signOut } from "@/services/supabase/auth/auth.sign-in";
-import { supabaseAdmin } from "./helpers/supabase-test-client";
+import { supabaseAdmin } from "../helpers/supabase-test-client";
 import {
   USER_A,
   USER_B,
   setupFriends,
   cleanupFriends,
-} from "./helpers/posts-test-setup";
+} from "../helpers/posts-test-setup";
 
 // ─── IDs compartidos ──────────────────────────────────────────────────────────
 let testPostId: string;

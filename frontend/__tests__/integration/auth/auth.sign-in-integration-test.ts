@@ -1,6 +1,6 @@
 import { signIn, signOut, getCurrentUser, } from "@/services/supabase/auth/auth.sign-in";
 import { signUp } from "@/services/supabase/auth/auth.sign-up";
-import { supabaseAdmin } from "./helpers/supabase-test-client";
+import { supabaseAdmin } from "../helpers/supabase-test-client";
 
 const TEST_USER = {
     email: process.env.TEST_USER_EMAIL!,
