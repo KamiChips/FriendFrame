@@ -1,5 +1,5 @@
 import { signUp } from "@/services/supabase/auth/auth.sign-up";
-import { supabaseAdmin } from "./helpers/supabase-test-client";
+import { supabaseAdmin } from "../helpers/supabase-test-client";
 
 // usuario fijo para los tests de signup
 const TEST_USER = {

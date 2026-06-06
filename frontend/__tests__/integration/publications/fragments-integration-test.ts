@@ -1,9 +1,9 @@
 import { signIn, signOut } from "@/services/supabase/auth/auth.sign-in";
 import { createFragment, editFragment, deleteFragment } 
     from "@/services/supabase/posts/fragment";
-import { supabaseAdmin } from "./helpers/supabase-test-client";
+import { supabaseAdmin } from "../helpers/supabase-test-client";
 import { setupFriends, cleanupFriends, USER_A, USER_B } 
-    from "./helpers/posts-test-setup";
+    from "../helpers/posts-test-setup";
 
 beforeAll(async () => {
     await setupFriends();

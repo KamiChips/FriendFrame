@@ -46,7 +46,7 @@ export async function uploadProfilePic(
     });
 
     if (result.canceled) return { data: null, error: null };
-    if (result.assets?.length)
+    if (!result.assets?.length)
       return { data: null, error: "No se seleccióno ningún archivo" };
 
     const asset = result.assets[0];

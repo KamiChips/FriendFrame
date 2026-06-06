@@ -53,6 +53,26 @@ describe("singIn", () => {
         const result = await signIn({ email: "nitomail@nito.com", password: "noesestajajasequivoco" });
         expect(result.error).toBe("Email o contraseña incorrectos.");
     });
+
+    it("throws error when email is invalid", async () => {
+        const result = await signIn({ email: "notanemail", password: "abc123" });
+        expect(result.error).toBeTruthy();
+    });
+
+    it("throws error when email is empty", async () => {
+        const result = await signIn({ email: "", password: "abc123" });
+        expect(result.error).toBeTruthy();
+    });
+
+    it("throws error when user is null after signIn", async () => {
+        mockAuth.signInWithPassword.mockResolvedValue({
+            data: { user: null },
+            error: null,
+        });
+
+        const result = await signIn({ email: "nitomail@nito.com", password: "abc123" });
+        expect(result.error).toBeTruthy();
+    });
 });
 
 // signOut
@@ -71,6 +91,14 @@ describe("signOut", () => {
 
         const result = await signOut();
         expect(result.error).toBe("Error de red. Verifica tu conexión.");
+    });
+
+    it("logs out successfully when user is active", async () => {
+        mockAuth.getUser.mockResolvedValue({ data: { user: { id: "uid-1" } } });
+        mockAuth.signOut.mockResolvedValue({ error: null });
+
+        const result = await signOut();
+        expect(result).toEqual({ data: null, error: null });
     });
 });
 
@@ -95,6 +123,26 @@ describe("getCurrentUser", () => {
         const result = await getCurrentUser();
         expect(result).toEqual({ data: mockProfile, error: null });
     });
+
+    it("returns error on unexpected auth error", async () => {
+        mockAuth.getUser.mockResolvedValue({
+            data: { user: null },
+            error: { message: "Something went wrong" },
+        });
+
+        const result = await getCurrentUser();
+        expect(result.error).toBeTruthy();
+    });
+
+    it("returns null when user is null and no error", async () => {
+        mockAuth.getUser.mockResolvedValue({
+            data: { user: null },
+            error: null,
+        });
+
+        const result = await getCurrentUser();
+        expect(result).toEqual({ data: null, error: null });
+    });
 });
 
 // signInWithGoogle
@@ -111,5 +159,14 @@ describe("signInWithGoogle", () => {
             expect.objectContaining({ provider: "google" })
         );
         expect(result.error).toBeNull();
+    });
+
+    it("returns error when OAuth call fails", async () => {
+        mockAuth.signInWithOAuth.mockResolvedValue({
+            error: new Error("OAuth failed"),
+        });
+
+        const result = await signInWithGoogle("myapp://auth/callback");
+        expect(result.error).toBeTruthy();
     });
 });

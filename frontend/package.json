@@ -11,8 +11,15 @@
     "lint": "expo lint",
     "test": "jest",
     "test:unit": "jest --testPathPattern=__tests__/unit",
+    "test:unit:auth": "jest --testPathPattern=__tests__/unit/auth",
+    "test:unit:publications": "jest --testPathPattern=__tests__/unit/publications",
+    "test:unit:storage": "jest --testPathPattern=__tests__/unit/storage",
     "test:components": "jest --testPathPattern=__tests__/components",
-    "test:integration": "jest --config jest.integration.config.js --runInBand"
+    "test:integration": "jest --config jest.integration.config.js --runInBand",
+    "test:integration:auth": "jest --config jest.integration.config.js --runInBand --testPathPattern=__tests__/integration/auth",
+    "test:integration:interactions": "jest --config jest.integration.config.js --runInBand --testPathPattern=__tests__/integration/interactions",
+    "test:integration:publications": "jest --config jest.integration.config.js --runInBand --testPathPattern=__tests__/integration/publications",
+    "test:integration:storage": "jest --config jest.integration.config.js --runInBand --testPathPattern=__tests__/integration/storage"
   },
   "dependencies": {
     "@expo-google-fonts/borel": "^0.4.2",
@@ -82,7 +89,8 @@
     ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/fileMock.ts",
-      "@react-native-async-storage/async-storage": "<rootDir>/node_modules/@react-native-async-storage/async-storage/jest/async-storage-mock"
+      "@react-native-async-storage/async-storage": "<rootDir>/node_modules/@react-native-async-storage/async-storage/jest/async-storage-mock",
+      "^@/(.*)$": "<rootDir>/$1"
     },
     "collectCoverage": true,
     "collectCoverageFrom": [

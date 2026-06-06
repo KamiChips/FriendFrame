@@ -14,6 +14,16 @@ jest.mock("@/lib/supabase/client", () => ({
 
 import { mockFrom } from "@/__mocks__/supabaseMock";
 
+const mockProfile = {
+    user_id: "uid-1",
+    full_name: "Rogelio Camacho",
+    username: "elnito7",
+    email: "nito@nitomail.com",
+    profile_pic: null,
+    created_at: "",
+    updated_at: "",
+};
+
 // validateEmail
 describe("validateEmail", () => {
     it("transforms to lowercase and removes whitespace", () => {
@@ -107,18 +117,9 @@ describe("validateRedirectUrl", () => {
     });
 });
 
+
 // fetchProfile
 describe("fetchProfile", () => {
-    const mockProfile = {
-        user_id: "uid-1",
-        full_name: "Rogelio Camacho",
-        username: "elnito7",
-        email: "nito@nitomail.com",
-        profile_pic: null,
-        created_at: "",
-        updated_at: "",
-    };
-
     beforeEach(() => jest.clearAllMocks());
 
     it("Returns profile if it exists", async () => {
@@ -150,4 +151,28 @@ describe("fetchProfile", () => {
             "No se encontró el perfil del usuario."
         );
     });
+});
+
+// waitForProfile
+describe("waitForProfile", () => {
+    it("Creates a profile successfully", async () => {
+        const maybeSingle = jest.fn().mockResolvedValue({ data: mockProfile });
+        const eq = jest.fn().mockReturnValue({ maybeSingle });
+        const select = jest.fn().mockReturnValue({ eq });
+        mockFrom.mockReturnValue({ select });
+
+        const result = await waitForProfile("uid-1");
+        expect(result).toEqual(mockProfile);
+    });
+
+    it("throws an error if profile never appears", async () => {
+        const maybeSingle = jest.fn().mockResolvedValue({ data: null });
+        const eq = jest.fn().mockReturnValue({ maybeSingle });
+        const select = jest.fn().mockReturnValue({ eq });
+        mockFrom.mockReturnValue({ select });
+
+        await expect(waitForProfile("uid-1")).rejects.toThrow(
+            "No se pudo crear el perfil. Intenta de nuevo."
+        );
+    }, 15000); 
 });
