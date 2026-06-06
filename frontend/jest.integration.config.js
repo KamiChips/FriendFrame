@@ -9,6 +9,7 @@ module.exports = {
     testTimeout: 15000,
     setupFiles: ["<rootDir>/__tests__/integration/helpers/setup.ts"],
     moduleNameMapper: {
+        "^@/(.*)$": "<rootDir>/$1",
         "@react-native-async-storage/async-storage": "<rootDir>/node_modules/@react-native-async-storage/async-storage/jest/async-storage-mock"
     },
     "collectCoverage": true,
