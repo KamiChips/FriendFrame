@@ -268,7 +268,7 @@ export default function SettingsScreen() {
               </Text>
             ) : (
               myPosts.map((post) => (
-                <View className="w-full">
+                <View key={post.post_id} className="w-full">
                   <FeedCard
                     key={post.post_id}
                     publicationId={post.post_id}
@@ -317,7 +317,7 @@ export default function SettingsScreen() {
               </View>
             ) : (
               myFragments.map((fragment) => (
-                <View className="w-full">
+                <View key={fragment.fragment_id} className="w-full">
                   <FeedCard
                     key={fragment.fragment_id}
                     publicationId={fragment.fragment_id}
