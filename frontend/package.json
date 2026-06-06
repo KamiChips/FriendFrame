@@ -84,7 +84,8 @@
     ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/fileMock.ts",
-      "@react-native-async-storage/async-storage": "<rootDir>/node_modules/@react-native-async-storage/async-storage/jest/async-storage-mock"
+      "@react-native-async-storage/async-storage": "<rootDir>/node_modules/@react-native-async-storage/async-storage/jest/async-storage-mock",
+      "^@/(.*)$": "<rootDir>/$1"
     },
     "collectCoverage": true,
     "collectCoverageFrom": [
