@@ -59,6 +59,14 @@ const mockAsset: ImagePicker.ImagePickerAsset = {
     pairedVideoAsset: null,
 };
 
+const videoAsset: ImagePicker.ImagePickerAsset = {
+    ...mockAsset,
+    uri: "file://test-video.mp4",
+    type: "video",
+    fileName: "test-video.mp4",
+    mimeType: "video/mp4",
+};
+
 const realFetch = global.fetch;
 
 beforeAll(async () => {
@@ -85,7 +93,6 @@ beforeEach(() => {
     mockGetInfoAsync.mockResolvedValue({ exists: true, size: TINY_JPEG_BUFFER.length });
     mockManipulateAsync.mockResolvedValue({ uri: "file://test-photo.jpg" });
 
-    // fetch selectivo: intercepta solo URIs locales, deja pasar llamadas HTTP de Supabase
     global.fetch = jest.fn().mockImplementation((url: string, ...args: any[]) => {
         if (typeof url === "string" && (url.startsWith("file://") || url.startsWith("blob:"))) {
             return Promise.resolve({
@@ -116,6 +123,21 @@ describe("uploadProfilePic (integration)", () => {
         expect(result).toEqual({ data: null, error: null });
     });
 
+    it("returns error if no assets selected", async () => {
+        mockRequestPermissions.mockResolvedValue({ status: "granted" });
+        mockLaunchLibrary.mockResolvedValue({ canceled: false, assets: [] });
+        const result = await uploadProfilePic(testUserId);
+        expect(result.error).toBe("No se seleccióno ningún archivo");
+    });
+
+    it("returns error if file is too large", async () => {
+        mockRequestPermissions.mockResolvedValue({ status: "granted" });
+        mockLaunchLibrary.mockResolvedValue({ canceled: false, assets: [mockAsset] });
+        mockGetInfoAsync.mockResolvedValue({ exists: true, size: 999 * 1024 * 1024 });
+        const result = await uploadProfilePic(testUserId);
+        expect(result.error).toContain("demasiado grande");
+    });
+
     it("uploads profile pic to supabase and updates db", async () => {
         mockRequestPermissions.mockResolvedValue({ status: "granted" });
         mockLaunchLibrary.mockResolvedValue({ canceled: false, assets: [mockAsset] });
@@ -134,15 +156,6 @@ describe("uploadProfilePic (integration)", () => {
             .single();
 
         expect(user?.profile_pic).toContain("profile-pictures");
-    });
-
-    it("returns error if file is too large", async () => {
-        mockRequestPermissions.mockResolvedValue({ status: "granted" });
-        mockLaunchLibrary.mockResolvedValue({ canceled: false, assets: [mockAsset] });
-        mockGetInfoAsync.mockResolvedValue({ exists: true, size: 999 * 1024 * 1024 });
-
-        const result = await uploadProfilePic(testUserId);
-        expect(result.error).toContain("demasiado grande");
     });
 });
 
@@ -168,7 +181,7 @@ describe("uploadPostImage (integration)", () => {
         expect(files?.some(f => f.name === fileName)).toBe(true);
     });
 
-    it("returns error if file is too large", async () => {
+    it("returns error if image is too large", async () => {
         mockGetInfoAsync.mockResolvedValue({ exists: true, size: 999 * 1024 * 1024 });
         const result = await uploadPostImage(testUserId, mockAsset);
         expect(result.error).toContain("demasiado grande");
@@ -178,18 +191,28 @@ describe("uploadPostImage (integration)", () => {
         mockGetInfoAsync
             .mockResolvedValueOnce({ exists: true, size: 100 })
             .mockResolvedValueOnce({ exists: true, size: 999 * 1024 * 1024 });
-
         const result = await uploadPostImage(testUserId, mockAsset);
         expect(result.error).toBe("La imagen procesada es demasiado grande.");
     });
 
+    it("uploads video successfully", async () => {
+        const result = await uploadPostImage(testUserId, videoAsset);
+        expect(result.error).toBeNull();
+        expect(result.data?.mediaType).toBe("video");
+        expect(result.data?.publicUrl).toContain("post-images");
+    });
+
+    it("returns error if video is too large", async () => {
+        mockGetInfoAsync.mockResolvedValue({ exists: true, size: 999 * 1024 * 1024 });
+        const result = await uploadPostImage(testUserId, videoAsset);
+        expect(result.error).toContain("demasiado grande");
+    });
+
     it("returns error for invalid mime type", async () => {
-        const badAsset = { ...mockAsset, uri: "file://photo.bmp" };
         jest.spyOn(StorageHelpers, "getMimeType").mockImplementationOnce(() => {
             throw new Error("Tipo de imagen no permitido.");
         });
-
-        const result = await uploadPostImage(testUserId, badAsset);
+        const result = await uploadPostImage(testUserId, mockAsset);
         expect(result.error).toBe("Tipo de imagen no permitido.");
     });
 });
@@ -210,9 +233,8 @@ describe("uploadMultiple (integration)", () => {
         expect(result.error).toContain("Máximo");
     });
 
-    it("uploads multiple assets and reports results", async () => {
+    it("uploads multiple assets successfully", async () => {
         const result = await uploadMultiple(testUserId, [mockAsset, mockAsset]);
-
         expect(result.error).toBeNull();
         expect(result.data?.successful.length).toBeGreaterThanOrEqual(1);
     });
@@ -227,6 +249,18 @@ describe("uploadMultiple (integration)", () => {
         expect(result.data?.successful).toHaveLength(1);
         expect(result.data?.failed).toHaveLength(1);
         expect(result.data?.failed[0]).toContain("Archivo 2");
+    });
+
+    it("tracks uploads that return error without rejecting", async () => {
+        // ambos assets fallan por tamaño — fulfilled pero con error en value
+        mockGetInfoAsync.mockResolvedValue({ exists: true, size: 999 * 1024 * 1024 });
+
+        const result = await uploadMultiple(testUserId, [mockAsset, mockAsset]);
+
+        expect(result.data?.successful).toHaveLength(0);
+        expect(result.data?.failed).toHaveLength(2);
+        expect(result.data?.failed[0]).toContain("Archivo 1");
+        expect(result.data?.failed[1]).toContain("Archivo 2");
     });
 });
 
