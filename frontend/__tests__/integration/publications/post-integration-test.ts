@@ -1,5 +1,5 @@
 import { signIn, signOut } from "@/services/supabase/auth/auth.sign-in";
-import { createPost, editPost, deletePost, getPostWithCounts } 
+import { createPost, editPost, deletePost, getPostWithCounts, getUserPosts } 
     from "@/services/supabase/posts/posts";
 import { supabaseAdmin } from "../helpers/supabase-test-client";
 import { setupFriends, cleanupFriends, USER_A, USER_B } 
@@ -122,6 +122,27 @@ describe("editPost — integration", () => {
 
         expect(result.error).toBe("Post no encontrado o sin permisos.");
     });
+
+    it("returns specific error when post not found (PGRST116)", async () => {
+        await signIn({ email: USER_A.email, password: USER_A.password });
+
+        // UUID válido pero inexistente
+        const fakePostId = "550e8400-e29b-41d4-a716-446655440099";
+        const result = await editPost(fakePostId, "nueva descripción");
+
+        expect(result.error).toBe("Post no encontrado o sin permisos.");
+    });
+
+    it("returns error when new description exceeds max length", async () => {
+        await signIn({ email: USER_A.email, password: USER_A.password });
+
+        const { data: post } = await createPost(
+            USER_B.user_id, "https://example.com/img.jpg", "image", "original"
+        );
+
+        const result = await editPost(post!.post_id, "a".repeat(2001));
+        expect(result.error).toContain("La descripción");
+    });
 });
 
 describe("deletePost — integration", () => {
@@ -157,6 +178,12 @@ describe("deletePost — integration", () => {
 
         expect(result.error).toBe("Post no encontrado o sin permisos para eliminarlo.");
     });
+
+    it("returns error when postId is invalid UUID", async () => {
+        await signIn({ email: USER_A.email, password: USER_A.password });
+        const result = await deletePost("no-es-uuid");
+        expect(result.error).toContain("error");
+    });
 });
 
 describe("getPostWithCounts — integration", () => {
@@ -173,5 +200,32 @@ describe("getPostWithCounts — integration", () => {
         expect(result.data?.likes_count).toBe(0);
         expect(result.data?.comments_count).toBe(0);
         expect(result.data?.liked_by_me).toBe(false);
+    });
+
+    it("returns error when currentUserId is invalid UUID", async () => {
+        const result = await getPostWithCounts("550e8400-e29b-41d4-a716-446655440099", "no-es-uuid");
+        expect(result.error).toContain("ID de usuario");
+    });
+});
+
+describe("getUserPosts — integration", () => {
+    it("returns posts for a user ordered by date", async () => {
+        await signIn({ email: USER_A.email, password: USER_A.password });
+
+        await createPost(USER_B.user_id, "https://example.com/img1.jpg", "image", "post 1");
+        await createPost(USER_B.user_id, "https://example.com/img2.jpg", "image", "post 2");
+
+        const result = await getUserPosts(USER_A.user_id);
+
+        // getUserPosts retorna la query directamente sin await
+        const { data, error } = await result;
+        expect(error).toBeNull();
+        expect(data?.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it("returns empty array for user with no posts", async () => {
+        const { data, error } = await getUserPosts(USER_B.user_id);
+        expect(error).toBeNull();
+        expect(data).toEqual([]);
     });
 });
