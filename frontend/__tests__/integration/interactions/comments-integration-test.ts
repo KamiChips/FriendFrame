@@ -6,13 +6,13 @@ import {
   getReplies,
 } from "@/services/supabase/interactions/comments";
 import { signIn, signOut } from "@/services/supabase/auth/auth.sign-in";
-import { supabaseAdmin } from "./helpers/supabase-test-client";
+import { supabaseAdmin } from "../helpers/supabase-test-client";
 import {
   USER_A,
   USER_B,
   setupFriends,
   cleanupFriends,
-} from "./helpers/posts-test-setup";
+} from "../helpers/posts-test-setup";
 
 // ─── IDs compartidos entre tests ──────────────────────────────────────────────
 let testPostId: string;
@@ -415,6 +415,35 @@ describe("getReplies — casos de error adicionales", () => {
 
     const root = await addComment({ postId: testPostId }, "Raíz");
     const result = await getReplies(root.data!.comment_id, "no-es-uuid");
+
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+describe("editComment — branch !data", () => {
+  it("retorna error si el comentario no existe en absoluto", async () => {
+    await signIn({ email: USER_A.email, password: USER_A.password });
+
+    // UUID válido que no existe — Supabase devuelve data null
+    const result = await editComment(
+      "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "Nuevo contenido"
+    );
+
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+describe("addComment — branch sin sesión con parentCommentId", () => {
+  it("retorna error sin sesión al agregar respuesta anidada", async () => {
+    // Sin sesión activa — falla en getAuthUser antes de llegar al padre
+    const result = await addComment(
+      { postId: testPostId },
+      "Respuesta sin sesión",
+      "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    );
 
     expect(result.error).not.toBeNull();
     expect(result.data).toBeNull();
