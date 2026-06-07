@@ -22,4 +22,5 @@ module.exports = {
         "!**/.expo/**",
         "!**/services/supabase/storage/media.ts",
     ]
+    
 };
