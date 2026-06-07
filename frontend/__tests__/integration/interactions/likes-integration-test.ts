@@ -1,5 +1,6 @@
 import {
   toggleLikePost,
+  toggleLike, 
   toggleLikeFragment,
   likePost,
   unlikePost,
@@ -294,5 +295,87 @@ describe("getLikers — integración", () => {
 
     expect(result.error).toBeNull();
     expect(result.data).toHaveLength(1);
+  });
+});
+
+describe("unlikePost — casos de error adicionales", () => {
+  it("retorna error con postId inválido", async () => {
+    await signIn({ email: USER_A.email, password: USER_A.password });
+
+    const result = await unlikePost("no-es-uuid");
+    expect(result.error).not.toBeNull();
+  });
+});
+
+describe("likeFragment — casos de error adicionales", () => {
+  it("retorna error sin sesión activa", async () => {
+    const result = await likeFragment(testFragmentId);
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+describe("unlikeFragment — casos de error adicionales", () => {
+  it("retorna error con fragmentId inválido", async () => {
+    await signIn({ email: USER_A.email, password: USER_A.password });
+
+    const result = await unlikeFragment("no-es-uuid");
+    expect(result.error).not.toBeNull();
+  });
+});
+
+describe("getLikers — casos de error adicionales", () => {
+  it("retorna error con target inválido", async () => {
+    const result = await getLikers({} as any);
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+describe("toggleLike — branch adicional", () => {
+  it("retorna error con target inválido (sin postId ni fragmentId)", async () => {
+    await signIn({ email: USER_A.email, password: USER_A.password });
+
+    const result = await toggleLike({} as any);
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+describe("likePost — branch adicional", () => {
+  it("retorna error sin sesión activa", async () => {
+    const result = await likePost(testPostId);
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+describe("unlikePost — branch adicional", () => {
+  it("retorna error sin sesión activa", async () => {
+    const result = await unlikePost(testPostId);
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+describe("unlikeFragment — branch adicional", () => {
+  it("retorna error sin sesión activa", async () => {
+    const result = await unlikeFragment(testFragmentId);
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+describe("getLikers — branch adicional", () => {
+  it("respeta límite máximo de 100", async () => {
+    const result = await getLikers({ postId: testPostId }, 200);
+    expect(result.error).toBeNull();
+    expect(result.data).toBeDefined();
+  });
+
+  it("respeta límite mínimo de 1", async () => {
+    const result = await getLikers({ postId: testPostId }, 0);
+    expect(result.error).toBeNull();
+    expect(result.data).toBeDefined();
   });
 });

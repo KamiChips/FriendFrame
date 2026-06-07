@@ -53,7 +53,10 @@ async function deleteAllComments() {
   if (testPostId)
     await supabaseAdmin.from("comments").delete().eq("post_id", testPostId);
   if (testFragmentId)
-    await supabaseAdmin.from("comments").delete().eq("fragment_id", testFragmentId);
+    await supabaseAdmin
+      .from("comments")
+      .delete()
+      .eq("fragment_id", testFragmentId);
 }
 
 // ─── Setup global ─────────────────────────────────────────────────────────────
@@ -69,7 +72,10 @@ afterAll(async () => {
   if (testPostId)
     await supabaseAdmin.from("posts").delete().eq("post_id", testPostId);
   if (testFragmentId)
-    await supabaseAdmin.from("fragments").delete().eq("fragment_id", testFragmentId);
+    await supabaseAdmin
+      .from("fragments")
+      .delete()
+      .eq("fragment_id", testFragmentId);
   await cleanupFriends();
 });
 
@@ -105,7 +111,7 @@ describe("addComment — integración", () => {
 
     const result = await addComment(
       { fragmentId: testFragmentId },
-      "Comentario en fragmento"
+      "Comentario en fragmento",
     );
 
     expect(result.error).toBeNull();
@@ -121,7 +127,7 @@ describe("addComment — integración", () => {
     const reply = await addComment(
       { postId: testPostId },
       "Respuesta al raíz",
-      root.data!.comment_id
+      root.data!.comment_id,
     );
 
     expect(reply.error).toBeNull();
@@ -135,7 +141,7 @@ describe("addComment — integración", () => {
     const result = await addComment(
       { postId: testPostId },
       "Intento con padre inválido",
-      fakeParentId
+      fakeParentId,
     );
 
     expect(result.error).not.toBeNull();
@@ -190,7 +196,10 @@ describe("editComment — integración", () => {
   it("retorna error si el contenido nuevo está vacío", async () => {
     await signIn({ email: USER_A.email, password: USER_A.password });
 
-    const created = await addComment({ postId: testPostId }, "Contenido válido");
+    const created = await addComment(
+      { postId: testPostId },
+      "Contenido válido",
+    );
     const result = await editComment(created.data!.comment_id, "");
 
     expect(result.error).not.toBeNull();
@@ -218,7 +227,10 @@ describe("deleteComment — integración", () => {
 
   it("no elimina el comentario de otro usuario", async () => {
     await signIn({ email: USER_A.email, password: USER_A.password });
-    const created = await addComment({ postId: testPostId }, "De A, no borrable por B");
+    const created = await addComment(
+      { postId: testPostId },
+      "De A, no borrable por B",
+    );
     const commentId = created.data!.comment_id;
     await signOut();
 
@@ -233,11 +245,11 @@ describe("deleteComment — integración", () => {
     expect(data).not.toBeNull();
   });
 
-  it("no lanza error si se intenta eliminar un comentario inexistente", async () => {
+  it("retorna error con UUID inválido", async () => {
     await signIn({ email: USER_A.email, password: USER_A.password });
 
-    const result = await deleteComment("00000000-0000-0000-0000-000000000000");
-    expect(result.error).toBeNull();
+    const result = await deleteComment("no-es-uuid");
+    expect(result.error).not.toBeNull();
   });
 });
 
@@ -256,7 +268,11 @@ describe("getComments — integración", () => {
     await signIn({ email: USER_A.email, password: USER_A.password });
 
     const root = await addComment({ postId: testPostId }, "Raíz");
-    await addComment({ postId: testPostId }, "Respuesta", root.data!.comment_id);
+    await addComment(
+      { postId: testPostId },
+      "Respuesta",
+      root.data!.comment_id,
+    );
 
     const result = await getComments({ postId: testPostId }, USER_A.user_id);
 
@@ -271,15 +287,13 @@ describe("getComments — integración", () => {
     const root = await addComment({ postId: testPostId }, "Raíz");
     await addComment({ postId: testPostId }, "Hijo", root.data!.comment_id);
 
-    const result = await getComments(
-      { postId: testPostId },
-      USER_A.user_id,
-      { include_replies: true }
-    );
+    const result = await getComments({ postId: testPostId }, USER_A.user_id, {
+      include_replies: true,
+    });
 
     expect(result.error).toBeNull();
     const rootComment = result.data!.find(
-      (c) => c.comment_id === root.data!.comment_id
+      (c) => c.comment_id === root.data!.comment_id,
     );
     expect(rootComment).toBeDefined();
     expect(rootComment!.replies).toHaveLength(1);
@@ -308,7 +322,10 @@ describe("getComments — integración", () => {
     await signIn({ email: USER_A.email, password: USER_A.password });
     await addComment({ fragmentId: testFragmentId }, "En fragmento");
 
-    const result = await getComments({ fragmentId: testFragmentId }, USER_A.user_id);
+    const result = await getComments(
+      { fragmentId: testFragmentId },
+      USER_A.user_id,
+    );
 
     expect(result.error).toBeNull();
     expect(result.data!.length).toBeGreaterThanOrEqual(1);
@@ -320,9 +337,20 @@ describe("getReplies — integración", () => {
   it("devuelve las respuestas de un comentario raíz", async () => {
     await signIn({ email: USER_A.email, password: USER_A.password });
 
-    const root = await addComment({ postId: testPostId }, "Raíz con respuestas");
-    await addComment({ postId: testPostId }, "Respuesta 1", root.data!.comment_id);
-    await addComment({ postId: testPostId }, "Respuesta 2", root.data!.comment_id);
+    const root = await addComment(
+      { postId: testPostId },
+      "Raíz con respuestas",
+    );
+    await addComment(
+      { postId: testPostId },
+      "Respuesta 1",
+      root.data!.comment_id,
+    );
+    await addComment(
+      { postId: testPostId },
+      "Respuesta 2",
+      root.data!.comment_id,
+    );
 
     const result = await getReplies(root.data!.comment_id, USER_A.user_id);
 
@@ -347,6 +375,75 @@ describe("getReplies — integración", () => {
     await signIn({ email: USER_A.email, password: USER_A.password });
 
     const result = await getReplies("no-es-un-uuid", USER_A.user_id);
+
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+// Casos adicionales para coverage
+describe("editComment — casos de error adicionales", () => {
+  it("retorna error si el comentario no existe", async () => {
+    await signIn({ email: USER_A.email, password: USER_A.password });
+
+    // UUID válido pero que no existe en la BD
+    const result = await editComment(
+      "11111111-1111-1111-1111-111111111111",
+      "Contenido nuevo"
+    );
+
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+describe("getComments — casos de error adicionales", () => {
+  it("retorna error con target inválido", async () => {
+    await signIn({ email: USER_A.email, password: USER_A.password });
+
+    // Sin postId ni fragmentId — target inválido
+    const result = await getComments({} as any, USER_A.user_id);
+
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+describe("getReplies — casos de error adicionales", () => {
+  it("retorna error con currentUserId inválido", async () => {
+    await signIn({ email: USER_A.email, password: USER_A.password });
+
+    const root = await addComment({ postId: testPostId }, "Raíz");
+    const result = await getReplies(root.data!.comment_id, "no-es-uuid");
+
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+describe("editComment — branch !data", () => {
+  it("retorna error si el comentario no existe en absoluto", async () => {
+    await signIn({ email: USER_A.email, password: USER_A.password });
+
+    // UUID válido que no existe — Supabase devuelve data null
+    const result = await editComment(
+      "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "Nuevo contenido"
+    );
+
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+});
+
+describe("addComment — branch sin sesión con parentCommentId", () => {
+  it("retorna error sin sesión al agregar respuesta anidada", async () => {
+    // Sin sesión activa — falla en getAuthUser antes de llegar al padre
+    const result = await addComment(
+      { postId: testPostId },
+      "Respuesta sin sesión",
+      "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    );
 
     expect(result.error).not.toBeNull();
     expect(result.data).toBeNull();
