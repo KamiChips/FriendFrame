@@ -19,6 +19,7 @@ module.exports = {
         "!**/node_modules/**",
         "!**/babel.config.js",
         "!**/expo-env.d.ts",
-        "!**/.expo/**"
+        "!**/.expo/**",
+        "!**/services/supabase/storage/media.ts",
     ]
 };
