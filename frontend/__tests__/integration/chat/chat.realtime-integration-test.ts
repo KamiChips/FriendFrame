@@ -3,8 +3,7 @@ import {
     subscribeToChatList,
 } from "@/services/supabase/chat/chat.realtime";
 
-// ─── Mock state ───────────────────────────────────────────────────────────────
-
+// Mock state
 const mockSubscribe      = jest.fn();
 const mockOn             = jest.fn();
 const mockChannel        = jest.fn();
@@ -13,17 +12,11 @@ const mockGetChannels    = jest.fn(() => [] as any[]);
 const mockGetUser        = jest.fn();
 const mockFrom           = jest.fn();
 
-/**
- * All postgres_changes handlers registered via .on(), keyed by channel name.
- * Tests trigger them directly to simulate Supabase realtime events.
- */
 let capturedHandlers: Record<string, Array<(payload: any) => void>> = {};
 
-/** The channel object returned by the last supabase.channel() call */
 let currentChannelTopic = "";
 
-// ─── Supabase client mock ─────────────────────────────────────────────────────
-
+// Supabase client mock
 jest.mock("@/lib/supabase/client", () => ({
     supabase: {
         from:          (...args: any[]) => mockFrom(...args),
@@ -41,8 +34,7 @@ jest.mock("@/services/supabase/helpers/validation", () => ({
         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
 }));
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
+// Constants
 const CHAT_ID    = "550e8400-e29b-41d4-a716-446655440000";
 const USER_ID    = "6ba7b810-9dad-41d4-80b4-00c04fd430c8";
 const MESSAGE_ID = "6ba7b811-9dad-41d4-80b4-00c04fd430c8";
@@ -62,11 +54,9 @@ const mockMessageData = {
     },
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
+// Helpers
 const flushPromises = () => new Promise<void>((r) => setTimeout(r, 0));
 
-/** Builds the query chain mock: .from().select().eq().single() */
 function buildQueryMock(resolvedData: any) {
     const mockSingleFn = jest.fn().mockResolvedValue({ data: resolvedData, error: null });
     const mockEqFn     = jest.fn().mockReturnValue({ single: mockSingleFn });
@@ -75,28 +65,18 @@ function buildQueryMock(resolvedData: any) {
     return { mockSingleFn, mockEqFn, mockSelectFn };
 }
 
-/**
- * Fires every handler registered for a given channel topic.
- * Awaits each one so async handlers (like the one that queries Supabase) settle.
- */
 async function triggerAllHandlers(channelTopic: string, payload: any) {
     const handlers = capturedHandlers[channelTopic] ?? [];
     if (!handlers.length) throw new Error(`No handlers captured for topic "${channelTopic}"`);
     for (const h of handlers) await h(payload);
 }
 
-// ─── beforeEach ───────────────────────────────────────────────────────────────
-
+//beforeEach
 beforeEach(() => {
     jest.clearAllMocks();
     capturedHandlers  = {};
     currentChannelTopic = "";
 
-    // El canal es un único objeto que se retorna en toda la cadena:
-    // supabase.channel(name) → channelObj
-    // channelObj.on(...)     → channelObj  (chainable)
-    // channelObj.subscribe() → channelObj  (mismo objeto)
-    // Así supabase.removeChannel(channel) recibe exactamente el objeto de channel().
     mockChannel.mockImplementation((name: string) => {
         currentChannelTopic = name;
         capturedHandlers[name] = [];
@@ -110,7 +90,7 @@ beforeEach(() => {
                 return channelObj;
             }),
             subscribe: jest.fn().mockImplementation(() => {
-                mockSubscribe();   // contabiliza la llamada en el spy global
+                mockSubscribe(); 
                 return channelObj;
             }),
         };
@@ -125,14 +105,9 @@ beforeEach(() => {
     mockGetChannels.mockReturnValue([]);
 });
 
-// ═════════════════════════════════════════════════════════════════════════════
 //  subscribeToMessages
-// ═════════════════════════════════════════════════════════════════════════════
-
 describe("subscribeToMessages", () => {
-
-    // ── UUID inválido ──────────────────────────────────────────────────────────
-
+    //UUID inválido
     describe("cuando el chatId NO es un UUID válido", () => {
         const invalidIds = ["not-a-uuid", "", "123", "550e8400-e29b-41d4-a716"];
 
@@ -148,8 +123,7 @@ describe("subscribeToMessages", () => {
         );
     });
 
-    // ── UUID válido ────────────────────────────────────────────────────────────
-
+    //UUID válido
     describe("cuando el chatId ES un UUID válido", () => {
 
         it("crea el canal con el nombre correcto", () => {
@@ -165,7 +139,6 @@ describe("subscribeToMessages", () => {
         it("registra el handler de postgres_changes con el filtro correcto", () => {
             subscribeToMessages(CHAT_ID, jest.fn());
 
-            // Cada canal tiene su propio .on — lo obtenemos desde mock.results
             const channelObj = mockChannel.mock.results[0].value;
             expect(channelObj.on).toHaveBeenCalledWith(
                 "postgres_changes",
@@ -291,14 +264,8 @@ describe("subscribeToMessages", () => {
     });
 });
 
-// ═════════════════════════════════════════════════════════════════════════════
 //  subscribeToChatList
-// ═════════════════════════════════════════════════════════════════════════════
-
 describe("subscribeToChatList", () => {
-
-    // ── Sin usuario autenticado ────────────────────────────────────────────────
-
     describe("cuando NO hay usuario autenticado", () => {
         beforeEach(() => {
             mockGetUser.mockReturnValue(
@@ -326,8 +293,7 @@ describe("subscribeToChatList", () => {
         });
     });
 
-    // ── Usuario autenticado ────────────────────────────────────────────────────
-
+    //Usuario autenticado
     describe("cuando hay usuario autenticado", () => {
 
         it("crea el canal con nombre inbox-{userId}", async () => {
@@ -346,7 +312,6 @@ describe("subscribeToChatList", () => {
             subscribeToChatList(jest.fn());
             await flushPromises();
 
-            // El canal creado tiene su propio .on — lo obtenemos desde mock.results
             const channelObj = mockChannel.mock.results[0].value;
             const onCalls: any[][] = channelObj.on.mock.calls;
 
@@ -386,7 +351,6 @@ describe("subscribeToChatList", () => {
             subscribeToChatList(onUpdate);
             await flushPromises();
 
-            // Dispara el primer handler capturado (messages)
             const handlers = capturedHandlers[`inbox-${USER_ID}`] ?? [];
             expect(handlers.length).toBeGreaterThan(0);
             handlers[0]({ new: {} });
@@ -399,7 +363,6 @@ describe("subscribeToChatList", () => {
             subscribeToChatList(onUpdate);
             await flushPromises();
 
-            // Dispara todos los handlers para cubrir chat_members
             const handlers = capturedHandlers[`inbox-${USER_ID}`] ?? [];
             handlers.forEach((h) => h({ new: {} }));
 
@@ -435,7 +398,6 @@ describe("subscribeToChatList", () => {
         });
 
         it("la función de cleanup NO lanza error si se llama antes de que resuelva getUser", () => {
-            // getUser nunca resuelve durante este test
             mockGetUser.mockReturnValue(new Promise(() => {}));
 
             const unsub = subscribeToChatList(jest.fn());
@@ -444,16 +406,9 @@ describe("subscribeToChatList", () => {
         });
     });
 
-    // ── getUser rechaza ────────────────────────────────────────────────────────
-
+    // getUser rechaza 
     describe("cuando getUser rechaza", () => {
         it("no crea canal y la función de cleanup es segura", async () => {
-            // El código fuente usa .then(({ data: { user } }) => ...).
-            // Si getUser rechaza, .then() se saltea y nunca se crea el canal.
-            // Simulamos el rechazo mediante una promesa que nunca llama a .then()
-            // (promesa eternamente pendiente) — equivale a un error de red donde
-            // la auth nunca responde. Alternativamente resolvemos con data:null
-            // para cubrir el branch de usuario no disponible por error de red.
             mockGetUser.mockReturnValue(
                 Promise.resolve({ data: { user: null } }),
             );
@@ -466,7 +421,6 @@ describe("subscribeToChatList", () => {
         });
 
         it("la promesa pendiente (timeout de red) no lanza y cleanup es seguro", () => {
-            // getUser nunca resuelve ni rechaza — simula un timeout de red
             mockGetUser.mockReturnValue(new Promise(() => {}));
 
             const unsub = subscribeToChatList(jest.fn());
@@ -477,10 +431,7 @@ describe("subscribeToChatList", () => {
     });
 });
 
-// ═════════════════════════════════════════════════════════════════════════════
 //  Aislamiento entre suscripciones
-// ═════════════════════════════════════════════════════════════════════════════
-
 describe("aislamiento entre suscripciones concurrentes", () => {
 
     const CHAT_ID_2 = "7ba7b810-9dad-41d4-80b4-00c04fd430c8";
@@ -495,13 +446,9 @@ describe("aislamiento entre suscripciones concurrentes", () => {
     });
 
     it("hacer unsub de un canal no afecta al otro", () => {
-        // Con el nuevo mock, channel() retorna un objeto único por canal
-        // (mismo objeto en .on() y .subscribe()), así removeChannel recibe
-        // exactamente ese objeto. Lo capturamos via mockChannel.mock.results.
         const unsub1 = subscribeToMessages(CHAT_ID,   jest.fn());
         subscribeToMessages(CHAT_ID_2, jest.fn());
 
-        // Los objetos de canal creados en orden
         const channelObj1 = mockChannel.mock.results[0].value;
         const channelObj2 = mockChannel.mock.results[1].value;
 
