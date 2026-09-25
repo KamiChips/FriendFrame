@@ -200,6 +200,4 @@ export async function markMessagesAsRead(
     .eq("chat_id", chatId)
     .eq("is_read", false)
     .neq("sender_id", userId);
-
-  console.log("markMessagesAsRead:", { chatId, userId, error, count });
 }

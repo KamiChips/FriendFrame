@@ -53,7 +53,6 @@ export async function createPost(
 
     return { data: data as Post, error: null };
   } catch (err) {
-    // console.log("🔴 ERROR REAL DE SUPABASE EN CREATE POST:", err);
     return { data: null, error: parseError(err) };
   }
 }

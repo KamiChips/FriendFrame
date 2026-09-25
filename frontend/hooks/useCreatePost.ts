@@ -44,8 +44,6 @@ const INITIAL_STATE: CreatePostState = {
 export function useCreatePost(authorId: string): UseCreatePostReturn {
   const [state, setState] = useState<CreatePostState>(INITIAL_STATE);
 
-  console.log("[UseCreatPost] authorId recibido:", authorId);
-
   const patch = useCallback(
     (partial: Partial<CreatePostState>) =>
       setState((prev) => ({ ...prev, ...partial })),

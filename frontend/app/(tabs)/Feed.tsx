@@ -169,7 +169,6 @@ export default function FeedScreen() {
         comments={[]}
         onAddComment={(texto) => {
           // TODO: conectar con acción de comentar
-          console.log("comentario en", item.id, texto);
         }}
       />
     );
