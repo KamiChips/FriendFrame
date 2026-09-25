@@ -109,7 +109,6 @@ export default function CreatePostModal({
         mimeType: "image/jpeg", // Siempre será JPEG gracias al manipulador
       });
     } catch (err) {
-      console.error("Error al procesar la imagen:", err);
       Alert.alert("Error", "No se pudo preparar la imagen para subir.");
     }
   };
