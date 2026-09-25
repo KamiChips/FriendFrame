@@ -59,10 +59,7 @@ const ChatScreen = () => {
         100,
       );
 
-      console.log("Ejecutando markMessagesAsRead...");
-
       await markMessagesAsRead(chatId, user?.user_id);
-      console.log("markMessagesAsRead completado");
     };
 
     load();

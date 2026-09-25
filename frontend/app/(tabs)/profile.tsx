@@ -73,9 +73,7 @@ export default function ProfileScreen() {
     if (!targetUserId || !currentUser) return;
     setLoadingProfile(true);
 
-    console.time("getProfile");
     const { data, error } = await getProfile(targetUserId, currentUser.user_id);
-    console.timeEnd("getProfile");
 
     if (error) {
       Alert.alert("Error", error);
@@ -343,7 +341,6 @@ export default function ProfileScreen() {
                       <TouchableOpacity
                         key={post.post_id}
                         className="w-[32%] aspect-square bg-gray-200 dark:bg-[#2A3654]"
-                        onPress={() => console.log("Post:", post.post_id)}
                       >
                         <Image
                           source={{ uri: post.media }}
@@ -448,11 +445,9 @@ export default function ProfileScreen() {
         <View className="z-10 absolute bottom-6 right-6">
           <FloatingMenu
             onCreatePost={() => {
-              console.log("Crear Post en", profile.user_id);
               loadFeed(); // Recarga el feed al publicar post
             }}
             onCreateFragment={() => {
-              console.log("Crear Fragment en", profile.user_id);
               loadFeed(); // Recarga el feed al publicar fragment
             }}
             targetUserId={profile.user_id}
