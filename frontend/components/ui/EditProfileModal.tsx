@@ -97,7 +97,6 @@ export function EditProfileModal({
     }
 
     if (newUrl) {
-      console.log("Nueva URL de foto:", newUrl);
       setProfilePic(newUrl);
       onSaved(name, username, newUrl);
     }

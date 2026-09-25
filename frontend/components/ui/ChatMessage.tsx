@@ -37,8 +37,6 @@ const ChatMessage = ({
     </>
   );
 
-  console.log(initials);
-
   return (
     <View className={`${isMe ? "self-end" : "self-start"} max-w-[65%] my-1`}>
       {isMe ? (
