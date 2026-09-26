@@ -105,7 +105,7 @@ function ListFooter({
     return (
       <View className="items-center py-8">
         <Text className="font-spartan text-sm text-gray-400 dark:text-gray-500">
-          You've reached the end 🎉
+          You've reached the end
         </Text>
       </View>
     );
