@@ -4,7 +4,7 @@ require("dotenv").config({
 
 module.exports = {
     preset: "jest-expo",
-    testMatch: ["**/__tests__/integration/*-test.ts"],
+    testMatch: ["**/__tests__/integration/**/*-test.ts"],
     testEnvironment: "node",
     testTimeout: 15000,
     setupFiles: ["<rootDir>/__tests__/integration/helpers/setup.ts"],

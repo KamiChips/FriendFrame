@@ -28,10 +28,8 @@ export function ChatBadgeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // Carga inicial
     refreshBadge();
 
-    // Realtime — actualiza el badge cuando llega un mensaje nuevo
     const unsub = subscribeToChatList(refreshBadge);
     return unsub;
   }, [refreshBadge]);
