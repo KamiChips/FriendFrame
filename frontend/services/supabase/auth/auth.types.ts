@@ -3,7 +3,6 @@ export interface AuthUser {
   full_name: string;
   username: string;
   email: string;
-  confirmation_sent_at: string;
   email_confirmed_at: string;
   profile_pic: string | null;
   created_at: string;

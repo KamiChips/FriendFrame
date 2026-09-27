@@ -49,7 +49,11 @@ export async function signUp({
     const profile = await waitForProfile(authData.user.id);
 
     if (!authData.user.confirmation_sent_at) {
-      authData.user.confirmation_sent_at = (await resendVerificationEmail(authData.user.email)).timestamp
+      try {
+        await resendVerificationEmail(authData.user.email);
+      } catch(resendError) {
+        console.error("Failed to resend verification email after signup", resendError);
+      }
     }
 
     return { data: profile, error: null };
