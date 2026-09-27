@@ -14,9 +14,11 @@ export function RouteGuard() {
 
     if (!user && !isAuthGroup) {
       router.replace("/(auth)/login");
+    } else if (user && user.email_confirmed_at === null) {
+      router.replace("/(auth)/verify-email")
     } else if (user && isAuthGroup) {
       router.replace("/(tabs)/Feed");
-    }
+    } 
   }, [user, loading, segments]);
   return null;
 }

@@ -1,6 +1,8 @@
 import { supabase } from "@/lib/supabase/client";
 import {
   AuthUser,
+  EmailVerificationRetryResult,
+  RetryCheckResult,
   EMAIL_REGEX,
   MAX_FULL_NAME_LEN,
   MIN_PASSWORD_LEN,
@@ -54,7 +56,7 @@ export async function fetchProfile(userId: string): Promise<AuthUser> {
   const { data, error } = await supabase
     .from("users")
     .select(
-      "user_id, full_name, username, email, profile_pic, created_at, updated_at",
+      "user_id, full_name, username, email, profile_pic, created_at, updated_at, email_confirmed_at, confirmation_sent_at",
     )
     .eq("user_id", userId)
     .single();
@@ -81,4 +83,41 @@ export async function waitForProfile(userId: string): Promise<AuthUser> {
   }
 
   throw new Error("No se pudo crear el perfil. Intenta de nuevo.");
+}
+
+export async function resendVerificationEmail( email:string|undefined): Promise<EmailVerificationRetryResult> {
+  if (!email) throw new Error("Email wasn't provided.")
+
+  const { data, error: checkError } = await supabase
+    .rpc('check_email_retry_limit', { user_email: email })
+    .single<RetryCheckResult>();
+
+  if (checkError) throw checkError;
+
+  if (!data?.can_retry) {
+    const wait = data?.retry_after_seconds ?? 60;
+    throw new Error(`Please wait ${wait} seconds before retrying.`);
+  }
+  
+  const { data: resendData, error } = await supabase.auth.resend({
+    type: 'signup',
+    email: email,
+  });
+
+  if (error) throw error;
+  if (!resendData) throw new Error("Failed to send verification email.");
+  
+  const completionDate = new Date();
+
+  return {
+    emailVerificationSent: true,
+    timestamp: completionDate.toISOString()
+  };
+}
+
+export class RetryLimitError extends Error {
+  constructor(public retryAfterSeconds: number) {
+    super(`Wait ${retryAfterSeconds} seconds before retrying.`);
+    this.name = "RetryLimitError";
+  }
 }
