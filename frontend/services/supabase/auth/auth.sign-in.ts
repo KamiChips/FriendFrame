@@ -26,12 +26,18 @@ export async function signIn({
         password,
       });
 
-    if (authError) throw authError;
+    if (authError) {
+      if (authError.message.includes("Email not confirmed")) {
+        throw new EmailNotConfirmedError(cleanEmail);
+      }
+      throw authError;
+    } 
     if (!authData.user) throw new Error("No se pudo iniciar sesión.");
 
     const profile = await fetchProfile(authData.user.id);
     return { data: profile, error: null };
   } catch (err) {
+    if (err instanceof EmailNotConfirmedError) throw err;
     return { data: null, error: parseAuthError(err) };
   }
 }
@@ -100,5 +106,12 @@ export async function getCurrentUser(): Promise<AuthResult<AuthUser>> {
     return { data: profile, error: null };
   } catch (err) {
     return { data: null, error: parseAuthError(err) };
+  }
+}
+
+export class EmailNotConfirmedError extends Error {
+  constructor(public email: string) {
+    super("Confirm your email before logging in");
+    this.name = "EmailNotConfirmedError"
   }
 }

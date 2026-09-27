@@ -13,10 +13,10 @@ import { TextField } from "../../components/ui/TextField";
 import { Button } from "../../components/ui/Button";
 import { router, Stack } from "expo-router";
 import {
+  EmailNotConfirmedError,
   signIn,
   signInWithGoogle,
 } from "@/services/supabase/auth/auth.sign-in";
-import { LOCATION_ID } from "expo-router/build/rsc/router/common";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -36,13 +36,22 @@ export default function LoginScreen() {
     }
 
     setLoading(true);
-    const { data, error: authError } = await signIn({ email, password });
-    setLoading(false);
 
-    if (authError) {
-      setError(authError);
-      return;
+    try {
+      const { data, error: authError } = await signIn({ email, password });
+      if (authError) {
+        setError(authError);
+      }
+    } catch (error) {
+      if (error instanceof EmailNotConfirmedError) {
+        router.replace(`/(auth)/verify-email?email=${encodeURIComponent(error.email)}`)
+        return;
+      }
+      setError("An unexpected error ocurred.");
+    } finally {
+      setLoading(false)
     }
+    
   };
 
   const handleGoogleSignIn = async () => {
