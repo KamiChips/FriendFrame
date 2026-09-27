@@ -48,19 +48,11 @@ export default function SignUpScreen() {
   };
 
   const handleRegister = async () => {
-    console.log("[UI] Click Register");
     setError(null);
 
     if (!validateTerms()) return;
 
     const { full_name, username, email, password } = form;
-
-    console.log("[UI] Datos:", {
-      full_name,
-      username,
-      email,
-      passwordLength: password.length,
-    });
 
     if (!full_name.trim() || !username.trim() || !email.trim() || !password) {
       setError("Completa todos los campos.");
@@ -68,7 +60,6 @@ export default function SignUpScreen() {
     }
 
     setLoading(true);
-    console.log("[UI] Llamando signUp");
     const { data, error: authError } = await signUp({
       email,
       password,
@@ -76,10 +67,6 @@ export default function SignUpScreen() {
       username,
     });
 
-    console.log("[UI] Resultado signUp:", {
-      data,
-      authError,
-    });
     setLoading(false);
 
     if (authError) {

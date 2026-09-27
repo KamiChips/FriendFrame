@@ -214,9 +214,10 @@ export default function FeedCard({
         publicationType={publicationType}
         initialContent={textContent}
         onDeleted={onDeleted}
-        onEdited={onEdited}
-        onEdit={() => console.log("Lógica para editar post")}
-      />
+        onEdited={onEdited} 
+        onEdit={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
 
     {/* MODAL DE SHARE */}
       <ShareChatModal 

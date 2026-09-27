@@ -59,7 +59,6 @@ export function useShareToChat() {
         const { data: chat, error: chatError } = await createDirectChat(friendId);
         
         if (chatError || !chat) {
-          console.warn(`No se pudo resolver el chat con ${friendId}`, chatError);
           continue; // Si falla uno, intentamos con el siguiente
         }
         

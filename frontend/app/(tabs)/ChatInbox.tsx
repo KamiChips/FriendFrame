@@ -41,11 +41,6 @@ const ChatInboxScreen = () => {
   const loadChats = useCallback(async () => {
     const { data } = await getConversations();
     if (data) {
-      console.log(
-        "Chats recargados, unread_counts:",
-        data.map((c) => ({ id: c.chat_id, unread: c.unread_count })),
-      );
-
       setChats(data);
     }
     setLoading(false);
@@ -59,29 +54,16 @@ const ChatInboxScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log("Inbox ganó foco — recargando chats");
       loadChats();
       refreshBadge();
     }, [loadChats]),
   );
 
   useEffect(() => {
-    console.log("targetUserId recibido:", targetUserId);
-    console.log("user:", user?.user_id);
-    if (!targetUserId || !user) {
-      console.log("Sin targetUserId o user, no hace nada");
-
-      return;
-    }
+    if (!targetUserId || !user) return;
 
     const openOrCreate = async () => {
-      console.log("Llamando createDirectChat con:", targetUserId);
-
       const { data, error } = await createDirectChat(targetUserId);
-      console.log("Resultado createDirectChat:", {
-        data: data?.chat_id,
-        error,
-      });
 
       if (error || !data) return;
 
@@ -95,8 +77,6 @@ const ChatInboxScreen = () => {
         .slice(0, 2)
         .join("")
         .toUpperCase();
-
-      console.log("Navegando a:", data.chat_id);
 
       router.navigate({
         pathname: "/ChatScreen",
@@ -178,14 +158,10 @@ const ChatInboxScreen = () => {
             showsVerticalScrollIndicator={false}
           >
             {chats.map((chat) => {
-              console.log("chat_id:", chat.chat_id);
-              console.log("members:", chat.members);
-              console.log("user_id:", user?.user_id);
               // Para chat 1 a 1 el nombre es el del otro miembro
               const otherMember = chat.members.find(
                 (m) => m.user_id !== user?.user_id,
               );
-              console.log("otherMember:", otherMember);
 
               const chatName = chat.is_group
                 ? (chat.group_name ?? "Grupo")
@@ -221,8 +197,6 @@ const ChatInboxScreen = () => {
                   isDark={isDark}
                   targetUserId={targetId}
                   onPress={() => {
-                    console.log("ChatCard presionado, targetId:", targetId);
-
                     router.push({
                       pathname: "/ChatScreen",
                       params: {
