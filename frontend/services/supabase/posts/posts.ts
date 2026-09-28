@@ -9,6 +9,7 @@ import {
   sanitizeDescription,
 } from "./helpers";
 import { Post, PostResult, PostWithCounts } from "./types";
+import safeLogger from "@/lib/logger/safeLogger";
 
 export async function createPost(
   profileOwnerId: string,
@@ -53,6 +54,7 @@ export async function createPost(
 
     return { data: data as Post, error: null };
   } catch (err) {
+    safeLogger.debug("ERROR REAL DE SUPABASE EN CREATE POST:", err);
     return { data: null, error: parseError(err) };
   }
 }
