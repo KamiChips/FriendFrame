@@ -10,6 +10,9 @@ import {
   TRIGGER_WAIT_MS,
   USERNAME_REGEX,
 } from "./auth.types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const PENDING_VERIFICATION_KEY = "pending_verification_email";
 
 export function validateEmail(email: string): string {
   const trimmed = email.trim().toLowerCase();
@@ -56,7 +59,7 @@ export async function fetchProfile(userId: string): Promise<AuthUser> {
   const { data, error } = await supabase
     .from("users")
     .select(
-      "user_id, full_name, username, email, profile_pic, created_at, updated_at, email_confirmed_at, confirmation_sent_at",
+      "user_id, full_name, username, email, profile_pic, created_at, updated_at, email_confirmed_at",
     )
     .eq("user_id", userId)
     .single();
@@ -96,7 +99,7 @@ export async function resendVerificationEmail( email:string|undefined): Promise<
 
   if (!data?.can_retry) {
     const wait = data?.retry_after_seconds ?? 60;
-    throw new Error(`Please wait ${wait} seconds before retrying.`);
+    throw new RetryLimitError(data?.retry_after_seconds ?? 60);
   }
   
   const { data: resendData, error } = await supabase.auth.resend({
@@ -120,4 +123,16 @@ export class RetryLimitError extends Error {
     super(`Wait ${retryAfterSeconds} seconds before retrying.`);
     this.name = "RetryLimitError";
   }
+}
+
+export async function savePendingVerificationEmail(email: string): Promise<void> {
+  await AsyncStorage.setItem(PENDING_VERIFICATION_KEY, email);
+}
+
+export async function getPendingVerificationEmail(): Promise<string | null> {
+  return AsyncStorage.getItem(PENDING_VERIFICATION_KEY);
+}
+
+export async function clearPendingVerificationEmail(): Promise<void> {
+  await AsyncStorage.removeItem(PENDING_VERIFICATION_KEY);
 }

@@ -7,7 +7,9 @@ import {
 import { parseAuthError } from "./auth.errors";
 import { _removeCurrentDeviceToken } from "./auth.notifications";
 import {
+  clearPendingVerificationEmail,
   fetchProfile,
+  savePendingVerificationEmail,
   validateEmail,
   validateRedirectUrl,
 } from "./auth.helpers";
@@ -28,6 +30,7 @@ export async function signIn({
 
     if (authError) {
       if (authError.message.includes("Email not confirmed")) {
+        await savePendingVerificationEmail(cleanEmail);
         throw new EmailNotConfirmedError(cleanEmail);
       }
       throw authError;
@@ -35,6 +38,7 @@ export async function signIn({
     if (!authData.user) throw new Error("No se pudo iniciar sesión.");
 
     const profile = await fetchProfile(authData.user.id);
+    await clearPendingVerificationEmail();
     return { data: profile, error: null };
   } catch (err) {
     if (err instanceof EmailNotConfirmedError) throw err;

@@ -61,6 +61,16 @@ describe("signUp - Integration", () => {
     it("throw error if email is already registered", async () => {
         await signUp(TEST_USER);
 
+        const { data: profile } = await supabaseAdmin
+            .from("users")
+            .select("user_id")
+            .eq("username", TEST_USER.username)
+            .single();
+
+        await supabaseAdmin.auth.admin.updateUserById(profile!.user_id, {
+            email_confirm: true,
+        });
+
         const result = await signUp({
             ...TEST_USER,
             username: "otro_integration_username"

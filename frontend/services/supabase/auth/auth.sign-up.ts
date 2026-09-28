@@ -7,7 +7,8 @@ import {
   validatePassword,
   validateUsername,
   waitForProfile,
-  resendVerificationEmail
+  resendVerificationEmail,
+  savePendingVerificationEmail
 } from "./auth.helpers";
 
 export async function signUp({
@@ -55,9 +56,11 @@ export async function signUp({
         console.error("Failed to resend verification email after signup", resendError);
       }
     }
+    await savePendingVerificationEmail(cleanEmail);
 
     return { data: profile, error: null };
   } catch (err) {
+    console.error("NOSE QUE ERROR EN SIGNUP:", err);
     return { data: null, error: parseAuthError(err) };
   }
 }
