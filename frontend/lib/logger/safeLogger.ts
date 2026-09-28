@@ -1,3 +1,5 @@
+//import * as Sentry from "@sentry/react-native";
+
 type LogData = Record<string, any> | any[] | any;
 
  interface SafeLogger {
@@ -8,15 +10,15 @@ type LogData = Record<string, any> | any[] | any;
 }
 
 // Lista de palabras clave sensibles que deben ser ocultadas en los logs
-const SENSITIVE_KEYS = new Set([
+const SENSITIVE_KEYS = [
     "token",
     "password",
     "email",
     "user_id",
-]);
+].map((k) => k.toLowerCase());
 
 const StringLengthLimit = 1000; // Limite para strings
-const isDev = process.env.NODE_ENV === "development"; // Determina si el entorno es de desarrollo
+const isDev = () => __DEV__; // Determina si el entorno es de desarrollo
 
 // Sanitiza los datos para evitar exponer información sensible o demasiado larga en los logs
 function sanitizeData(value: any,seen = new WeakSet<object>()): LogData {
@@ -43,7 +45,7 @@ function sanitizeData(value: any,seen = new WeakSet<object>()): LogData {
         return {
             name: value.name,
             message: sanitizeData(value.message, seen),
-            stack: isDev ? value.stack : undefined,
+            stack: isDev() ? value.stack : undefined,
         };
     }
 
@@ -59,7 +61,7 @@ function sanitizeData(value: any,seen = new WeakSet<object>()): LogData {
         const isSensitive = [...SENSITIVE_KEYS].some((f) => lowerKey.includes(f.toLowerCase())); // Verifica si la clave contiene alguna palabra sensible
 
         if (isSensitive) {
-            sanitized[key] = "[Sensitive Data]";
+            sanitized[key] = "[REDACTED]";
             continue;
         }
 
@@ -84,17 +86,28 @@ function formatLogMessage(level: string, msg: string): string {
 // Implementación del logger seguro
 export const safeLogger: SafeLogger = {
     debug(msg, data) { // log tipo debug solo en desarrollo
-        if(!isDev) return;
-        console.debug(formatLogMessage("debug", msg), data != undefined ? sanitizeData(data) : undefined);
+        if(!isDev()) return;
+        console.debug(formatLogMessage("debug", msg), data != undefined ? sanitizeData(data) : "");
     },
     info(msg, data) { // Log para información general 
-        console.info(formatLogMessage("info", msg), data != undefined ? sanitizeData(data) : undefined);
+        if(!isDev()) return;
+        console.info(formatLogMessage("info", msg), data != undefined ? sanitizeData(data) : "");
     },
     warn(msg, data) { // Log para advertencias
-        console.warn(formatLogMessage("warn", msg), data != undefined ? sanitizeData(data) : undefined);
+        console.warn(formatLogMessage("warn", msg), data != undefined ? sanitizeData(data) : "");
     },
     error(msg, error) { // Log para errores
-        console.error(formatLogMessage("error", msg), error != undefined ? sanitizeData(error) : undefined);
+        //const sanitized = error !== undefined ? sanitizeData(error) : "";
+        console.error(formatLogMessage("error", msg), error != undefined ? sanitizeData(error) : "");
+
+        /*
+        try {
+            Sentry.captureException(error instanceof Error ? error : new Error(msg), {
+                extra: { message: msg, data: sanitized },
+            });
+        } catch (sentryError) {
+            console.warn(formatLogMessage("warn", "Sentry captureException failed"), sentryError);
+        }*/
     },
 }
 

@@ -6,6 +6,7 @@ import {
   MAX_PAGE_LIMIT,
 } from "./chat.types";
 import { UUID_REGEX } from "../helpers/validation";
+import safeLogger from "@/lib/logger/safeLogger";
 
 export function assertUUIDs(values: string[], label = "ID"): void {
   values.forEach((v, i) => {
@@ -200,4 +201,6 @@ export async function markMessagesAsRead(
     .eq("chat_id", chatId)
     .eq("is_read", false)
     .neq("sender_id", userId);
+
+    safeLogger.debug("markMessagesAsRead:", { chatId, userId, error, count });
 }
