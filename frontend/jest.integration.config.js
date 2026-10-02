@@ -1,38 +1,34 @@
-require("dotenv").config({
-    path: require("path").resolve(__dirname, ".env.test")
+require('dotenv').config({
+    path: require('path').resolve(__dirname, '.env.test'),
 });
 
 module.exports = {
-    displayName: "integration",
+    displayName: 'integration',
 
-    preset: "jest-expo",
+    preset: 'jest-expo',
 
-    testMatch: [
-        "**/__tests__/integration/**/*-test.ts"
-    ],
+    testMatch: ['**/__tests__/integration/**/*-test.ts'],
 
-    testEnvironment: "node",
+    testEnvironment: 'node',
 
     testTimeout: 15000,
 
-    setupFiles: [
-        "<rootDir>/__tests__/integration/helpers/setup.ts"
-    ],
+    setupFiles: ['<rootDir>/__tests__/integration/helpers/setup.ts'],
 
     moduleNameMapper: {
-        "^@/(.*)$": "<rootDir>/$1",
+        '^@/(.*)$': '<rootDir>/$1',
 
-        "@react-native-async-storage/async-storage":
-        "<rootDir>/node_modules/@react-native-async-storage/async-storage/jest/async-storage-mock"
+        '@react-native-async-storage/async-storage':
+            '<rootDir>/node_modules/@react-native-async-storage/async-storage/jest/async-storage-mock',
     },
 
     collectCoverageFrom: [
-    "app/**/*.{ts,tsx}",
-    "services/**/*.{ts,tsx}",
-    "lib/**/*.{ts,tsx}",
+        'app/**/*.{ts,tsx}',
+        'services/**/*.{ts,tsx}',
+        'lib/**/*.{ts,tsx}',
 
-    "!**/*.d.ts",
-    "!**/__tests__/**",
-    "!**/__mocks__/**"
-]
+        '!**/*.d.ts',
+        '!**/__tests__/**',
+        '!**/__mocks__/**',
+    ],
 };

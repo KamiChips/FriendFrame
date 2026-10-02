@@ -1,8 +1,8 @@
-import { supabase } from "@/lib/supabase/client";
-import { RelationshipStatus, SocialResult, SocialUser } from "./social.types";
-import { parseError } from "./social.helper";
-import { assertUUID, getAuthUser } from "../helpers/validation";
-import { fetchRelationshipStatus } from "./social.queries";
+import { supabase } from '@/lib/supabase/client';
+import { RelationshipStatus, SocialResult, SocialUser } from './social.types';
+import { parseError } from './social.helper';
+import { assertUUID, getAuthUser } from '../helpers/validation';
+import { fetchRelationshipStatus } from './social.queries';
 
 /**
  *  const { data: rel } = await getRelationshipStatus(targetUserId)
@@ -11,38 +11,41 @@ import { fetchRelationshipStatus } from "./social.queries";
  * if (rel?.i_follow_them) return <BotonDejarSeguir />
  */
 export async function getRelationshipStatus(
-  targetUserId: string,
+    targetUserId: string
 ): Promise<SocialResult<RelationshipStatus>> {
-  try {
-    assertUUID(targetUserId, "ID de usuario");
-    const currentUserId = await getAuthUser();
-    const status = await fetchRelationshipStatus(currentUserId, targetUserId);
-    return { data: status, error: null };
-  } catch (err) {
-    return { data: null, error: parseError(err) };
-  }
+    try {
+        assertUUID(targetUserId, 'ID de usuario');
+        const currentUserId = await getAuthUser();
+        const status = await fetchRelationshipStatus(
+            currentUserId,
+            targetUserId
+        );
+        return { data: status, error: null };
+    } catch (err) {
+        return { data: null, error: parseError(err) };
+    }
 }
 
 export async function getFriends(
-  userId: string,
+    userId: string
 ): Promise<SocialResult<SocialUser[]>> {
-  try {
-    assertUUID(userId, "ID de usuario");
+    try {
+        assertUUID(userId, 'ID de usuario');
 
-    const { data, error } = await supabase.rpc("get_friends", {
-      target_user_id: userId,
-    });
+        const { data, error } = await supabase.rpc('get_friends', {
+            target_user_id: userId,
+        });
 
-    if (error) throw error;
+        if (error) throw error;
 
-    const friends: SocialUser[] = (data ?? []).map((u: any) => ({
-      ...u,
-      i_follow_them: true,
-      is_friend: true,
-    }));
+        const friends: SocialUser[] = (data ?? []).map((u: any) => ({
+            ...u,
+            i_follow_them: true,
+            is_friend: true,
+        }));
 
-    return { data: friends, error: null };
-  } catch (err) {
-    return { data: null, error: parseError(err) };
-  }
+        return { data: friends, error: null };
+    } catch (err) {
+        return { data: null, error: parseError(err) };
+    }
 }
