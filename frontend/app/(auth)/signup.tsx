@@ -182,8 +182,7 @@ export default function SignUpScreen() {
 
                         {error && (
                             <Text className="text-red-500 text-sm mt-1">
-                                {error.charAt(0).toUpperCase() +
-                                    error.slice(1)}
+                                {error.charAt(0).toUpperCase() + error.slice(1)}
                             </Text>
                         )}
 

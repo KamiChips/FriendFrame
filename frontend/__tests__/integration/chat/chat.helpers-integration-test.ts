@@ -351,12 +351,10 @@ describe('getChatById', () => {
         mockFrom.mockReturnValue({
             select: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                    single: jest
-                        .fn()
-                        .mockResolvedValueOnce({
-                            data: null,
-                            error: new Error('not found'),
-                        }),
+                    single: jest.fn().mockResolvedValueOnce({
+                        data: null,
+                        error: new Error('not found'),
+                    }),
                 }),
             }),
         });

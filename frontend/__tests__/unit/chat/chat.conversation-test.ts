@@ -344,12 +344,10 @@ describe('getConversations', () => {
         mockRpc.mockResolvedValueOnce({ data: mockRows, error: null });
         mockFrom.mockReturnValue({
             select: jest.fn().mockReturnValue({
-                in: jest
-                    .fn()
-                    .mockResolvedValueOnce({
-                        data: null,
-                        error: new Error('Members error'),
-                    }),
+                in: jest.fn().mockResolvedValueOnce({
+                    data: null,
+                    error: new Error('Members error'),
+                }),
             }),
         });
 

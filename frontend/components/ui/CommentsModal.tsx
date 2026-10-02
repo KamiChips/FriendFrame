@@ -15,7 +15,10 @@ import { BlurView } from 'expo-blur';
 
 // Hook para cargar y publicar comentarios
 import { useComments } from '@/hooks/useComments';
-import { PublicationTarget , AppComment } from '@/services/supabase/interactions/types';
+import {
+    PublicationTarget,
+    AppComment,
+} from '@/services/supabase/interactions/types';
 
 // Hook para respetar las "zonas seguras" del celular (notch arriba, barra de navegación abajo)
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

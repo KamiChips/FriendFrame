@@ -59,7 +59,8 @@ const NotificationCard = ({
         case NotificationType.COMMENT:
             message = (
                 <>
-                    <Text className="font-spartan-bold">{name}</Text> comentó: &quot;
+                    <Text className="font-spartan-bold">{name}</Text> comentó:
+                    &quot;
                     {comment}&quot;
                 </>
             );

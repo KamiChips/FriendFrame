@@ -239,11 +239,9 @@ describe('uploadToStorage', () => {
     it('uploads and returns public url', async () => {
         mockStorageFrom.mockReturnValue({
             upload: jest.fn().mockResolvedValue({ error: null }),
-            getPublicUrl: jest
-                .fn()
-                .mockReturnValue({
-                    data: { publicUrl: 'https://cdn.example.com/file.jpg' },
-                }),
+            getPublicUrl: jest.fn().mockReturnValue({
+                data: { publicUrl: 'https://cdn.example.com/file.jpg' },
+            }),
         });
 
         const result = await uploadToStorage(

@@ -106,12 +106,10 @@ export async function toggleFollow(
                 error: null,
             };
         } else {
-            const { error } = await supabase
-                .from('follows')
-                .insert({
-                    follower_id: currentUserId,
-                    following_id: targetUserId,
-                });
+            const { error } = await supabase.from('follows').insert({
+                follower_id: currentUserId,
+                following_id: targetUserId,
+            });
 
             if (error) throw error;
             notifyFollow(currentUserId, targetUserId);

@@ -8,7 +8,11 @@ import {
     Platform,
     ActivityIndicator,
     Alert,
- SafeAreaView, KeyboardAvoidingView, ScrollView , useColorScheme } from 'react-native';
+    SafeAreaView,
+    KeyboardAvoidingView,
+    ScrollView,
+    useColorScheme,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import MaskedView from '@react-native-masked-view/masked-view';

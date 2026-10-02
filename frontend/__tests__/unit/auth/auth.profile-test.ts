@@ -195,20 +195,16 @@ describe('editUsername', () => {
             callCount++;
             if (callCount === 1)
                 return {
-                    select: jest
-                        .fn()
-                        .mockReturnValue({
-                            eq: jest.fn().mockReturnValue({ single: singleFn }),
-                        }),
+                    select: jest.fn().mockReturnValue({
+                        eq: jest.fn().mockReturnValue({ single: singleFn }),
+                    }),
                 };
             return {
-                select: jest
-                    .fn()
-                    .mockReturnValue({
-                        eq: jest
-                            .fn()
-                            .mockReturnValue({ maybeSingle: maybeSingleFn }),
-                    }),
+                select: jest.fn().mockReturnValue({
+                    eq: jest
+                        .fn()
+                        .mockReturnValue({ maybeSingle: maybeSingleFn }),
+                }),
             };
         });
 
@@ -232,34 +228,26 @@ describe('editUsername', () => {
             callCount++;
             if (callCount === 1)
                 return {
-                    select: jest
-                        .fn()
-                        .mockReturnValue({
-                            eq: jest
-                                .fn()
-                                .mockReturnValue({ single: singleCurrent }),
-                        }),
+                    select: jest.fn().mockReturnValue({
+                        eq: jest
+                            .fn()
+                            .mockReturnValue({ single: singleCurrent }),
+                    }),
                 };
             if (callCount === 2)
                 return {
-                    select: jest
-                        .fn()
-                        .mockReturnValue({
-                            eq: jest.fn().mockReturnValue({ maybeSingle }),
-                        }),
+                    select: jest.fn().mockReturnValue({
+                        eq: jest.fn().mockReturnValue({ maybeSingle }),
+                    }),
                 };
             return {
-                update: jest
-                    .fn()
-                    .mockReturnValue({
-                        eq: jest
+                update: jest.fn().mockReturnValue({
+                    eq: jest.fn().mockReturnValue({
+                        select: jest
                             .fn()
-                            .mockReturnValue({
-                                select: jest
-                                    .fn()
-                                    .mockReturnValue({ single: singleUpdate }),
-                            }),
+                            .mockReturnValue({ single: singleUpdate }),
                     }),
+                }),
             };
         });
 
@@ -283,34 +271,26 @@ describe('editUsername', () => {
             callCount++;
             if (callCount === 1)
                 return {
-                    select: jest
-                        .fn()
-                        .mockReturnValue({
-                            eq: jest
-                                .fn()
-                                .mockReturnValue({ single: singleCurrent }),
-                        }),
+                    select: jest.fn().mockReturnValue({
+                        eq: jest
+                            .fn()
+                            .mockReturnValue({ single: singleCurrent }),
+                    }),
                 };
             if (callCount === 2)
                 return {
-                    select: jest
-                        .fn()
-                        .mockReturnValue({
-                            eq: jest.fn().mockReturnValue({ maybeSingle }),
-                        }),
+                    select: jest.fn().mockReturnValue({
+                        eq: jest.fn().mockReturnValue({ maybeSingle }),
+                    }),
                 };
             return {
-                update: jest
-                    .fn()
-                    .mockReturnValue({
-                        eq: jest
+                update: jest.fn().mockReturnValue({
+                    eq: jest.fn().mockReturnValue({
+                        select: jest
                             .fn()
-                            .mockReturnValue({
-                                select: jest
-                                    .fn()
-                                    .mockReturnValue({ single: singleUpdate }),
-                            }),
+                            .mockReturnValue({ single: singleUpdate }),
                     }),
+                }),
             };
         });
 

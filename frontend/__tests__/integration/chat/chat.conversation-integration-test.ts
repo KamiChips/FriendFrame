@@ -148,21 +148,17 @@ describe('createDirectChat', () => {
                 return {
                     insert: jest.fn().mockReturnThis(),
                     select: jest.fn().mockReturnThis(),
-                    single: jest
-                        .fn()
-                        .mockResolvedValue({
-                            data: { chat_id: CHAT_ID },
-                            error: null,
-                        }),
+                    single: jest.fn().mockResolvedValue({
+                        data: { chat_id: CHAT_ID },
+                        error: null,
+                    }),
                 };
             }
             return {
-                insert: jest
-                    .fn()
-                    .mockResolvedValue({
-                        data: null,
-                        error: { message: 'members error' },
-                    }),
+                insert: jest.fn().mockResolvedValue({
+                    data: null,
+                    error: { message: 'members error' },
+                }),
             };
         });
 
@@ -418,12 +414,10 @@ describe('getConversations', () => {
         });
         (supabase.from as jest.Mock).mockReturnValue({
             select: jest.fn().mockReturnThis(),
-            in: jest
-                .fn()
-                .mockResolvedValue({
-                    data: null,
-                    error: { message: 'members error' },
-                }),
+            in: jest.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'members error' },
+            }),
         });
 
         const { data, error } = await getConversations();

@@ -299,12 +299,10 @@ describe('getMessages', () => {
     });
 
     it('no llama a markMessagesAsRead si Supabase falla', async () => {
-        const rangeFn = jest
-            .fn()
-            .mockResolvedValueOnce({
-                data: null,
-                error: new Error('DB error'),
-            });
+        const rangeFn = jest.fn().mockResolvedValueOnce({
+            data: null,
+            error: new Error('DB error'),
+        });
         const orderFn = jest.fn().mockReturnValue({ range: rangeFn });
         const eqFn = jest.fn().mockReturnValue({ order: orderFn });
         const selFn = jest.fn().mockReturnValue({ eq: eqFn });
@@ -316,12 +314,10 @@ describe('getMessages', () => {
     });
 
     it('retorna error si Supabase falla', async () => {
-        const rangeFn = jest
-            .fn()
-            .mockResolvedValueOnce({
-                data: null,
-                error: new Error('DB error'),
-            });
+        const rangeFn = jest.fn().mockResolvedValueOnce({
+            data: null,
+            error: new Error('DB error'),
+        });
         const orderFn = jest.fn().mockReturnValue({ range: rangeFn });
         const eqFn = jest.fn().mockReturnValue({ order: orderFn });
         const selFn = jest.fn().mockReturnValue({ eq: eqFn });

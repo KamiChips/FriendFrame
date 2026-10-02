@@ -188,21 +188,17 @@ describe('attachCountsBatch', () => {
 // uploadMediaFile
 describe('uploadMediaFile', () => {
     beforeEach(() => {
-        global.fetch = jest
-            .fn()
-            .mockResolvedValue({
-                blob: jest.fn().mockResolvedValue(new Blob()),
-            });
+        global.fetch = jest.fn().mockResolvedValue({
+            blob: jest.fn().mockResolvedValue(new Blob()),
+        });
     });
 
     it('uploads image and returns public url', async () => {
         mockStorageFrom.mockReturnValue({
             upload: jest.fn().mockResolvedValue({ error: null }),
-            getPublicUrl: jest
-                .fn()
-                .mockReturnValue({
-                    data: { publicUrl: 'https://cdn.example.com/file.jpg' },
-                }),
+            getPublicUrl: jest.fn().mockReturnValue({
+                data: { publicUrl: 'https://cdn.example.com/file.jpg' },
+            }),
         });
 
         const url = await uploadMediaFile('uid-1', 'file://photo.jpg', 'image');

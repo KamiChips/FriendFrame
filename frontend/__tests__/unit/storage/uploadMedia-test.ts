@@ -71,11 +71,9 @@ beforeEach(() => {
         }),
     });
     mockStorageFrom.mockReturnValue({
-        getPublicUrl: jest
-            .fn()
-            .mockReturnValue({
-                data: { publicUrl: 'https://cdn.example.com/file.jpg' },
-            }),
+        getPublicUrl: jest.fn().mockReturnValue({
+            data: { publicUrl: 'https://cdn.example.com/file.jpg' },
+        }),
     });
 });
 
