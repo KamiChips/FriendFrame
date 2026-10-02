@@ -16,13 +16,12 @@ import {
     signIn,
     signInWithGoogle,
 } from '@/services/supabase/auth/auth.sign-in';
-import { LOCATION_ID } from 'expo-router/build/rsc/router/common';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [, setError] = useState<string | null>(null);
 
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
@@ -36,7 +35,7 @@ export default function LoginScreen() {
         }
 
         setLoading(true);
-        const { data, error: authError } = await signIn({ email, password });
+        const { error: authError } = await signIn({ email, password });
         setLoading(false);
 
         if (authError) {
@@ -158,7 +157,7 @@ export default function LoginScreen() {
                             />
                         </TouchableOpacity>
                         <Text className="dark:text-background-light mt-10">
-                            Don't have an account?{' '}
+                            Don&apos;t have an account?{' '}
                             <Text
                                 className="font-semibold dark:text-background-light"
                                 onPress={() => router.push('/(auth)/signup')}

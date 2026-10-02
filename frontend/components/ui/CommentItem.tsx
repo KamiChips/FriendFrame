@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 // 1. INTERFACES DE DATOS
 // Definen la estructura exacta que deben tener los comentarios y las respuestas.
@@ -40,10 +39,6 @@ interface CommentItemProps {
 // las dibuja justo debajo con un margen a la izquierda (anidadas).
 
 export default function CommentItem({ comment, onReply }: CommentItemProps) {
-    // Detecta el modo oscuro para aplicar colores condicionales si es necesario
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
-
     return (
         <View className="mb-4">
             {/* 3. COMENTARIO PRINCIPAL (NIVEL 0) */}

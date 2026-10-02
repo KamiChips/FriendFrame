@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Animated, useColorScheme } from 'react-native';
-import { useReducedMotion } from 'react-native-reanimated';
 
 function SkeletonBox({
     style,

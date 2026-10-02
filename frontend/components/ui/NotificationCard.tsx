@@ -59,8 +59,8 @@ const NotificationCard = ({
         case NotificationType.COMMENT:
             message = (
                 <>
-                    <Text className="font-spartan-bold">{name}</Text> comentó: "
-                    {comment}"
+                    <Text className="font-spartan-bold">{name}</Text> comentó: &quot;
+                    {comment}&quot;
                 </>
             );
             icon = (
@@ -105,7 +105,7 @@ const NotificationCard = ({
             message = (
                 <>
                     <Text className="font-spartan-bold">{name}</Text> te envió
-                    un mensaje: "{comment}"
+                    un mensaje: &quot;{comment}&quot;
                 </>
             );
             icon = (

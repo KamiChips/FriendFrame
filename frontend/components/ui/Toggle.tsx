@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, SwitchProps, useColorScheme } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
-interface CustomSwitchProps extends SwitchProps {}
+type CustomSwitchProps = SwitchProps;
 
 export function Toggle({ value, onValueChange, ...props }: CustomSwitchProps) {
     const colorScheme = useColorScheme();

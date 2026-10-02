@@ -56,7 +56,7 @@ const ChatInboxScreen = () => {
         useCallback(() => {
             loadChats();
             refreshBadge();
-        }, [loadChats])
+        }, [loadChats, refreshBadge])
     );
 
     useEffect(() => {

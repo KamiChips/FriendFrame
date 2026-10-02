@@ -1,12 +1,4 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import {
-    ScrollView,
-    StatusBar,
-    Text,
-    TouchableOpacity,
-    View,
-    useColorScheme,
-} from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import '../../global.css';
 import ProfileIcon from './ProfileIcon';
 import { router } from 'expo-router';

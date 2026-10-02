@@ -38,7 +38,7 @@ export function TextField({
             duration: 200,
             useNativeDriver: false,
         }).start();
-    }, [isFocused, text]);
+    }, [isFocused, text, animateFocus]);
 
     // Interpolación para el label flotante
     const labelTop = animateFocus.interpolate({

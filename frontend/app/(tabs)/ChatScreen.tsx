@@ -26,21 +26,15 @@ const ChatScreen = () => {
     const scrollRef = useRef<ScrollView>(null);
     const { user } = useAuth();
 
-    const {
-        chatId,
-        chatName,
-        chatInitials,
-        isGroup,
-        targetUserId,
-        profilePic,
-    } = useLocalSearchParams<{
-        chatId: string;
-        chatName: string;
-        chatInitials: string;
-        isGroup: string;
-        targetUserId?: string;
-        profilePic?: string;
-    }>();
+    const { chatId, chatName, chatInitials, profilePic } =
+        useLocalSearchParams<{
+            chatId: string;
+            chatName: string;
+            chatInitials: string;
+            isGroup: string;
+            targetUserId?: string;
+            profilePic?: string;
+        }>();
 
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(true);
@@ -69,7 +63,7 @@ const ChatScreen = () => {
         };
 
         load();
-    }, [chatId]);
+    }, [chatId, user?.user_id]);
 
     useEffect(() => {
         if (!chatId) return;
@@ -92,7 +86,7 @@ const ChatScreen = () => {
 
     const handleLoadMore = useCallback(async () => {
         if (loadingMore || !hasMore || !chatId) return;
-        setLoading(true);
+        setLoadingMore(true);
         pageRef.current += 1;
 
         const { data } = await getMessages(chatId, {
@@ -105,7 +99,7 @@ const ChatScreen = () => {
             setHasMore(data.length === 30);
         }
 
-        setLoading(false);
+        setLoadingMore(false);
     }, [chatId, loadingMore, hasMore]);
 
     const handleSend = async (text: string) => {

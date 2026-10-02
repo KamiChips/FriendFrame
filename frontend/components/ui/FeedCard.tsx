@@ -73,12 +73,6 @@ export default function FeedCard({
     // ✅ Hook siempre en el nivel superior, nunca en condicional
     const isDark = useColorScheme() === 'dark';
 
-    // ✅ Lógica del avatar en una variable, sin duplicar el componente
-    const hasImage =
-        authorImage &&
-        typeof authorImage === 'string' &&
-        authorImage.trim() !== '';
-
     const handleLike = async () => {
         if (!publicationId || isTogglingLike) return;
 

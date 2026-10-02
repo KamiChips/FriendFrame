@@ -79,7 +79,8 @@ export default function ExploreScreen() {
                     {showEmpty && (
                         <View className="mt-10 items-center justify-center">
                             <Text className="font-spartan text-gray-400 text-center">
-                                No se encontraron usuarios con "{query}"
+                                No se encontraron usuarios con &quot;{query}
+                                &quot;
                             </Text>
                         </View>
                     )}

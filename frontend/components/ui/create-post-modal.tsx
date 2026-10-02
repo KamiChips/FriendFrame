@@ -63,10 +63,13 @@ export default function CreatePostModal({
     } = useCreatePost(currentUserId);
 
     // Cargar fotos cuando se abre el modal
+    // loadGallery se recrea en cada render; solo debe correr al abrir el modal
+    // (incluirla en el arreglo de dependencias recargaría la galería en cada selección de foto)
     useEffect(() => {
         if (visible && step === 1) {
             loadGallery();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [visible, step]);
 
     const loadGallery = async () => {
@@ -108,7 +111,7 @@ export default function CreatePostModal({
                 fileName: `foto_${Date.now()}.jpg`, // Generamos un nombre único y seguro
                 mimeType: 'image/jpeg', // Siempre será JPEG gracias al manipulador
             });
-        } catch (err) {
+        } catch {
             Alert.alert('Error', 'No se pudo preparar la imagen para subir.');
         }
     };

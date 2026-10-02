@@ -17,7 +17,6 @@ import FeedCard from '@/components/ui/FeedCard';
 import { FeedSkeletonList } from '@/components/ui/FeedCardSkeleton';
 import { useFeed } from '@/hooks/useFeed';
 import { FeedPost } from '@/services/supabase/feed/feed.types';
-import { FeedItem } from '@/services/supabase/posts/types';
 
 //  Helpers
 function timeAgo(isoDate: string): string {
@@ -135,7 +134,7 @@ export default function FeedScreen() {
     useFocusEffect(
         useCallback(() => {
             refresh();
-        }, [])
+        }, [refresh])
     );
 
     // Adaptador: convierte FeedPost → props de FeedCard

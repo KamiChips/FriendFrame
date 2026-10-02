@@ -7,15 +7,12 @@ import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import Feather from '@expo/vector-icons/Feather';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { getUnreadCount } from '@/services/supabase/notifications/notification.queries';
 import { useChatBadge } from '@/context/ChatContext';
-import { useNotificationsBadge } from '@/context/NotificationContext';
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const { unreadMessages } = useChatBadge();
-    const { counts } = useNotificationsBadge();
 
     return (
         <Tabs

@@ -143,6 +143,7 @@ export const useSettings = (userId?: string) => {
         loadingBlocked,
         loadingPosts,
         loadingFragments,
+        loading,
         loadBlockedUsers,
         loadMyPosts,
         loadMyFragments,

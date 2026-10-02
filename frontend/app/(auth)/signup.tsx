@@ -4,7 +4,6 @@ import {
     View,
     Text,
     TouchableOpacity,
-    Image,
     useColorScheme,
     Modal,
     ScrollView,
@@ -17,7 +16,6 @@ import { TextField } from '../../components/ui/TextField';
 import { Button } from '../../components/ui/Button';
 import { TERMS_AND_SERVICES_TEXT } from '../../constants/termsText';
 import { router, Stack } from 'expo-router';
-import { useSafeArea } from 'react-native-safe-area-context';
 import { signUp } from '@/services/supabase/auth/auth.sign-up';
 
 export default function SignUpScreen() {
@@ -27,7 +25,7 @@ export default function SignUpScreen() {
         email: '',
         password: '',
     });
-    const [error, setError] = useState<string | null>(null);
+    const [, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isTermsAccepted, setIsTermsAccepted] = useState(false);

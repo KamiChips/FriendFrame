@@ -52,7 +52,7 @@ export default function CommentsModal({
     // Cargar comentarios al abrir el modal
     useEffect(() => {
         if (isVisible) load();
-    }, [isVisible]);
+    }, [isVisible, load]);
 
     const handlePost = async () => {
         if (!newComment.trim()) return;

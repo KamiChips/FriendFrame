@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -17,7 +17,6 @@ import { useAuth } from '@/context/AuthContext';
 import { useSettings } from '@/hooks/useSettings';
 import { Image } from 'expo-image';
 import ProfileIcon from '@/components/ui/ProfileIcon';
-import { MyPost } from '@/types/settings.types';
 import FeedCard from '@/components/ui/FeedCard';
 import NotificationButton from '@/components/ui/NotificationButton';
 
@@ -27,12 +26,8 @@ export default function SettingsScreen() {
     const isSystemDark = systemColorScheme === 'dark';
 
     const [activeTab, setActiveTab] = useState('General');
-    const [isDark, setIsDark] = useState(isSystemDark);
+    const [isDark] = useState(isSystemDark);
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-    const [loading, setLoading] = useState(false);
-    const [myTabFragments, setMyFragments] = useState<any[]>([]);
-    const [myTabPosts, setMyPosts] = useState<any[]>([]);
-
     const [modalVisible, setModalVisible] = useState(false);
 
     const { user, refreshUser } = useAuth();
@@ -41,6 +36,7 @@ export default function SettingsScreen() {
     const {
         blockedUsers,
         loadingBlocked,
+        loading,
         loadBlockedUsers,
         loadMyPosts,
         loadMyFragments,
@@ -56,7 +52,7 @@ export default function SettingsScreen() {
         if (activeTab === 'Bloqueados') loadBlockedUsers();
         if (activeTab === 'Mis Posts') loadMyPosts();
         if (activeTab === 'Mis Fragments') loadMyFragments();
-    }, [activeTab]);
+    }, [activeTab, loadBlockedUsers, loadMyPosts, loadMyFragments]);
 
     const handleProfileSaved = async (newName: string, newUsername: string) => {
         await refreshUser();
@@ -313,15 +309,7 @@ export default function SettingsScreen() {
                                         isLiked={post.liked_by_me ?? false}
                                         isOwnPost={true}
                                         comments={[]}
-                                        onDeleted={() =>
-                                            setMyPosts((prev) =>
-                                                prev.filter(
-                                                    (p) =>
-                                                        p.post_id !==
-                                                        post.post_id
-                                                )
-                                            )
-                                        }
+                                        onDeleted={() => loadMyPosts()}
                                     />
                                 </View>
                             ))
@@ -377,15 +365,7 @@ export default function SettingsScreen() {
                                         isLiked={fragment.liked_by_me ?? false}
                                         isOwnPost={true}
                                         comments={[]}
-                                        onDeleted={() =>
-                                            setMyFragments((prev) =>
-                                                prev.filter(
-                                                    (f) =>
-                                                        f.fragment_id !==
-                                                        fragment.fragment_id
-                                                )
-                                            )
-                                        }
+                                        onDeleted={() => loadMyFragments()}
                                     />
                                 </View>
                             ))
