@@ -21,7 +21,7 @@ export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
@@ -111,6 +111,13 @@ export default function LoginScreen() {
                             onChangeText={setPassword}
                             secureTextEntry
                         />
+
+                        {error && (
+                            <Text className="text-red-500 text-sm mt-1">
+                                {error.charAt(0).toUpperCase() +
+                                    error.slice(1)}
+                            </Text>
+                        )}
 
                         {/* Remember me / Forgot Password? */}
                         <View className="flex-row justify-between mb-12">

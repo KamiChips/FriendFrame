@@ -6,7 +6,7 @@ module.exports = {
 
     testMatch: [
         '**/__tests__/unit/**/*-test.ts',
-        '**/__tests__/components/**/*-test.ts',
+        '**/__tests__/components/**/*-test.tsx',
     ],
 
     testPathIgnorePatterns: [

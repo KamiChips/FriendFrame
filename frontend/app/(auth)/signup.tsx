@@ -25,7 +25,7 @@ export default function SignUpScreen() {
         email: '',
         password: '',
     });
-    const [, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isTermsAccepted, setIsTermsAccepted] = useState(false);
@@ -179,6 +179,13 @@ export default function SignUpScreen() {
                             }
                             secureTextEntry
                         />
+
+                        {error && (
+                            <Text className="text-red-500 text-sm mt-1">
+                                {error.charAt(0).toUpperCase() +
+                                    error.slice(1)}
+                            </Text>
+                        )}
 
                         {/* Checkbox de Términos */}
                         <View className="flex-row items-center justify-start w-full my-4 pr-2">
