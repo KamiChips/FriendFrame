@@ -6,7 +6,7 @@ import {
     View,
 } from 'react-native';
 import '../../global.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export function TextField({
     placeholder,
@@ -20,17 +20,18 @@ export function TextField({
     const isDark = colorScheme === 'dark';
 
     const [text, setText] = useState(value || '');
+    const [prevValue, setPrevValue] = useState(value);
+    if (value !== prevValue) {
+        setPrevValue(value);
+        if (value) setText(value);
+    }
+
     const [isFocused, setIsFocused] = useState(false);
 
-    //Sincroniza el valor externo con el interno
-    useEffect(() => {
-        if (value) setText(value);
-    }, [value]);
-
     // Animación para el label flotante 0 = placeholder, 1 = flotando
-    const animateFocus = useRef(
-        new Animated.Value(text !== '' ? 1 : 0)
-    ).current;
+    const [animateFocus] = useState(
+        () => new Animated.Value(text !== '' ? 1 : 0)
+    );
 
     useEffect(() => {
         Animated.timing(animateFocus, {

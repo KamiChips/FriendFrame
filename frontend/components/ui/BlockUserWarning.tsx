@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import {
     Animated,
     Modal,
@@ -17,8 +17,8 @@ const BlockUserWarning = ({
     onBlock?: () => void;
 }) => {
     const [visible, setVisible] = useState(false);
-    const scaleAnim = useRef(new Animated.Value(0)).current;
-    const opacityAnim = useRef(new Animated.Value(0)).current;
+    const [scaleAnim] = useState(() => new Animated.Value(0));
+    const [opacityAnim] = useState(() => new Animated.Value(0));
     const isDark = useColorScheme() === 'dark';
 
     const openModal = () => {

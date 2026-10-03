@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
     View,
     Text,
@@ -17,7 +17,13 @@ import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as MediaLibrary from 'expo-media-library'; // NUEVA LIBRERÍA
+import {
+    Asset,
+    AssetField,
+    MediaType,
+    Query,
+    requestPermissionsAsync,
+} from 'expo-media-library'; // NUEVA LIBRERÍA
 import * as ImageManipulator from 'expo-image-manipulator';
 import { useCreatePost } from '@/hooks/useCreatePost';
 
@@ -30,6 +36,10 @@ interface CreatePostModalProps {
     currentUserId: string;
     currentUserName: string;
     currentUserInitials: string;
+}
+
+function buildFileName(): string {
+    return `foto_${Date.now()}.jpg`;
 }
 
 export default function CreatePostModal({
@@ -49,7 +59,8 @@ export default function CreatePostModal({
     const [caption, setCaption] = useState('');
 
     // Estados de la Galería Integrada
-    const [photos, setPhotos] = useState<MediaLibrary.Asset[]>([]);
+    const [photos, setPhotos] = useState<Asset[]>([]);
+    const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
 
     const {
@@ -62,42 +73,15 @@ export default function CreatePostModal({
         setAsset, // NUESTRA NUEVA FUNCIÓN DEL HOOK
     } = useCreatePost(currentUserId);
 
-    // Cargar fotos cuando se abre el modal
-    // loadGallery se recrea en cada render; solo debe correr al abrir el modal
-    // (incluirla en el arreglo de dependencias recargaría la galería en cada selección de foto)
-    useEffect(() => {
-        if (visible && step === 1) {
-            loadGallery();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [visible, step]);
-
-    const loadGallery = async () => {
-        const { status } = await MediaLibrary.requestPermissionsAsync();
-        setHasPermission(status === 'granted');
-
-        if (status === 'granted') {
-            const media = await MediaLibrary.getAssetsAsync({
-                mediaType: 'photo',
-                first: 200, // Cargamos las últimas 40 fotos
-                sortBy: ['creationTime'],
-            });
-            setPhotos(media.assets);
-
-            // Auto-seleccionar la primera foto si no hay ninguna seleccionada
-            if (media.assets.length > 0 && !selectedAsset) {
-                handleSelectPhoto(media.assets[0]);
-            }
-        }
-    };
-
     // Convertimos la foto al formato exacto y seguro que espera Supabase
-    const handleSelectPhoto = async (photo: MediaLibrary.Asset) => {
+    const handleSelectPhoto = async (photo: Asset) => {
+        setSelectedPhotoId(photo.id);
         try {
             // MAGIA: Esto fuerza a iOS a leer la foto original (incluso si es HEIC o de iCloud),
             // no le aplica recortes ([]), y devuelve un JPEG limpio en una ruta file://
+            const sourceUri = await photo.getUri();
             const manipResult = await ImageManipulator.manipulateAsync(
-                photo.uri,
+                sourceUri,
                 [],
                 { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
             );
@@ -108,11 +92,31 @@ export default function CreatePostModal({
                 width: manipResult.width,
                 height: manipResult.height,
                 type: 'image',
-                fileName: `foto_${Date.now()}.jpg`, // Generamos un nombre único y seguro
+                fileName: buildFileName(), // Generamos un nombre único y seguro
                 mimeType: 'image/jpeg', // Siempre será JPEG gracias al manipulador
             });
         } catch {
+            setSelectedPhotoId(null);
             Alert.alert('Error', 'No se pudo preparar la imagen para subir.');
+        }
+    };
+
+    const loadGallery = async () => {
+        const { status } = await requestPermissionsAsync();
+        setHasPermission(status === 'granted');
+
+        if (status !== 'granted') return;
+
+        const assets = await new Query()
+            .eq(AssetField.MEDIA_TYPE, MediaType.IMAGE)
+            .orderBy({ key: AssetField.CREATION_TIME, ascending: false })
+            .limit(200)
+            .exe();
+        setPhotos(assets);
+
+        // Auto-seleccionar la primera foto si no hay ninguna seleccionada
+        if (assets.length > 0 && !selectedAsset) {
+            handleSelectPhoto(assets[0]);
         }
     };
 
@@ -121,6 +125,7 @@ export default function CreatePostModal({
         setCaption('');
         clearAsset();
         reset();
+        setSelectedPhotoId(null);
         onClose();
     };
 
@@ -135,8 +140,8 @@ export default function CreatePostModal({
     };
 
     // Componente para dibujar cada cuadrito de la galería
-    const renderGridItem = ({ item }: { item: MediaLibrary.Asset }) => {
-        const isSelected = selectedAsset?.uri === item.uri;
+    const renderGridItem = ({ item }: { item: Asset }) => {
+        const isSelected = selectedPhotoId === item.id;
 
         return (
             <TouchableOpacity
@@ -150,7 +155,7 @@ export default function CreatePostModal({
                 }}
             >
                 <Image
-                    source={{ uri: item.uri }}
+                    source={{ uri: item.id }}
                     style={{ width: '100%', height: '100%' }}
                     contentFit="cover"
                 />
@@ -173,6 +178,7 @@ export default function CreatePostModal({
             animationType="slide"
             transparent={true}
             visible={visible}
+            onShow={loadGallery}
             onRequestClose={handleClose}
         >
             <KeyboardAvoidingView

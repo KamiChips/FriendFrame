@@ -42,6 +42,12 @@ export const NewFragment = ({
     const colorScheme = useColorScheme();
     const maxChars = 280;
 
+    const [prevVisible, setPrevVisible] = useState(isVisible);
+    if (isVisible !== prevVisible) {
+        setPrevVisible(isVisible);
+        if (!isVisible) setText('');
+    }
+
     //Inicializamos el hook de Supabase
     const { createFragment, isLoading, isSuccess, error, reset } =
         useCreateFragment();
@@ -56,7 +62,6 @@ export const NewFragment = ({
     // Un useEffect para escuchar cuando la base de datos termine con éxito o error
     useEffect(() => {
         if (isSuccess) {
-            setText(''); // Limpiamos la caja de texto
             reset(); // Reseteamos el estado del hook
             onPublishSuccess(); // Le decimos a la pantalla del perfil que recargue el feed
             onClose(); // Cerramos el modal
@@ -66,6 +71,8 @@ export const NewFragment = ({
             reset();
         }
     }, [isSuccess, error, onClose, onPublishSuccess, reset]);
+
+    const canPublish = text.trim().length > 0 && !isLoading;
 
     return (
         <Modal
@@ -133,7 +140,7 @@ export const NewFragment = ({
                         {/* El botón ahora se desactiva si está cargando y muestra un spinner */}
                         <TouchableOpacity
                             onPress={handlePublish}
-                            disabled={text.length === 0 || isLoading}
+                            disabled={canPublish}
                         >
                             <LinearGradient
                                 colors={['#06b6d4', '#f97316']}
@@ -141,10 +148,7 @@ export const NewFragment = ({
                                 end={{ x: 1, y: 1 }}
                                 className="px-5 py-2 rounded-full items-center justify-center min-w-[90px]"
                                 style={{
-                                    opacity:
-                                        text.length === 0 || isLoading
-                                            ? 0.5
-                                            : 1,
+                                    opacity: canPublish ? 0.5 : 1,
                                 }}
                             >
                                 {isLoading ? (

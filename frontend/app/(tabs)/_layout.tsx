@@ -12,12 +12,13 @@ import { useChatBadge } from '@/context/ChatContext';
 export default function TabLayout() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
+    const theme = isDark ? 'dark' : 'light';
     const { unreadMessages } = useChatBadge();
 
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+                tabBarActiveTintColor: Colors[theme].tint,
                 tabBarInactiveTintColor: isDark ? '#6B7280' : '#9CA3AF',
                 headerShown: false,
                 tabBarButton: HapticTab,
