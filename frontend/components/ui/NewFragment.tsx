@@ -94,7 +94,7 @@ export const NewFragment = ({
                                 {isLoading ? (
                                     <ActivityIndicator size="small" color="#FFFFFF" />
                                 ) : (
-                                    <Text className="font-semibold text-white">Publish</Text>
+                                    <Text className="font-semibold text-white">Post</Text>
                                 )}
                             </LinearGradient>
                         </TouchableOpacity>
@@ -161,7 +161,7 @@ export const NewFragment = ({
                                     <Text className="text-sm font-bold text-cyan-500 dark:text-[#f97316]">
                                         {text.length} / {maxChars}
                                     </Text>
-                                    <Text className="text-xs text-gray-400">characters</Text>
+                                    <Text className="text-xs text-gray-400">caracteres</Text>
                                 </View>
                             </View>
 
@@ -169,7 +169,7 @@ export const NewFragment = ({
                                 <Text className="text-xs font-semibold text-gray-700 dark:text-white">
                                     Start writing
                                 </Text>
-                                <Text className="text-[10px] text-gray-400">Express your thoughts</Text>
+                                <Text className="text-[10px] text-gray-400">Expresa tu pensamiento</Text>
                             </View>
                         </View>
 
