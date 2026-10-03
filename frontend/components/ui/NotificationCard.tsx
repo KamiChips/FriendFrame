@@ -121,7 +121,11 @@ const NotificationCard = ({
     return (
         <TouchableOpacity
             onPress={onPress}
-            className={`flex-row items-center w-full ${unread ? 'bg-[#30C2D9]/5 dark:bg-background-semidark/70' : 'bg-background-light dark:bg-background-semidark'} px-4 py-5 border-y border-[#e6e6e6] dark:border-[#404b65]`}
+            className={`flex-row items-center w-full ${
+                unread
+                    ? 'bg-[#30C2D9]/5 dark:bg-background-semidark/70'
+                    : 'bg-background-light dark:bg-background-semidark'
+            } px-4 py-5 border-y border-[#e6e6e6] dark:border-background-semidark`}
             activeOpacity={0.7}
             style={{
                 shadowColor: '#000',
