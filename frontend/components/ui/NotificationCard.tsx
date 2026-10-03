@@ -6,11 +6,11 @@ import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import Octicons from '@expo/vector-icons/Octicons';
 
 export enum NotificationType {
-    'LIKE',
-    'COMMENT',
-    'POST',
-    'FOLLOW',
-    'MENTION',
+    LIKE,
+    COMMENT,
+    POST,
+    FOLLOW,
+    MENTION,
 }
 
 export interface NotificationCardProps {
