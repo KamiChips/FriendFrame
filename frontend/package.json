@@ -79,5 +79,6 @@
     "supabase": "^2.105.0",
     "typescript": "~6.0.3"
   },
-  "private": true
+  "private": true,
+  "allowScripts": {}
 }
