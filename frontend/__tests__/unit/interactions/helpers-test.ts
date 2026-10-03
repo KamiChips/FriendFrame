@@ -231,9 +231,9 @@ describe('parseError', () => {
     });
 
     it("retorna el mensaje original si contiene 'no puede'", () => {
-        expect(
-            parseError(new Error('The content cannot be empty.'))
-        ).toBe('The content cannot be empty.');
+        expect(parseError(new Error('The content cannot be empty.'))).toBe(
+            'The content cannot be empty.'
+        );
     });
 
     it("retorna el mensaje original si contiene 'no existe'", () => {

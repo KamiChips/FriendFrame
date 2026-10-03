@@ -86,7 +86,7 @@ export async function assertFriendship(
     })) as { data: boolean | null; error: any };
 
     if (error) throw error;
-    if (!data) throw new Error("Solo puedes publicar en perfiles de amigos.");
+    if (!data) throw new Error('Solo puedes publicar en perfiles de amigos.');
 }
 
 //conteos de posts y fragments

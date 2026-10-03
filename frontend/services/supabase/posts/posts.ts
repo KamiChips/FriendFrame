@@ -108,9 +108,7 @@ export async function deletePost(postId: string): Promise<PostResult> {
             .single();
 
         if (fetchError || !existing)
-            throw new Error(
-                'Post not found or no permissions to delete.'
-            );
+            throw new Error('Post not found or no permissions to delete.');
 
         const { error } = await supabase
             .from('posts')

@@ -181,9 +181,7 @@ describe('Comments Service — Unit', () => {
                 error: null,
             });
             const result = await editComment(commentId, 'Nuevo');
-            expect(result.error).toBe(
-                'Comment not found or no permissions.'
-            );
+            expect(result.error).toBe('Comment not found or no permissions.');
         });
 
         it('va al catch block si getAuthUser lanza', async () => {

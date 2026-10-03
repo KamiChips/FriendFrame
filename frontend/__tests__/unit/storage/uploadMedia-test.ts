@@ -87,9 +87,7 @@ describe('uploadProfilePic', () => {
     it('returns error if gallery permission denied', async () => {
         mockRequestPermissions.mockResolvedValue({ status: 'denied' });
         const result = await uploadProfilePic(userId);
-        expect(result.error).toBe(
-            'Permission required to access gallery.'
-        );
+        expect(result.error).toBe('Permission required to access gallery.');
     });
 
     it('returns null if user cancels', async () => {

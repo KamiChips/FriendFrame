@@ -72,7 +72,7 @@ describe('<SignUpScreen />', () => {
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByText('Completa todos los campos.')).toBeTruthy();
+            expect(getByText('Please fill in all fields.')).toBeTruthy();
         });
     });
 
@@ -100,7 +100,7 @@ describe('<SignUpScreen />', () => {
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByText('Completa todos los campos.')).toBeTruthy();
+            expect(getByText('Please fill in all fields.')).toBeTruthy();
         });
     });
 
@@ -129,7 +129,7 @@ describe('<SignUpScreen />', () => {
 
         await waitFor(() => {
             expect(alertSpy).toHaveBeenCalledWith(
-                'Aviso Legal',
+                'Legal Notice',
                 expect.any(String)
             );
         });
@@ -137,7 +137,7 @@ describe('<SignUpScreen />', () => {
 
     test('terms checkbox toggles when pressed', () => {
         const { getByText, getByTestId } = render(<SignUpScreen />);
-        const termsText = getByText('Términos de Servicio y Privacidad');
+        const termsText = getByText('Terms of Service and Privacy Policy');
         // Antes de presionar no hay checkmark
         expect(() => getByText('✓')).toThrow();
         // Presionar checkbox
@@ -156,27 +156,27 @@ describe('<SignUpScreen />', () => {
     });
 
     // Modal de términos
-    test('opens terms modal when pressing "Términos de Servicio y Privacidad"', () => {
+    test('opens terms modal when pressing "Terms of Service and Privacy Policy"', () => {
         const { getByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Términos de Servicio y Privacidad'));
-        expect(getByText('Aviso Legal y Privacidad')).toBeTruthy();
+        fireEvent.press(getByText('Terms of Service and Privacy Policy'));
+        expect(getByText('Terms & Privacy Policy')).toBeTruthy();
     });
 
-    test('closes terms modal when pressing "Entendido"', async () => {
+    test('closes terms modal when pressing "Got it"', async () => {
         const { getByText, queryByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Términos de Servicio y Privacidad'));
-        fireEvent.press(getByText('Entendido'));
+        fireEvent.press(getByText('Terms of Service and Privacy Policy'));
+        fireEvent.press(getByText('Got it'));
         await waitFor(() => {
-            expect(queryByText('Aviso Legal y Privacidad')).toBeNull();
+            expect(queryByText('Terms & Privacy Policy')).toBeNull();
         });
     });
 
     test('closes terms modal when pressing "✕"', async () => {
         const { getByText, queryByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Términos de Servicio y Privacidad'));
+        fireEvent.press(getByText('Terms of Service and Privacy Policy'));
         fireEvent.press(getByText('✕'));
         await waitFor(() => {
-            expect(queryByText('Aviso Legal y Privacidad')).toBeNull();
+            expect(queryByText('Terms & Privacy Policy')).toBeNull();
         });
     });
 
@@ -241,14 +241,14 @@ describe('<SignUpScreen />', () => {
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByText('¡Cuenta creada!')).toBeTruthy();
+            expect(getByText('Account created!')).toBeTruthy();
         });
     });
 
     test('shows error when signUp fails', async () => {
         (signUp as jest.Mock).mockResolvedValue({
             data: null,
-            error: 'El email ya está en uso',
+            error: 'An account with that email already exists.',
         });
 
         const { getByText, getByTestId } = render(<SignUpScreen />);
@@ -272,7 +272,9 @@ describe('<SignUpScreen />', () => {
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByText('El email ya está en uso')).toBeTruthy();
+            expect(
+                getByText('An account with that email already exists.')
+            ).toBeTruthy();
         });
     });
 

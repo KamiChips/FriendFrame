@@ -30,10 +30,7 @@ export function parseError(err: unknown): string {
         ['mime', 'File type not allowed.'],
         ['row-level security', 'You do not have permission to upload files.'],
         ['403', 'You do not have permission to upload files.'],
-        [
-            'Bucket not found',
-            'Storage bucket is not configured.',
-        ],
+        ['Bucket not found', 'Storage bucket is not configured.'],
         ['NetworkError', 'Network error. Check your connection.'],
         ['network', 'Network error. Check your connection.'],
         ['Failed to fetch', 'Network error. Check your connection.'],

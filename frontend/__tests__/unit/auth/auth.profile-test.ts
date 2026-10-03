@@ -62,9 +62,7 @@ describe('updateProfilePic', () => {
         mockRequestPermissions.mockResolvedValue({ status: 'denied' });
 
         const result = await updateProfilePic('uid-1');
-        expect(result.error).toBe(
-            'Permission required to access gallery.'
-        );
+        expect(result.error).toBe('Permission required to access gallery.');
     });
 
     it('returns null if user cancels picker', async () => {

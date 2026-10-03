@@ -124,6 +124,12 @@ export default function LoginScreen() {
                             </Text>
                         </View>
 
+                        {error && (
+                            <Text className="text-red-500 text-sm mb-4 text-center">
+                                {error}
+                            </Text>
+                        )}
+
                         <View className="items-center mb-18 mt-12">
                             <Button
                                 testID="login-button"

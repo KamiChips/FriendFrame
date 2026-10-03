@@ -25,7 +25,10 @@ export function parseError(err: unknown): string {
     const known: [string, string][] = [
         ['PGRST116', 'User not found.'],
         ['No rows found', 'User not found.'],
-        ['row-level security', 'You do not have permission to perform this action.'],
+        [
+            'row-level security',
+            'You do not have permission to perform this action.',
+        ],
         ['NetworkError', 'Network error. Check your connection.'],
         ['Failed to fetch', 'Network error. Check your connection.'],
     ];

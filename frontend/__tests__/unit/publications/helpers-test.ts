@@ -108,7 +108,7 @@ describe('assertFriendship', () => {
     it('throws if rpc returns false', async () => {
         mockRpc.mockResolvedValue({ data: false, error: null });
         await expect(assertFriendship('uid-1', 'uid-2')).rejects.toThrow(
-            "Solo puedes publicar en perfiles de amigos."
+            'Solo puedes publicar en perfiles de amigos.'
         );
     });
 

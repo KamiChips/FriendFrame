@@ -61,9 +61,7 @@ describe('parseError', () => {
             'The file is too large.'
         ));
     it('maps 413', () =>
-        expect(parseError(new Error('413'))).toBe(
-            'The file is too large.'
-        ));
+        expect(parseError(new Error('413'))).toBe('The file is too large.'));
     it('maps Invalid mime type', () =>
         expect(parseError(new Error('Invalid mime type'))).toBe(
             'File type not allowed.'
@@ -101,9 +99,7 @@ describe('parseError', () => {
             'The file does not exist.'
         ));
     it('passes through too large', () =>
-        expect(parseError(new Error('too large'))).toBe(
-            'too large'
-        ));
+        expect(parseError(new Error('too large'))).toBe('too large'));
     it('passes through not allowed', () =>
         expect(parseError(new Error('not allowed'))).toBe('not allowed'));
     it('passes through does not exist', () =>

@@ -54,15 +54,11 @@ describe('parseError', () => {
     });
 
     it('maps PGRST116 to a not-found message', () => {
-        expect(parseError(new Error('PGRST116'))).toBe(
-            'User not found.'
-        );
+        expect(parseError(new Error('PGRST116'))).toBe('User not found.');
     });
 
     it("maps 'No rows found' to a not-found message", () => {
-        expect(parseError(new Error('No rows found'))).toBe(
-            'User not found.'
-        );
+        expect(parseError(new Error('No rows found'))).toBe('User not found.');
     });
 
     it('maps row-level security errors to a permission message', () => {

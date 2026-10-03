@@ -50,9 +50,7 @@ describe('validatePassword', () => {
     });
 
     it('throws error when password is empty', () => {
-        expect(() => validatePassword('')).toThrow(
-            'Password is required.'
-        );
+        expect(() => validatePassword('')).toThrow('Password is required.');
     });
 
     it('throws error if password is too short', () => {
@@ -69,9 +67,7 @@ describe('validateUsername', () => {
     });
 
     it('throws error when username is empty', () => {
-        expect(() => validateUsername('')).toThrow(
-            'Username is required.'
-        );
+        expect(() => validateUsername('')).toThrow('Username is required.');
     });
 
     it('throws error when username contains invalid characters', () => {
@@ -92,9 +88,7 @@ describe('validateFullName', () => {
     });
 
     it('throws error when name is empty', () => {
-        expect(() => validateFullName('   ')).toThrow(
-            'Full name is required.'
-        );
+        expect(() => validateFullName('   ')).toThrow('Full name is required.');
     });
 
     it('throws error when name is too long (> 120 chars)', () => {
