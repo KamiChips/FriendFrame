@@ -31,7 +31,7 @@ export async function signUp({
         if (existing)
             return {
                 data: null,
-                error: 'Ese nombre de usuario ya está en uso.',
+                error: 'That username is already taken.',
             };
 
         const { data: authData, error: authError } = await supabase.auth.signUp(
@@ -48,7 +48,7 @@ export async function signUp({
         );
 
         if (authError) throw authError;
-        if (!authData.user) throw new Error('No se pudo crear el usuario.');
+        if (!authData.user) throw new Error('Could not create user.');
 
         const profile = await waitForProfile(authData.user.id);
         return { data: profile, error: null };

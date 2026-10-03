@@ -34,7 +34,7 @@ export async function addComment(
     try {
         assertTarget(target);
         const currentUserId = await getAuthUser();
-        const sanitized = validateContent(content, 'comentario');
+        const sanitized = validateContent(content, 'comment');
 
         if (parentCommentId) {
             assertUUID(parentCommentId, 'parentCommentId');
@@ -51,7 +51,7 @@ export async function addComment(
             if (parentError) throw parentError;
             if (!parent)
                 throw new Error(
-                    'El comentario padre no existe o no pertenece a esta publicación.'
+                    'The parent comment does not exist or does not belong to this post.'
                 );
         }
 
@@ -98,7 +98,7 @@ export async function editComment(
     try {
         assertUUID(commentId, 'commentId');
         const currentUserId = await getAuthUser();
-        const sanitized = validateContent(newContent, 'comentario');
+        const sanitized = validateContent(newContent, 'comment');
 
         const { data, error } = await supabase
             .from('comments')
@@ -116,7 +116,7 @@ export async function editComment(
             .single();
 
         if (error) throw error;
-        if (!data) throw new Error('Comentario no encontrado o sin permisos.');
+        if (!data) throw new Error('Comment not found or no permissions.');
 
         // 1 RPC en lugar de 3 queries para recuperar los conteos
         const base = {

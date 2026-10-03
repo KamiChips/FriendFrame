@@ -17,25 +17,25 @@ export function normalizePagination(params: PaginationParams): {
 }
 
 export function parseError(err: unknown): string {
-    if (!err) return 'Error desconocido';
+    if (!err) return 'Unknown error';
     const msg = (err as Error).message ?? String(err);
 
     const map: [string, string][] = [
         [
             'duplicate key value violates unique constraint "follows',
-            'Ya sigues a este usuario.',
+            'You are already following this user.',
         ],
         [
             'duplicate key value violates unique constraint "blocks',
-            'Ya has bloqueado a este usuario.',
+            'You have already blocked this user.',
         ],
         [
             'violates check constraint',
-            'No puedes realizar esta acción contigo mismo.',
+            'You cannot perform this action on yourself.',
         ],
-        ['row-level security', 'No tienes permiso para realizar esta acción.'],
-        ['NetworkError', 'Error de red. Verifica tu conexión.'],
-        ['Failed to fetch', 'Error de red. Verifica tu conexión.'],
+        ['row-level security', 'You do not have permission to perform this action.'],
+        ['NetworkError', 'Network error. Check your connection.'],
+        ['Failed to fetch', 'Network error. Check your connection.'],
         ['No hay sesión', msg],
         ['No puedes', msg],
         ['Ya sigues', msg],
@@ -49,5 +49,5 @@ export function parseError(err: unknown): string {
         if (msg.includes(key)) return value;
     }
 
-    return 'Ocurrió un error inesperado.';
+    return 'An unexpected error occurred.';
 }

@@ -28,10 +28,10 @@ export async function sendMessage(
         const currentUserId = await getAuthUser();
 
         const trimmed = content.trim();
-        if (!trimmed) throw new Error('El mensaje no puede estar vacío.');
+        if (!trimmed) throw new Error('The message cannot be empty.');
         if (trimmed.length > MAX_MESSAGE_LEN)
             throw new Error(
-                `El mensaje no puede superar ${MAX_MESSAGE_LEN} caracteres.`
+                `The message cannot exceed ${MAX_MESSAGE_LEN} characters.`
             );
 
         await assertMembership(chatId, currentUserId);
@@ -121,13 +121,13 @@ export async function shareToChat(
         const currentUserId = await getAuthUser();
 
         const targetId = target.postId ?? target.fragmentId;
-        if (!targetId) throw new Error('Se requiere postId o fragmentId.');
+        if (!targetId) throw new Error('postId or fragmentId is required.');
         assertUUID(targetId, target.postId ? 'postId' : 'fragmentId');
 
         if (chatIds.length === 0)
-            throw new Error('Selecciona al menos un chat.');
+            throw new Error('Select at least one chat.');
         if (chatIds.length > MAX_SHARE_CHATS)
-            throw new Error(`Máximo ${MAX_SHARE_CHATS} chats por compartir.`);
+            throw new Error(`Maximum ${MAX_SHARE_CHATS} chats to share.`);
 
         assertUUIDs(chatIds, 'chatId');
 
@@ -140,7 +140,7 @@ export async function shareToChat(
                 .maybeSingle();
             previewText = post?.description
                 ? `📷 ${post.description.slice(0, MAX_PREVIEW_LEN)}`
-                : '📷 Publicación compartida';
+                : '📷 Shared post';
         } else {
             const { data: fragment } = await supabase
                 .from('fragments')
@@ -149,7 +149,7 @@ export async function shareToChat(
                 .maybeSingle();
             previewText = fragment?.content
                 ? `📝 ${fragment.content.slice(0, MAX_PREVIEW_LEN)}`
-                : '📝 Fragment compartido';
+                : '📝 Shared fragment';
         }
 
         const results = await Promise.allSettled(

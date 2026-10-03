@@ -25,20 +25,20 @@ export function sanitizeDescription(
     if (!trimmed) return null;
     if (trimmed.length > MAX_DESCRIPTION_LENGTH)
         throw new Error(
-            `La descripción no puede superar ${MAX_DESCRIPTION_LENGTH} caracteres.`
+            `The description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters.`
         );
     return trimmed;
 }
 
 export function parseError(err: unknown): string {
-    if (!err) return 'Error desconocido';
+    if (!err) return 'Unknown error';
     const msg = (err as Error).message ?? String(err);
 
     const known: [string, string][] = [
-        ['row-level security', 'No tienes permiso para realizar esta acción.'],
-        ['violates foreign key', 'El usuario o perfil no existe.'],
-        ['NetworkError', 'Error de red. Verifica tu conexión.'],
-        ['Failed to fetch', 'Error de red. Verifica tu conexión.'],
+        ['row-level security', 'You do not have permission to perform this action.'],
+        ['violates foreign key', 'The user or profile does not exist.'],
+        ['NetworkError', 'Network error. Check your connection.'],
+        ['Failed to fetch', 'Network error. Check your connection.'],
     ];
 
     for (const [key, value] of known) {
@@ -58,7 +58,7 @@ export function parseError(err: unknown): string {
     )
         return msg;
 
-    return 'Ocurrió un error inesperado.';
+    return 'An unexpected error occurred.';
 }
 
 //verifica la amistad
@@ -67,7 +67,7 @@ export async function assertFriendship(
     profileOwnerId: string
 ): Promise<void> {
     if (authorId === profileOwnerId)
-        throw new Error('No puedes publicar en tu propio perfil.');
+        throw new Error('You cannot post on your own profile.');
 
     const { data, error } = (await supabase.rpc('assert_friendship', {
         author_id: authorId,
@@ -76,7 +76,7 @@ export async function assertFriendship(
 
     if (error) throw error;
     if (!data)
-        throw new Error('Solo puedes publicar en el perfil de tus amigos.');
+        throw new Error('You can only post on your friends\' profiles.');
 }
 
 //conteos de posts y fragments

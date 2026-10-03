@@ -21,13 +21,13 @@ export async function followUser(
         assertUUID(targetUserId, 'ID de usuario');
         const currentUserId = await getAuthUser();
         if (currentUserId === targetUserId)
-            throw new Error('No puedes seguirte a ti mismo.');
+            throw new Error('You cannot follow yourself.');
 
         const blocks = await fetchBlockStatus(currentUserId, targetUserId);
         if (blocks.a_blocked_b)
-            throw new Error('Has bloqueado a este usuario.');
+            throw new Error('You have blocked this user.');
         if (blocks.b_blocked_a)
-            throw new Error('No puedes seguir a este usuario.');
+            throw new Error('You cannot follow this user.');
 
         const { data, error } = await supabase
             .from('follows')
@@ -89,9 +89,9 @@ export async function toggleFollow(
             targetUserId
         );
 
-        if (status.is_blocked) throw new Error('Has bloqueado a este usuario.');
+        if (status.is_blocked) throw new Error('You have blocked this user.');
         if (status.blocked_me)
-            throw new Error('No puedes seguir a este usuario.');
+            throw new Error('You cannot follow this user.');
 
         if (status.i_follow_them) {
             const { error } = await supabase

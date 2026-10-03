@@ -16,7 +16,7 @@ export async function blockUser(
         assertUUID(targetUserId, 'ID de usuario');
         const currentUserId = await getAuthUser();
         if (currentUserId === targetUserId)
-            throw new Error('No puedes bloquearte a ti mismo.');
+            throw new Error('You cannot block yourself.');
 
         const { data, error } = await supabase
             .from('blocks')
