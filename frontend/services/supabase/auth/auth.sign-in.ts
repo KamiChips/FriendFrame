@@ -1,84 +1,84 @@
-import { supabase } from "@/lib/supabase/client";
+import { supabase } from '@/lib/supabase/client';
 import {
-  SignInParams,
-  AuthResult,
-  AuthUser,
-} from "@/services/supabase/auth/auth.types";
-import { parseAuthError } from "./auth.errors";
-import { _removeCurrentDeviceToken } from "./auth.notifications";
+    SignInParams,
+    AuthResult,
+    AuthUser,
+} from '@/services/supabase/auth/auth.types';
+import { parseAuthError } from './auth.errors';
+import { _removeCurrentDeviceToken } from './auth.notifications';
 import {
-  clearPendingVerificationEmail,
-  fetchProfile,
-  savePendingVerificationEmail,
-  validateEmail,
-  validateRedirectUrl,
-} from "./auth.helpers";
+    clearPendingVerificationEmail,
+    fetchProfile,
+    savePendingVerificationEmail,
+    validateEmail,
+    validateRedirectUrl,
+} from './auth.helpers';
 
 export async function signIn({
-  email,
-  password,
+    email,
+    password,
 }: SignInParams): Promise<AuthResult<AuthUser>> {
-  try {
-    const cleanEmail = validateEmail(email);
-    if (!password) throw new Error("La contraseña es requerida.");
+    try {
+        const cleanEmail = validateEmail(email);
+        if (!password) throw new Error('La contraseña es requerida.');
 
-    const { data: authData, error: authError } =
-      await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password,
-      });
+        const { data: authData, error: authError } =
+            await supabase.auth.signInWithPassword({
+                email: cleanEmail,
+                password,
+            });
 
-    if (authError) {
-      if (authError.message.includes("Email not confirmed")) {
-        await savePendingVerificationEmail(cleanEmail);
-        throw new EmailNotConfirmedError(cleanEmail);
-      }
-      throw authError;
-    } 
-    if (!authData.user) throw new Error("No se pudo iniciar sesión.");
+        if (authError) {
+            if (authError.message.includes('Email not confirmed')) {
+                await savePendingVerificationEmail(cleanEmail);
+                throw new EmailNotConfirmedError(cleanEmail);
+            }
+            throw authError;
+        }
+        if (!authData.user) throw new Error('No se pudo iniciar sesión.');
 
-    const profile = await fetchProfile(authData.user.id);
-    await clearPendingVerificationEmail();
-    return { data: profile, error: null };
-  } catch (err) {
-    if (err instanceof EmailNotConfirmedError) throw err;
-    return { data: null, error: parseAuthError(err) };
-  }
+        const profile = await fetchProfile(authData.user.id);
+        await clearPendingVerificationEmail();
+        return { data: profile, error: null };
+    } catch (err) {
+        if (err instanceof EmailNotConfirmedError) throw err;
+        return { data: null, error: parseAuthError(err) };
+    }
 }
 
 export async function signInWithGoogle(
-  redirectTo: string,
+    redirectTo: string
 ): Promise<AuthResult> {
-  try {
-    validateRedirectUrl(redirectTo);
+    try {
+        validateRedirectUrl(redirectTo);
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo },
-    });
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo },
+        });
 
-    if (error) throw error;
-    return { data: null, error: null };
-  } catch (err) {
-    return { data: null, error: parseAuthError(err) };
-  }
+        if (error) throw error;
+        return { data: null, error: null };
+    } catch (err) {
+        return { data: null, error: parseAuthError(err) };
+    }
 }
 
 export async function signOut(): Promise<AuthResult> {
-  try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    try {
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
 
-    if (user) _removeCurrentDeviceToken(user.id).catch(() => {});
+        if (user) _removeCurrentDeviceToken(user.id).catch(() => {});
 
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
 
-    return { data: null, error: null };
-  } catch (err) {
-    return { data: null, error: parseAuthError(err) };
-  }
+        return { data: null, error: null };
+    } catch (err) {
+        return { data: null, error: parseAuthError(err) };
+    }
 }
 
 //Este se usa para restaurar la sesion cuando se inicia la app
@@ -92,30 +92,30 @@ if(user){
 }
 */
 export async function getCurrentUser(): Promise<AuthResult<AuthUser>> {
-  try {
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    try {
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
 
-    if (authError) {
-      if (authError.message.includes("Auth session missing"))
-        return { data: null, error: null };
-      throw authError;
+        if (authError) {
+            if (authError.message.includes('Auth session missing'))
+                return { data: null, error: null };
+            throw authError;
+        }
+
+        if (!user) return { data: null, error: null };
+
+        const profile = await fetchProfile(user.id);
+        return { data: profile, error: null };
+    } catch (err) {
+        return { data: null, error: parseAuthError(err) };
     }
-
-    if (!user) return { data: null, error: null };
-
-    const profile = await fetchProfile(user.id);
-    return { data: profile, error: null };
-  } catch (err) {
-    return { data: null, error: parseAuthError(err) };
-  }
 }
 
 export class EmailNotConfirmedError extends Error {
-  constructor(public email: string) {
-    super("Confirm your email before logging in");
-    this.name = "EmailNotConfirmedError"
-  }
+    constructor(public email: string) {
+        super('Confirm your email before logging in');
+        this.name = 'EmailNotConfirmedError';
+    }
 }

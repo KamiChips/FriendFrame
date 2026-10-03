@@ -2,18 +2,18 @@ import {
     DarkTheme,
     DefaultTheme,
     ThemeProvider,
-} from "expo-router/react-navigation";
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import "react-native-reanimated";
-import { useEffect, useState } from "react";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import SplashScreen from "@/components/ui/SplashScreen";
-import { useFonts } from "expo-font"; // <-- Importamos useFonts
-import { AuthProvider } from "@/context/AuthContext";
-import { RouteGuard } from "@/navigation/RouteGuard";
-import { NotificationsBadgeProvider } from "@/context/NotificationContext";
-import { ChatBadgeProvider } from "@/context/ChatContext";
+} from 'expo-router/react-navigation';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import 'react-native-reanimated';
+import { useEffect, useState } from 'react';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import SplashScreen from '@/components/ui/SplashScreen';
+import { useFonts } from 'expo-font'; // <-- Importamos useFonts
+import { AuthProvider } from '@/context/AuthContext';
+import { RouteGuard } from '@/navigation/RouteGuard';
+import { NotificationsBadgeProvider } from '@/context/NotificationContext';
+import { ChatBadgeProvider } from '@/context/ChatContext';
 
 export const unstable_settings = {
     anchor: '(tabs)',

@@ -64,9 +64,9 @@ describe('signUp - Integration', () => {
         await signUp(TEST_USER);
 
         const { data: profile } = await supabaseAdmin
-            .from("users")
-            .select("user_id")
-            .eq("username", TEST_USER.username)
+            .from('users')
+            .select('user_id')
+            .eq('username', TEST_USER.username)
             .single();
 
         await supabaseAdmin.auth.admin.updateUserById(profile!.user_id, {

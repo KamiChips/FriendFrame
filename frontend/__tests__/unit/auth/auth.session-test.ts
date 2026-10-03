@@ -1,6 +1,9 @@
 import { onAuthStateChange } from '@/services/supabase/auth/auth.session';
 import { mockAuth } from '@/__mocks__/supabaseMock';
-import { fetchProfile, clearPendingVerificationEmail } from '@/services/supabase/auth/auth.helpers';
+import {
+    fetchProfile,
+    clearPendingVerificationEmail,
+} from '@/services/supabase/auth/auth.helpers';
 
 jest.mock('@/lib/supabase/client', () => ({
     supabase: require('@/__mocks__/supabaseMock').supabase,
@@ -147,7 +150,9 @@ describe('onAuthStateChange', () => {
         mockFetchProfile.mockResolvedValue(mockProfile);
         mockClearPending.mockRejectedValue(new Error('storage error'));
         const callback = jest.fn();
-        const { fire } = setupAuthStateChange('SIGNED_IN', { user: { id: 'uid-1' } });
+        const { fire } = setupAuthStateChange('SIGNED_IN', {
+            user: { id: 'uid-1' },
+        });
 
         onAuthStateChange(callback);
         await fire();
