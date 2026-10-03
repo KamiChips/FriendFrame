@@ -24,10 +24,8 @@ export async function followUser(
             throw new Error('You cannot follow yourself.');
 
         const blocks = await fetchBlockStatus(currentUserId, targetUserId);
-        if (blocks.a_blocked_b)
-            throw new Error('You have blocked this user.');
-        if (blocks.b_blocked_a)
-            throw new Error('You cannot follow this user.');
+        if (blocks.a_blocked_b) throw new Error('You have blocked this user.');
+        if (blocks.b_blocked_a) throw new Error('You cannot follow this user.');
 
         const { data, error } = await supabase
             .from('follows')
@@ -90,8 +88,7 @@ export async function toggleFollow(
         );
 
         if (status.is_blocked) throw new Error('You have blocked this user.');
-        if (status.blocked_me)
-            throw new Error('You cannot follow this user.');
+        if (status.blocked_me) throw new Error('You cannot follow this user.');
 
         if (status.i_follow_them) {
             const { error } = await supabase

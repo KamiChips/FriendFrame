@@ -33,7 +33,10 @@ export function parseError(err: unknown): string {
             'violates check constraint',
             'You cannot perform this action on yourself.',
         ],
-        ['row-level security', 'You do not have permission to perform this action.'],
+        [
+            'row-level security',
+            'You do not have permission to perform this action.',
+        ],
         ['NetworkError', 'Network error. Check your connection.'],
         ['Failed to fetch', 'Network error. Check your connection.'],
         ['No hay sesión', msg],

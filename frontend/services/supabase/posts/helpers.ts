@@ -35,7 +35,10 @@ export function parseError(err: unknown): string {
     const msg = (err as Error).message ?? String(err);
 
     const known: [string, string][] = [
-        ['row-level security', 'You do not have permission to perform this action.'],
+        [
+            'row-level security',
+            'You do not have permission to perform this action.',
+        ],
         ['violates foreign key', 'The user or profile does not exist.'],
         ['NetworkError', 'Network error. Check your connection.'],
         ['Failed to fetch', 'Network error. Check your connection.'],
@@ -75,8 +78,7 @@ export async function assertFriendship(
     })) as { data: boolean | null; error: any };
 
     if (error) throw error;
-    if (!data)
-        throw new Error('You can only post on your friends\' profiles.');
+    if (!data) throw new Error("You can only post on your friends' profiles.");
 }
 
 //conteos de posts y fragments

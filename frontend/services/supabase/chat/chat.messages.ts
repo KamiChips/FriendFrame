@@ -124,8 +124,7 @@ export async function shareToChat(
         if (!targetId) throw new Error('postId or fragmentId is required.');
         assertUUID(targetId, target.postId ? 'postId' : 'fragmentId');
 
-        if (chatIds.length === 0)
-            throw new Error('Select at least one chat.');
+        if (chatIds.length === 0) throw new Error('Select at least one chat.');
         if (chatIds.length > MAX_SHARE_CHATS)
             throw new Error(`Maximum ${MAX_SHARE_CHATS} chats to share.`);
 

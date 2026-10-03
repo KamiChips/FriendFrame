@@ -12,8 +12,7 @@ import {
 export function validateEmail(email: string): string {
     const trimmed = email.trim().toLowerCase();
     if (!trimmed) throw new Error('Email is required.');
-    if (!EMAIL_REGEX.test(trimmed))
-        throw new Error('Invalid email format.');
+    if (!EMAIL_REGEX.test(trimmed)) throw new Error('Invalid email format.');
     return trimmed;
 }
 
@@ -46,8 +45,7 @@ export function validateFullName(fullName: string): string {
 }
 
 export function validateRedirectUrl(url: string): void {
-    if (!url || !url.includes('://'))
-        throw new Error('Invalid redirect URL.');
+    if (!url || !url.includes('://')) throw new Error('Invalid redirect URL.');
 }
 
 export async function fetchProfile(userId: string): Promise<AuthUser> {

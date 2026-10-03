@@ -40,7 +40,10 @@ export function parseError(err: unknown): string {
     const msg = (err as Error).message ?? String(err);
 
     const known: [string, string][] = [
-        ['row-level security', 'You do not have permission to perform this action.'],
+        [
+            'row-level security',
+            'You do not have permission to perform this action.',
+        ],
         [
             'duplicate key value violates unique constraint',
             'You already liked this post.',

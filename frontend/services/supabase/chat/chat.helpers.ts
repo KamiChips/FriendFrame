@@ -27,7 +27,10 @@ export function parseError(err: unknown): string {
     const msg = (err as Error).message ?? String(err);
 
     const known: [string, string][] = [
-        ['row-level security', 'You do not have permission to access this chat.'],
+        [
+            'row-level security',
+            'You do not have permission to access this chat.',
+        ],
         ['duplicate key', 'You are already a member of this chat.'],
         ['violates foreign key', 'The user or chat does not exist.'],
         ['NetworkError', 'Network error. Check your connection.'],

@@ -78,8 +78,7 @@ export async function createGroupChat(
             throw new Error(
                 `The group name cannot exceed ${MAX_GROUP_NAME_LEN} characters.`
             );
-        if (memberIds.length === 0)
-            throw new Error('Add at least one member.');
+        if (memberIds.length === 0) throw new Error('Add at least one member.');
         if (memberIds.length > MAX_GROUP_MEMBERS - 1)
             throw new Error(
                 `Maximum ${MAX_GROUP_MEMBERS - 1} additional members per group.`
