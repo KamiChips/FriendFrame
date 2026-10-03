@@ -2,7 +2,6 @@ import { registerDeviceToken } from "@/services/supabase/auth/auth.notifications
 import { onAuthStateChange } from "@/services/supabase/auth/auth.session";
 import { getCurrentUser } from "@/services/supabase/auth/auth.sign-in";
 import { AuthUser } from "@/services/supabase/auth/auth.types";
-import { userEvent } from "@testing-library/react-native/build/pure";
 import { getPendingVerificationEmail, clearPendingVerificationEmail } from "@/services/supabase/auth/auth.helpers";
 import React, {
   createContext,

@@ -1,24 +1,24 @@
 import {
-  DEFAULT_LIMIT,
-  MAX_PAGE_LIMIT,
-  NotificationType,
-  VALID_TYPES,
-} from "./notification.types";
+    DEFAULT_LIMIT,
+    MAX_PAGE_LIMIT,
+    NotificationType,
+    VALID_TYPES,
+} from './notification.types';
 
 export function assertNotificationType(
-  type: string,
+    type: string
 ): asserts type is NotificationType {
-  if (!VALID_TYPES.has(type as NotificationType))
-    throw new Error(`Tipo de notificación inválido: ${type}`);
+    if (!VALID_TYPES.has(type as NotificationType))
+        throw new Error(`Tipo de notificación inválido: ${type}`);
 }
 
 export function normalizePagination(
-  page = 0,
-  limit = DEFAULT_LIMIT,
+    page = 0,
+    limit = DEFAULT_LIMIT
 ): { from: number; to: number } {
-  const p = Math.max(0, Math.floor(page));
-  const l = Math.min(MAX_PAGE_LIMIT, Math.max(1, Math.floor(limit)));
-  return { from: p * l, to: p * l + l - 1 };
+    const p = Math.max(0, Math.floor(page));
+    const l = Math.min(MAX_PAGE_LIMIT, Math.max(1, Math.floor(limit)));
+    return { from: p * l, to: p * l + l - 1 };
 }
 
 export const NOTIFICATION_SELECT = `

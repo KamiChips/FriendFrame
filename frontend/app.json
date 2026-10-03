@@ -25,24 +25,21 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#FFD1A9",
-          "dark": {
-            "backgroundColor": "#1A1A24"
+        "expo-router",
+        [
+          "expo-splash-screen",
+          {
+            "image": "./assets/images/splash.png",
+            "imageWidth": 200,
+            "resizeMode": "contain",
+            "backgroundColor": "#FFD1A9",
+            "dark": {
+              "backgroundColor": "#1A1A24"
+            }
           }
-        }
-      ],
-      "expo-font",
-      "@react-native-google-signin/google-signin",
-      "expo-web-browser",
-      "expo-image",
-      "expo-status-bar"
+        ],
+        "expo-font",
+        "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true,

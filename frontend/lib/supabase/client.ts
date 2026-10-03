@@ -1,25 +1,21 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createClient } from "@supabase/supabase-js";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createClient } from '@supabase/supabase-js';
 
-const isTest = process.env.NODE_ENV === "test";
+const isTest = process.env.NODE_ENV === 'test';
 
 const supabaseUrl = isTest
-  ? process.env.SUPABASE_URL!
-  : process.env.EXPO_PUBLIC_SUPABASE_URL!;
+    ? process.env.SUPABASE_URL!
+    : process.env.EXPO_PUBLIC_SUPABASE_URL!;
 
 const supabaseKey = isTest
-  ? process.env.SUPABASE_SERVICE_ROLE_KEY!
-  : process.env.EXPO_PUBLIC_SUPABASE_KEY!;
+    ? process.env.SUPABASE_SERVICE_ROLE_KEY!
+    : process.env.EXPO_PUBLIC_SUPABASE_KEY!;
 
-export const supabase = createClient(
-  supabaseUrl,
-  supabaseKey,
-  {
+export const supabase = createClient(supabaseUrl, supabaseKey, {
     auth: {
-      storage: isTest ? undefined : AsyncStorage,
-      autoRefreshToken: !isTest,
-      persistSession: !isTest,
-      detectSessionInUrl: false,
+        storage: isTest ? undefined : AsyncStorage,
+        autoRefreshToken: !isTest,
+        persistSession: !isTest,
+        detectSessionInUrl: false,
     },
-  }
-);
+});
