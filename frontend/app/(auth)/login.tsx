@@ -31,7 +31,7 @@ export default function LoginScreen() {
     setError(null);
 
     if (!email.trim() || !password) {
-      setError("Completa todos los campos.");
+      setError("Please fill in all fields.");
       return;
     }
 
@@ -129,7 +129,7 @@ export default function LoginScreen() {
                 {loading ? (
                   <ActivityIndicator testID="loading-indicator" />
                 ) : (
-                  <Text>Iniciando Sesión</Text>
+                  <Text>Log In</Text>
                 )}
               </Button>
             </View>
