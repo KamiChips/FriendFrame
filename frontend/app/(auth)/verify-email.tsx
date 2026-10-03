@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, useColorScheme } from 'react-native';
 import '../../global.css';
 import { Button } from '../../components/ui/Button';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import {
     resendVerificationEmail,
     RetryLimitError,
@@ -14,7 +14,7 @@ import { Feather } from '@expo/vector-icons';
 export default function VerifyEmailScreen() {
     const { email: emailParam } = useLocalSearchParams<{ email?: string }>();
     const [secondsLeft, setSecondsLeft] = useState(0);
-    const timerRef = useRef(0);
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const { user, refreshUser } = useAuth();
@@ -28,7 +28,7 @@ export default function VerifyEmailScreen() {
         timerRef.current = setInterval(() => {
             setSecondsLeft((prev) => {
                 if (prev <= 1) {
-                    clearInterval(timerRef.current);
+                    if (timerRef.current) clearInterval(timerRef.current);
                     return 0;
                 }
                 return prev - 1;
@@ -48,13 +48,13 @@ export default function VerifyEmailScreen() {
         }
     };
 
-    const checkEmailVerificationStatus = async () => {
+    const checkEmailVerificationStatus = useCallback(async () => {
         try {
             await refreshUser();
         } catch (error) {
             console.error('Error al checar la verificación de correo.', error);
         }
-    };
+    }, [refreshUser]);
 
     useEffect(() => {
         return () => {
@@ -68,7 +68,7 @@ export default function VerifyEmailScreen() {
         checkEmailVerificationStatus();
         const interval = setInterval(checkEmailVerificationStatus, 5000);
         return () => clearInterval(interval);
-    }, [hasSession]);
+    }, [hasSession, checkEmailVerificationStatus]);
 
     const isButtonDisabled = secondsLeft > 0;
 
@@ -121,7 +121,7 @@ export default function VerifyEmailScreen() {
                     {/* Botón de reenvío */}
                     <View className="w-full items-center mb-6">
                         <Text className="text-background-dark dark:text-background-light text-sm opacity-70 mb-2">
-                            Didn't receive an email?
+                            Didn&apos;t receive an email?
                         </Text>
                         <Button
                             title={

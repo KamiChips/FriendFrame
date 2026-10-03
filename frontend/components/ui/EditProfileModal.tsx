@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
     View,
     Text,
@@ -45,12 +45,14 @@ export function EditProfileModal({
     const isDark = useColorScheme() === 'dark';
     const size = 80; // Tamaño del avatar
 
-    useEffect(() => {
+    const [prevVisible, setPrevVisible] = useState(visible);
+    if (visible !== prevVisible) {
+        setPrevVisible(visible);
         if (visible) {
             setName(currentName);
             setUsername(currentUsername);
         }
-    }, [visible, currentName, currentUsername]);
+    }
 
     const handleSave = async () => {
         if (loading) return;
