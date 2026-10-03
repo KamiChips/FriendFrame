@@ -19,7 +19,7 @@ export async function addMemberToGroup(
             .eq('chat_id', chatId)
             .single();
         if (!chat?.is_group)
-            throw new Error('Solo puedes añadir miembros a grupos.');
+            throw new Error('You can only add members to groups.');
 
         await assertMembership(chatId, currentUserId);
         await assertFriendship(currentUserId, newUserId);

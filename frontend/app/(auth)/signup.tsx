@@ -4,6 +4,7 @@ import {
     View,
     Text,
     TouchableOpacity,
+    Image,
     useColorScheme,
     Modal,
     ScrollView,
@@ -16,6 +17,7 @@ import { TextField } from '../../components/ui/TextField';
 import { Button } from '../../components/ui/Button';
 import { TERMS_AND_SERVICES_TEXT } from '../../constants/termsText';
 import { router, Stack } from 'expo-router';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { signUp } from '@/services/supabase/auth/auth.sign-up';
 
 export default function SignUpScreen() {
@@ -37,8 +39,8 @@ export default function SignUpScreen() {
     const validateTerms = () => {
         if (!isTermsAccepted) {
             Alert.alert(
-                'Aviso Legal',
-                'Para poder utilizar FriendFrame, es obligatorio leer y aceptar los Términos de Servicio y la Política de Privacidad.'
+                'Legal Notice',
+                'To use FriendFrame, you must read and accept the Terms of Service and Privacy Policy.'
             );
             return false;
         }
@@ -58,7 +60,7 @@ export default function SignUpScreen() {
             !email.trim() ||
             !password
         ) {
-            setError('Completa todos los campos.');
+            setError('Please fill in all fields.');
             return;
         }
 
@@ -86,11 +88,11 @@ export default function SignUpScreen() {
         return (
             <View className="flex-1 bg-white justify-center items-center px-6">
                 <Text className="text-2xl font-bold text-gray-900 mb-4 text-center">
-                    ¡Cuenta creada!
+                    Account created!
                 </Text>
                 <Text className="text-base text-gray-500 text-center">
-                    Revisa tu email para confirmar tu cuenta antes de iniciar
-                    sesión.
+                    Please check your email to confirm your account before
+                    logging in.
                 </Text>
             </View>
         );
@@ -180,12 +182,6 @@ export default function SignUpScreen() {
                             secureTextEntry
                         />
 
-                        {error && (
-                            <Text className="text-red-500 text-sm mt-1">
-                                {error.charAt(0).toUpperCase() + error.slice(1)}
-                            </Text>
-                        )}
-
                         {/* Checkbox de Términos */}
                         <View className="flex-row items-center justify-start w-full my-4 pr-2">
                             <TouchableOpacity
@@ -208,15 +204,21 @@ export default function SignUpScreen() {
                             </TouchableOpacity>
 
                             <Text className="text-background-dark dark:text-background-light text-sm flex-row items-center">
-                                Acepto los{' '}
+                                I accept the{' '}
                                 <Text
                                     onPress={() => setModalVisible(true)}
                                     className="font-bold underline text-background-dark dark:text-background-light"
                                 >
-                                    Términos de Servicio y Privacidad
+                                    Terms of Service and Privacy Policy
                                 </Text>
                             </Text>
                         </View>
+
+                        {error && (
+                            <Text className="text-red-500 text-sm mb-4 text-center">
+                                {error}
+                            </Text>
+                        )}
 
                         <View className="items-center mb-6 mt-4">
                             <Button
@@ -229,7 +231,7 @@ export default function SignUpScreen() {
                                 {loading ? (
                                     <ActivityIndicator testID="signup-loaging-indicator" />
                                 ) : (
-                                    <Text>Crear cuenta</Text>
+                                    <Text>Create Account</Text>
                                 )}
                             </Button>
                         </View>
@@ -262,10 +264,10 @@ export default function SignUpScreen() {
                             <View className="flex-row justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-800 pb-3">
                                 <View>
                                     <Text className="text-xl font-bold text-slate-900 dark:text-white">
-                                        Aviso Legal y Privacidad
+                                        Terms & Privacy Policy
                                     </Text>
                                     <Text className="text-xs text-slate-400 mt-0.5">
-                                        FriendFrame — Carta de Responsabilidades
+                                        FriendFrame — Terms
                                     </Text>
                                 </View>
                                 <TouchableOpacity
@@ -315,7 +317,7 @@ export default function SignUpScreen() {
                                 className="mt-4 bg-slate-900 dark:bg-slate-100 py-3.5 rounded-xl items-center"
                             >
                                 <Text className="text-white dark:text-slate-900 font-semibold text-sm">
-                                    Entendido
+                                    Got it
                                 </Text>
                             </TouchableOpacity>
                         </SafeAreaView>

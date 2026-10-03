@@ -7,6 +7,7 @@ import {
     useColorScheme,
     View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const BlockUserWarning = ({
@@ -80,13 +81,14 @@ const BlockUserWarning = ({
                         </View>
 
                         <Text className="font-spartan-bold text-xl text-[#2C2C2C] dark:text-background-light text-center mb-2">
-                            ¿Bloquear usuario?
+                            Block user?
                         </Text>
                         <Text className="font-spartan text-lg text-[#6B6B6B] dark:text-[#A0A0A0] text-center">
-                            ¿Estas seguro de bloquear a {name}?
+                            Are you sure you want to block {name}?
                         </Text>
                         <Text className="font-spartan text-lg text-[#6B6B6B] dark:text-[#A0A0A0] text-center mb-4">
-                            No podrán ver tu perfil ni interactuar contigo.
+                            They will not be able to see your profile or
+                            interact with you.
                         </Text>
 
                         <View className="flex-row justify-center">
@@ -95,7 +97,7 @@ const BlockUserWarning = ({
                                 onPress={closeModal}
                             >
                                 <Text className="font-spartan text-lg text-[#2C2C2C] dark:text-[#F0F0F0] text-center">
-                                    Cancelar
+                                    Cancel
                                 </Text>
                             </Pressable>
                             <Pressable
@@ -106,7 +108,7 @@ const BlockUserWarning = ({
                                 }}
                             >
                                 <Text className="font-spartan text-lg text-[#FFFFFF] text-center">
-                                    Bloquear
+                                    Block
                                 </Text>
                             </Pressable>
                         </View>
@@ -125,7 +127,7 @@ const BlockUserWarning = ({
                     color={isDark ? '#ef4444' : '#B91C1C'}
                 />
                 <Text className="font-spartan-bold text-base text-red-800 dark:text-red-500 ml-2">
-                    Bloquear usuario
+                    Block user
                 </Text>
             </Pressable>
         </View>

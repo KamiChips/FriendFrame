@@ -15,14 +15,12 @@ import { BlurView } from 'expo-blur';
 
 // Hook para cargar y publicar comentarios
 import { useComments } from '@/hooks/useComments';
-import {
-    PublicationTarget,
-    AppComment,
-} from '@/services/supabase/interactions/types';
+import { PublicationTarget } from '@/services/supabase/interactions/types';
 
 // Hook para respetar las "zonas seguras" del celular (notch arriba, barra de navegación abajo)
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CommentItem, { CommentType } from './CommentItem';
+import { AppComment } from '../../services/supabase/interactions/types';
 
 // 1. INTERFAZ DE PROPIEDADES (CommentsModalProps)
 interface CommentsModalProps {
@@ -55,7 +53,7 @@ export default function CommentsModal({
     // Cargar comentarios al abrir el modal
     useEffect(() => {
         if (isVisible) load();
-    }, [isVisible, load]);
+    }, [isVisible]);
 
     const handlePost = async () => {
         if (!newComment.trim()) return;
@@ -70,11 +68,11 @@ export default function CommentsModal({
     function timeAgo(isoDate: string): string {
         const diff = Date.now() - new Date(isoDate).getTime();
         const mins = Math.floor(diff / 60_000);
-        if (mins < 1) return 'ahora mismo';
-        if (mins < 60) return `hace ${mins} min`;
+        if (mins < 1) return 'just now';
+        if (mins < 60) return `${mins} min ago`;
         const hrs = Math.floor(mins / 60);
-        if (hrs < 24) return `hace ${hrs} h`;
-        return `hace ${Math.floor(hrs / 24)} d`;
+        if (hrs < 24) return `${hrs} h ago`;
+        return `${Math.floor(hrs / 24)} d ago`;
     }
 
     function initials(fullName: string): string {
@@ -154,7 +152,7 @@ export default function CommentsModal({
                     {/* HEADER DEL MODAL: Título y Botón de Cerrar */}
                     <View className="flex-row items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-white/10">
                         <Text className="font-spartan-bold text-xl text-black dark:text-white">
-                            Comentarios ({totalComments})
+                            Comments ({totalComments})
                         </Text>
                         <TouchableOpacity onPress={onClose} className="p-1">
                             <Ionicons name="close" size={24} color="#8A8A8E" />
@@ -181,7 +179,7 @@ export default function CommentsModal({
                     {replyingTo && (
                         <View className="flex-row items-center justify-between px-4 py-2 bg-gray-50 dark:bg-[#1A1D2E]">
                             <Text className="font-spartan text-xs text-gray-500 dark:text-gray-400">
-                                Respondiendo a{' '}
+                                Replying to{' '}
                                 <Text className="font-spartan-bold text-primary-light">
                                     @{replyingTo.authorName}
                                 </Text>
@@ -211,7 +209,7 @@ export default function CommentsModal({
                         <View className="flex-1 flex-row items-center bg-gray-100 dark:bg-[#272B40] rounded-full px-4 h-12">
                             <TextInput
                                 ref={inputRef} // Conectamos la referencia para el focus automático
-                                placeholder="Escribe un comentario..."
+                                placeholder="Write a comment..."
                                 placeholderTextColor="#8A8A8E"
                                 value={newComment}
                                 onChangeText={setNewComment} // Actualiza el estado con cada tecla pulsada
@@ -229,7 +227,6 @@ export default function CommentsModal({
                             className="ml-3 h-10 w-10 items-center justify-center rounded-full bg-primary-light dark:bg-[#FF9B42]"
                             disabled={newComment.length === 0}
                             style={{ opacity: newComment.length > 0 ? 1 : 0.5 }} // Se pone medio transparente si no hay texto
-
                             onPress={handlePost}
                         >
                             <Ionicons

@@ -7,7 +7,7 @@ interface SearchBarProps extends TextInputProps {
 }
 
 export default function SearchBar({
-    placeholder = 'Buscar...',
+    placeholder = 'Search...',
     ...props
 }: SearchBarProps) {
     return (

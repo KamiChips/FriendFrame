@@ -63,13 +63,10 @@ export default function CreatePostModal({
     } = useCreatePost(currentUserId);
 
     // Cargar fotos cuando se abre el modal
-    // loadGallery se recrea en cada render; solo debe correr al abrir el modal
-    // (incluirla en el arreglo de dependencias recargaría la galería en cada selección de foto)
     useEffect(() => {
         if (visible && step === 1) {
             loadGallery();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [visible, step]);
 
     const loadGallery = async () => {
@@ -111,7 +108,7 @@ export default function CreatePostModal({
                 fileName: `foto_${Date.now()}.jpg`, // Generamos un nombre único y seguro
                 mimeType: 'image/jpeg', // Siempre será JPEG gracias al manipulador
             });
-        } catch {
+        } catch (err) {
             Alert.alert('Error', 'No se pudo preparar la imagen para subir.');
         }
     };
@@ -199,7 +196,7 @@ export default function CreatePostModal({
                                     />
                                 </TouchableOpacity>
                                 <Text className="font-spartan-bold text-lg text-black dark:text-white">
-                                    Nueva publicación
+                                    New Publication
                                 </Text>
                                 <TouchableOpacity
                                     onPress={() => setStep(2)}
@@ -212,7 +209,7 @@ export default function CreatePostModal({
                                     }}
                                 >
                                     <Text className="font-spartan-bold text-[#FBA353] text-base">
-                                        Siguiente
+                                        Next
                                     </Text>
                                 </TouchableOpacity>
                             </>
@@ -230,7 +227,7 @@ export default function CreatePostModal({
                                     />
                                 </TouchableOpacity>
                                 <Text className="font-spartan-bold text-lg text-black dark:text-white">
-                                    Nuevo Post
+                                    New Post
                                 </Text>
                                 <TouchableOpacity
                                     onPress={handleShare}
@@ -244,7 +241,7 @@ export default function CreatePostModal({
                                         />
                                     ) : (
                                         <Text className="font-spartan-bold text-[#FBA353] text-base">
-                                            Compartir
+                                            Share
                                         </Text>
                                     )}
                                 </TouchableOpacity>
@@ -272,7 +269,7 @@ export default function CreatePostModal({
                         {/* BARRA DE HERRAMIENTAS */}
                         <View className="flex-row justify-between items-center px-4 py-3 bg-gray-50 dark:bg-[#1F2B4A]">
                             <Text className="font-spartan-bold text-base text-black dark:text-white">
-                                Recientes
+                                Recents
                             </Text>
                             <View className="flex-row items-center">
                                 <Ionicons
@@ -287,8 +284,8 @@ export default function CreatePostModal({
                         {hasPermission === false ? (
                             <View className="flex-1 items-center justify-center p-6">
                                 <Text className="text-center font-spartan text-gray-500">
-                                    Necesitamos acceso a tus fotos para mostrar
-                                    la galería.
+                                    We need access to your photos to show the
+                                    gallery.
                                 </Text>
                             </View>
                         ) : (
@@ -350,8 +347,9 @@ export default function CreatePostModal({
                                         {currentUserName}
                                     </Text>
                                     <Text className="font-spartan text-xs text-gray-500 dark:text-gray-400">
-                                        Publicando en el perfil de{' '}
-                                        {targetProfileName}
+                                        {
+                                            "Posting on {targetProfileName}'s profile"
+                                        }
                                     </Text>
                                 </View>
                             </View>
@@ -359,7 +357,7 @@ export default function CreatePostModal({
                             <View className="relative bg-gray-50 dark:bg-[#1F2B4A] rounded-2xl p-4 border border-gray-100 dark:border-white/5">
                                 <TextInput
                                     className="font-spartan text-base text-black dark:text-white min-h-[100px] pb-6"
-                                    placeholder="Escribe un pie de foto (opcional)..."
+                                    placeholder="Write a caption (optional)..."
                                     placeholderTextColor="#8A8A8E"
                                     multiline
                                     maxLength={280}

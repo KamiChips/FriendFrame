@@ -27,7 +27,7 @@ export default function ConfirmActionCard({
     title,
     message,
     confirmText,
-    cancelText = 'Cancelar',
+    cancelText = 'Cancel',
     iconName,
     loading = false,
     destructive = false,
