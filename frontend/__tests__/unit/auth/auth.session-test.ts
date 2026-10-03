@@ -1,6 +1,6 @@
 import { onAuthStateChange } from '@/services/supabase/auth/auth.session';
 import { mockAuth } from '@/__mocks__/supabaseMock';
-import { fetchProfile } from '@/services/supabase/auth/auth.helpers';
+import { fetchProfile, clearPendingVerificationEmail } from '@/services/supabase/auth/auth.helpers';
 
 jest.mock('@/lib/supabase/client', () => ({
     supabase: require('@/__mocks__/supabaseMock').supabase,
@@ -8,9 +8,11 @@ jest.mock('@/lib/supabase/client', () => ({
 
 jest.mock('@/services/supabase/auth/auth.helpers', () => ({
     fetchProfile: jest.fn(),
+    clearPendingVerificationEmail: jest.fn().mockResolvedValue(undefined),
 }));
 
 const mockFetchProfile = fetchProfile as jest.Mock;
+const mockClearPending = clearPendingVerificationEmail as jest.Mock;
 
 const mockProfile = {
     user_id: 'uid-1',
@@ -74,6 +76,7 @@ describe('onAuthStateChange', () => {
         onAuthStateChange(callback);
         await fire();
 
+        expect(mockClearPending).toHaveBeenCalled();
         expect(callback).toHaveBeenCalledWith(mockProfile);
     });
 
@@ -138,5 +141,17 @@ describe('onAuthStateChange', () => {
         await fire();
 
         expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('calls callback with null if clearPendingVerificationEmail throws', async () => {
+        mockFetchProfile.mockResolvedValue(mockProfile);
+        mockClearPending.mockRejectedValue(new Error('storage error'));
+        const callback = jest.fn();
+        const { fire } = setupAuthStateChange('SIGNED_IN', { user: { id: 'uid-1' } });
+
+        onAuthStateChange(callback);
+        await fire();
+
+        expect(callback).toHaveBeenCalledWith(null);
     });
 });
