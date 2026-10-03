@@ -190,7 +190,7 @@ const NotificationInbox = () => {
                 ) : notifications.length === 0 ? (
                     <View className="flex-1 items-center justify-center px-8">
                         <Text className="text-gray-400 dark:text-gray-500 text-center font-spartan">
-                            You don't have any notifications yet
+                            {"You don't have any notifications yet"}
                         </Text>
                     </View>
                 ) : (

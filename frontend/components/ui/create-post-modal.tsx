@@ -347,7 +347,7 @@ export default function CreatePostModal({
                                         {currentUserName}
                                     </Text>
                                     <Text className="font-spartan text-xs text-gray-500 dark:text-gray-400">
-                                        Posting on {targetProfileName}'s profile
+                                        {"Posting on {targetProfileName}'s profile"}
                                     </Text>
                                 </View>
                             </View>

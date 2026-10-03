@@ -181,7 +181,7 @@ export default function ProfileScreen() {
         return (
             <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240] items-center justify-center px-8">
                 <Text className="text-xl font-spartan-bold text-gray-900 dark:text-white text-center">
-                    You can't view this profile.
+                    {"You can't view this profile."}
                 </Text>
             </SafeAreaView>
         );

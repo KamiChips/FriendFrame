@@ -158,7 +158,7 @@ export default function LoginScreen() {
                             />
                         </TouchableOpacity>
                         <Text className="dark:text-background-light mt-10">
-                            Don't have an account?{' '}
+                            {"Don't have an account?{' '}"}
                             <Text
                                 className="font-semibold dark:text-background-light"
                                 onPress={() => router.push('/(auth)/signup')}

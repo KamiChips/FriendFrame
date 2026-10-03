@@ -60,7 +60,7 @@ const NotificationCard = ({
             message = (
                 <>
                     <Text className="font-spartan-bold">{name}</Text> commented:
-                    "{comment}"
+                    {`"${comment}"`}
                 </>
             );
             icon = (
@@ -105,7 +105,7 @@ const NotificationCard = ({
             message = (
                 <>
                     <Text className="font-spartan-bold">{name}</Text> sent you a
-                    message: "{comment}"
+                    {`message: "${comment}"`}
                 </>
             );
             icon = (

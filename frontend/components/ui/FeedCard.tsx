@@ -141,7 +141,7 @@ export default function FeedCard({
                             <Text className="font-spartan-bold">
                                 {targetProfileName}
                             </Text>
-                            's profile
+                            {"'s profile"}
                         </Text>
                     </View>
                 </View>

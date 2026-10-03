@@ -214,7 +214,7 @@ export default function SettingsScreen() {
                         ) : blockedUsers.length === 0 ? (
                             <View className="py-20 items-center">
                                 <Text className="text-gray-400 dark:text-neutral-500 text-center">
-                                    You haven't blocked any users
+                                    {"You haven't blocked any users"}
                                 </Text>
                             </View>
                         ) : (
@@ -276,7 +276,7 @@ export default function SettingsScreen() {
                             />
                         ) : myPosts.length === 0 ? (
                             <Text className="text-gray-400 font-medium dark:text-neutral-500">
-                                You haven't published any posts yet.
+                                {"You haven't published any posts yet."}
                             </Text>
                         ) : (
                             myPosts.map((post) => (
@@ -339,7 +339,7 @@ export default function SettingsScreen() {
                         ) : myFragments.length === 0 ? (
                             <View className="py-20 items-center">
                                 <Text className="text-gray-400 dark:text-neutral-500 text-center">
-                                    You haven't published any fragments yet
+                                    {"You haven't published any fragments yet"}
                                 </Text>
                             </View>
                         ) : (
