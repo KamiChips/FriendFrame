@@ -63,7 +63,7 @@ describe('updateProfilePic', () => {
 
         const result = await updateProfilePic('uid-1');
         expect(result.error).toBe(
-            'Se necesita permiso para acceder a la galería.'
+            'Permission required to access gallery.'
         );
     });
 
@@ -179,7 +179,7 @@ describe('editUsername', () => {
         mockFrom.mockReturnValue({ select });
 
         const result = await editUsername('elnito7');
-        expect(result.error).toBe('El username es igual al actual.');
+        expect(result.error).toBe('Username is the same as current.');
     });
 
     it('returns error if username is already taken', async () => {
@@ -209,7 +209,7 @@ describe('editUsername', () => {
         });
 
         const result = await editUsername('elnito7');
-        expect(result.error).toBe('Ese nombre de usuario ya está en uso.');
+        expect(result.error).toBe('That username is already taken.');
     });
 
     it('updates username successfully', async () => {

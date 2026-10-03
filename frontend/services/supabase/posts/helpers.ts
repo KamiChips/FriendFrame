@@ -50,13 +50,21 @@ export function parseError(err: unknown): string {
 
     if (
         msg.startsWith('No hay sesión') ||
+        msg.startsWith('No active session') ||
+        msg.startsWith('Invalid') ||
         msg.startsWith('ID') ||
         msg.startsWith('La descripción') ||
+        msg.startsWith('The description') ||
         msg.startsWith('El fragment') ||
+        msg.startsWith('The fragment') ||
         msg.startsWith('No puedes') ||
+        msg.startsWith('You cannot') ||
         msg.startsWith('Solo puedes') ||
+        msg.startsWith('You can only') ||
         msg.startsWith('Post no') ||
+        msg.startsWith('Post not') ||
         msg.startsWith('Fragment no') ||
+        msg.startsWith('Fragment not') ||
         msg.startsWith('Se necesita')
     )
         return msg;
@@ -70,7 +78,7 @@ export async function assertFriendship(
     profileOwnerId: string
 ): Promise<void> {
     if (authorId === profileOwnerId)
-        throw new Error('You cannot post on your own profile.');
+        throw new Error('No puedes publicar en tu propio perfil.');
 
     const { data, error } = (await supabase.rpc('assert_friendship', {
         author_id: authorId,
@@ -78,7 +86,7 @@ export async function assertFriendship(
     })) as { data: boolean | null; error: any };
 
     if (error) throw error;
-    if (!data) throw new Error("You can only post on your friends' profiles.");
+    if (!data) throw new Error("Solo puedes publicar en perfiles de amigos.");
 }
 
 //conteos de posts y fragments

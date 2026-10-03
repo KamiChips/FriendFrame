@@ -33,12 +33,12 @@ describe('validateEmail', () => {
     });
 
     it('throws error when email is empty', () => {
-        expect(() => validateEmail('   ')).toThrow('El email es requerido.');
+        expect(() => validateEmail('   ')).toThrow('Email is required.');
     });
 
     it('throws error if format is invalid', () => {
         expect(() => validateEmail('no-he-comido-aiuda')).toThrow(
-            'El email no tiene un formato válido.'
+            'Invalid email format.'
         );
     });
 });
@@ -51,13 +51,13 @@ describe('validatePassword', () => {
 
     it('throws error when password is empty', () => {
         expect(() => validatePassword('')).toThrow(
-            'La contraseña es requerida.'
+            'Password is required.'
         );
     });
 
     it('throws error if password is too short', () => {
         expect(() => validatePassword('ola')).toThrow(
-            'La contraseña debe tener al menos 8 caracteres.'
+            'Password must be at least 8 characters.'
         );
     });
 });
@@ -70,13 +70,13 @@ describe('validateUsername', () => {
 
     it('throws error when username is empty', () => {
         expect(() => validateUsername('')).toThrow(
-            'El nombre de usuario es requerido.'
+            'Username is required.'
         );
     });
 
     it('throws error when username contains invalid characters', () => {
         expect(() => validateUsername('NI tO!')).toThrow(
-            'El username solo puede contener'
+            'Username can only contain'
         );
     });
 
@@ -93,13 +93,13 @@ describe('validateFullName', () => {
 
     it('throws error when name is empty', () => {
         expect(() => validateFullName('   ')).toThrow(
-            'El nombre completo es requerido.'
+            'Full name is required.'
         );
     });
 
     it('throws error when name is too long (> 120 chars)', () => {
         expect(() => validateFullName('A'.repeat(121))).toThrow(
-            'El nombre no puede superar'
+            'Full name cannot exceed'
         );
     });
 });
@@ -112,7 +112,7 @@ describe('validateRedirectUrl', () => {
 
     it('throws error with an invalid URL', () => {
         expect(() => validateRedirectUrl('quesesto')).toThrow(
-            'La URL de redirección no es válida.'
+            'Invalid redirect URL.'
         );
     });
 
@@ -155,7 +155,7 @@ describe('fetchProfile', () => {
         mockFrom.mockReturnValue({ select });
 
         await expect(fetchProfile('uid-1')).rejects.toThrow(
-            'No se encontró el perfil del usuario.'
+            'User profile not found.'
         );
     });
 });
@@ -179,7 +179,7 @@ describe('waitForProfile', () => {
         mockFrom.mockReturnValue({ select });
 
         await expect(waitForProfile('uid-1')).rejects.toThrow(
-            'No se pudo crear el perfil. Intenta de nuevo.'
+            'Could not create profile. Please try again.'
         );
     }, 15000);
 });

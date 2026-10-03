@@ -18,7 +18,7 @@ export async function followUser(
     targetUserId: string
 ): Promise<SocialResult<{ follow: Follow; is_friend: boolean }>> {
     try {
-        assertUUID(targetUserId, 'ID de usuario');
+        assertUUID(targetUserId, 'user ID');
         const currentUserId = await getAuthUser();
         if (currentUserId === targetUserId)
             throw new Error('You cannot follow yourself.');

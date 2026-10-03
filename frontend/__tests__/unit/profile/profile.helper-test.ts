@@ -50,54 +50,54 @@ describe('normalizePagination', () => {
 
 describe('parseError', () => {
     it('returns a generic message when there is no error', () => {
-        expect(parseError(null)).toBe('Error desconocido');
+        expect(parseError(null)).toBe('Unknown error');
     });
 
     it('maps PGRST116 to a not-found message', () => {
         expect(parseError(new Error('PGRST116'))).toBe(
-            'Usuario no encontrado.'
+            'User not found.'
         );
     });
 
     it("maps 'No rows found' to a not-found message", () => {
         expect(parseError(new Error('No rows found'))).toBe(
-            'Usuario no encontrado.'
+            'User not found.'
         );
     });
 
     it('maps row-level security errors to a permission message', () => {
         expect(parseError(new Error('row-level security violation'))).toBe(
-            'No tienes permiso para realizar esta acción.'
+            'You do not have permission to perform this action.'
         );
     });
 
     it('maps network errors to a connection message', () => {
         expect(parseError(new Error('NetworkError'))).toBe(
-            'Error de red. Verifica tu conexión.'
+            'Network error. Check your connection.'
         );
         expect(parseError(new Error('Failed to fetch'))).toBe(
-            'Error de red. Verifica tu conexión.'
+            'Network error. Check your connection.'
         );
     });
 
     it('returns the original message when it starts with a known prefix', () => {
-        expect(parseError(new Error('No hay sesión activa.'))).toBe(
-            'No hay sesión activa.'
+        expect(parseError(new Error('No active session.'))).toBe(
+            'No active session.'
         );
-        expect(parseError(new Error('ID de usuario inválido.'))).toBe(
-            'ID de usuario inválido.'
+        expect(parseError(new Error('Invalid user ID.'))).toBe(
+            'Invalid user ID.'
         );
         expect(
-            parseError(new Error('La búsqueda no puede superar 50 caracteres.'))
-        ).toBe('La búsqueda no puede superar 50 caracteres.');
-        expect(parseError(new Error('Usuario no encontrado.'))).toBe(
-            'Usuario no encontrado.'
+            parseError(new Error('The search cannot exceed 50 characters.'))
+        ).toBe('The search cannot exceed 50 characters.');
+        expect(parseError(new Error('User not found.'))).toBe(
+            'User not found.'
         );
     });
 
     it('returns a generic message for unknown errors', () => {
         expect(parseError(new Error('something unexpected'))).toBe(
-            'Ocurrió un error inesperado.'
+            'An unexpected error occurred.'
         );
     });
 });

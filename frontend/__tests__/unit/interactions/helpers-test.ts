@@ -80,7 +80,7 @@ describe('assertTarget', () => {
 
     it('lanza si no se pasa ni postId ni fragmentId', () => {
         expect(() => assertTarget({} as any)).toThrow(
-            'Se requiere postId o fragmentId.'
+            'postId or fragmentId is required.'
         );
     });
 
@@ -144,26 +144,26 @@ describe('validateContent', () => {
 
     it('lanza si el contenido está vacío', () => {
         expect(() => validateContent('')).toThrow(
-            'El contenido no puede estar vacío.'
+            'The content cannot be empty.'
         );
     });
 
     it('lanza si el contenido es solo espacios', () => {
         expect(() => validateContent('   ')).toThrow(
-            'El contenido no puede estar vacío.'
+            'The content cannot be empty.'
         );
     });
 
     it(`lanza si el contenido supera ${MAX_COMMENT_LENGTH} caracteres`, () => {
         const largo = 'a'.repeat(MAX_COMMENT_LENGTH + 1);
         expect(() => validateContent(largo)).toThrow(
-            `El contenido no puede superar ${MAX_COMMENT_LENGTH} caracteres.`
+            `The content cannot exceed ${MAX_COMMENT_LENGTH} characters.`
         );
     });
 
     it('usa el label personalizado en el mensaje de error', () => {
         expect(() => validateContent('', 'comentario')).toThrow(
-            'El comentario no puede estar vacío.'
+            'The comentario cannot be empty.'
         );
     });
 
@@ -175,15 +175,15 @@ describe('validateContent', () => {
 
 // ─── parseError ───────────────────────────────────────────────────────────────
 describe('parseError', () => {
-    it("retorna 'Error desconocido' si err es falsy", () => {
-        expect(parseError(null)).toBe('Error desconocido');
-        expect(parseError(undefined)).toBe('Error desconocido');
+    it("retorna 'Unknown error' si err es falsy", () => {
+        expect(parseError(null)).toBe('Unknown error');
+        expect(parseError(undefined)).toBe('Unknown error');
     });
 
     it("mapea 'row-level security' a mensaje de permisos", () => {
         expect(
             parseError(new Error('row-level security policy violated'))
-        ).toBe('No tienes permiso para realizar esta acción.');
+        ).toBe('You do not have permission to perform this action.');
     });
 
     it("mapea 'duplicate key value violates unique constraint' a like duplicado", () => {
@@ -191,30 +191,30 @@ describe('parseError', () => {
             parseError(
                 new Error('duplicate key value violates unique constraint')
             )
-        ).toBe('Ya diste like a esta publicación.');
+        ).toBe('You already liked this post.');
     });
 
     it("mapea 'violates check constraint' a error de validación", () => {
         expect(parseError(new Error('violates check constraint'))).toBe(
-            'Error de validación.'
+            'Validation error.'
         );
     });
 
     it("mapea 'NetworkError' a error de red", () => {
         expect(parseError(new Error('NetworkError occurred'))).toBe(
-            'Error de red. Verifica tu conexión.'
+            'Network error. Check your connection.'
         );
     });
 
     it("mapea 'Failed to fetch' a error de red", () => {
         expect(parseError(new Error('Failed to fetch'))).toBe(
-            'Error de red. Verifica tu conexión.'
+            'Network error. Check your connection.'
         );
     });
 
     it("retorna el mensaje original si empieza con 'No hay sesión'", () => {
-        expect(parseError(new Error('No hay sesión activa.'))).toBe(
-            'No hay sesión activa.'
+        expect(parseError(new Error('No active session.'))).toBe(
+            'No active session.'
         );
     });
 
@@ -232,8 +232,8 @@ describe('parseError', () => {
 
     it("retorna el mensaje original si contiene 'no puede'", () => {
         expect(
-            parseError(new Error('El contenido no puede estar vacío.'))
-        ).toBe('El contenido no puede estar vacío.');
+            parseError(new Error('The content cannot be empty.'))
+        ).toBe('The content cannot be empty.');
     });
 
     it("retorna el mensaje original si contiene 'no existe'", () => {
@@ -250,15 +250,15 @@ describe('parseError', () => {
         ).toBe('El comentario no pertenece a esta publicación');
     });
 
-    it("retorna 'Ocurrió un error inesperado.' para errores desconocidos", () => {
+    it("retorna 'An unexpected error occurred.' para errores desconocidos", () => {
         expect(parseError(new Error('algún error raro interno'))).toBe(
-            'Ocurrió un error inesperado.'
+            'An unexpected error occurred.'
         );
     });
 
     it('maneja errores sin .message usando String(err)', () => {
         expect(parseError('row-level security')).toBe(
-            'No tienes permiso para realizar esta acción.'
+            'You do not have permission to perform this action.'
         );
     });
 });

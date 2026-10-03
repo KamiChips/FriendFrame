@@ -58,13 +58,19 @@ export function parseError(err: unknown): string {
     }
 
     if (
+        msg.startsWith('No active session') ||
         msg.startsWith('No hay sesión') ||
+        msg.startsWith('The comment') ||
         msg.startsWith('El comentario') ||
-        msg.startsWith('El contenido') ||
-        msg.startsWith('Se requiere') ||
+        msg.startsWith('The content') ||
+        msg.includes('is required') ||
+        msg.includes('Invalid') ||
         msg.includes('inválido') ||
+        msg.includes('cannot') ||
         msg.includes('no puede') ||
+        msg.includes('does not exist') ||
         msg.includes('no existe') ||
+        msg.includes('does not belong') ||
         msg.includes('no pertenece')
     )
         return msg;

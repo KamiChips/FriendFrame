@@ -1,11 +1,11 @@
 import { FeedPost } from './feed.types';
 
 export function parseError(err: unknown): string {
-    if (!err) return 'Error desconocido';
+    if (!err) return 'Unknown error';
     const msg = (err as Error).message ?? String(err);
     if (msg.includes('NetworkError') || msg.includes('Failed to fetch'))
-        return 'Error de red. Verifica tu conexión.';
-    return 'No se pudo cargar el feed.';
+        return 'Network error. Check your connection.';
+    return 'Could not load the feed.';
 }
 
 export function mapRow(row: any): FeedPost {

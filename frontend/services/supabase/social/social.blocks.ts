@@ -13,7 +13,7 @@ export async function blockUser(
     targetUserId: string
 ): Promise<SocialResult<Block>> {
     try {
-        assertUUID(targetUserId, 'ID de usuario');
+        assertUUID(targetUserId, 'user ID');
         const currentUserId = await getAuthUser();
         if (currentUserId === targetUserId)
             throw new Error('You cannot block yourself.');

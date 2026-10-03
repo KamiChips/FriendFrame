@@ -20,33 +20,33 @@ export function parseError(err: unknown): string {
     if (!err) return 'Unknown error';
     const msg = (err as Error).message ?? String(err);
 
-    const map: [string, string][] = [
-        [
-            'duplicate key value violates unique constraint "follows',
-            'You are already following this user.',
-        ],
-        [
-            'duplicate key value violates unique constraint "blocks',
-            'You have already blocked this user.',
-        ],
-        [
-            'violates check constraint',
-            'You cannot perform this action on yourself.',
-        ],
-        [
-            'row-level security',
-            'You do not have permission to perform this action.',
-        ],
-        ['NetworkError', 'Network error. Check your connection.'],
-        ['Failed to fetch', 'Network error. Check your connection.'],
-        ['No hay sesión', msg],
-        ['No puedes', msg],
-        ['Ya sigues', msg],
-        ['Ya has bloqueado', msg],
-        ['Has bloqueado', msg],
-        ['Solo puedes', msg],
-        ['ID', msg],
-    ];
+        const map: [string, string][] = [
+            [
+                'duplicate key value violates unique constraint "follows',
+                'You are already following this user.',
+            ],
+            [
+                'duplicate key value violates unique constraint "blocks',
+                'You have already blocked this user.',
+            ],
+            [
+                'violates check constraint',
+                'You cannot perform this action on yourself.',
+            ],
+            [
+                'row-level security',
+                'You do not have permission to perform this action.',
+            ],
+            ['NetworkError', 'Network error. Check your connection.'],
+            ['Failed to fetch', 'Network error. Check your connection.'],
+            ['No active session', msg],
+            ['You cannot', msg],
+            ['You are already following', msg],
+            ['You have already blocked', msg],
+            ['You have blocked', msg],
+            ['You can only', msg],
+            ['Invalid', msg],
+        ];
 
     for (const [key, value] of map) {
         if (msg.includes(key)) return value;

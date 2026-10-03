@@ -41,7 +41,12 @@ export function parseAuthError(error: unknown): string {
         msg.startsWith('El username') ||
         msg.startsWith('La URL') ||
         msg.startsWith('No hay sesión') ||
-        msg.startsWith('El ID')
+        msg.startsWith('El ID') ||
+        msg.startsWith('Email') ||
+        msg.startsWith('Password') ||
+        msg.startsWith('Username') ||
+        msg.startsWith('Full name') ||
+        msg.startsWith('Invalid')
     )
         return msg;
 

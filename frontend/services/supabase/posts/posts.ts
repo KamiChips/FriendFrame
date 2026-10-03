@@ -17,7 +17,7 @@ export async function createPost(
     description?: string
 ): Promise<PostResult<Post>> {
     try {
-        assertUUID(profileOwnerId, 'ID de perfil');
+        assertUUID(profileOwnerId, 'profile ID');
         const sanitized = sanitizeDescription(description);
         const currentUserId = await getAuthUser();
 
@@ -83,11 +83,11 @@ export async function editPost(
 
         if (error) {
             if (error.code === 'PGRST116') {
-                throw new Error('Post no encontrado o sin permisos.');
+                throw new Error('Post not found or no permissions.');
             }
             throw error;
         }
-        if (!data) throw new Error('Post no encontrado o sin permisos.');
+        if (!data) throw new Error('Post not found or no permissions.');
 
         return { data: data as Post, error: null };
     } catch (err) {
@@ -109,7 +109,7 @@ export async function deletePost(postId: string): Promise<PostResult> {
 
         if (fetchError || !existing)
             throw new Error(
-                'Post no encontrado o sin permisos para eliminarlo.'
+                'Post not found or no permissions to delete.'
             );
 
         const { error } = await supabase
@@ -134,7 +134,7 @@ export async function getPostWithCounts(
 ): Promise<PostResult<PostWithCounts>> {
     try {
         assertUUID(postId, 'postId');
-        assertUUID(currentUserId, 'ID de usuario');
+        assertUUID(currentUserId, 'user ID');
 
         const { data, error } = await supabase
             .from('posts')
