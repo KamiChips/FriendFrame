@@ -10,12 +10,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
-import UserProfileHeader from '@/components/ui/UserProfileHeader';
+import UserProfileHeader from '@/components/ui/profile/user-profile-header';
 import '../../global.css';
-import { FloatingMenu } from '@/components/ui/FloatingMenu';
-import BlockUserWarning from '@/components/ui/BlockUserWarning';
-import ProfileTabs from '@/components/ui/ProfileTabs';
-import FeedCard from '@/components/ui/FeedCard';
+import { FloatingMenu } from '@/components/ui/posts/floating-menu';
+import BlockUserWarning from '@/components/ui/users/block-user-warning';
+import ProfileTabs from '@/components/ui/profile/ProfileTabs';
+import FeedCard from '@/components/ui/posts/feed-card';
 import { useAuth } from '@/context/AuthContext';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FullProfile } from '@/services/supabase/profile/types';
@@ -27,8 +27,8 @@ import {
     blockUser,
     unblockUser,
 } from '@/services/supabase/social/social.blocks';
-import { EditProfileModal } from '@/components/ui/EditProfileModal';
-import BlockedUserScreen from '@/components/ui/blocked-user-screen';
+import { EditProfileModal } from '@/components/ui/common/edit-profile-modal';
+import BlockedUserScreen from '@/components/ui/users/blocked-user-screen';
 
 type TabType = 'grid' | 'list';
 

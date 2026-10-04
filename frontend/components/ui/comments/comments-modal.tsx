@@ -22,7 +22,7 @@ import {
 
 // Hook para respetar las "zonas seguras" del celular (notch arriba, barra de navegación abajo)
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import CommentItem, { CommentType } from './CommentItem';
+import CommentItem, { CommentType } from './comment-item';
 
 // 1. INTERFAZ DE PROPIEDADES (CommentsModalProps)
 interface CommentsModalProps {
