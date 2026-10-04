@@ -8,7 +8,7 @@ import {
     Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { NewFragment } from './NewFragment';
+import { NewFragment } from './new-fragment';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import CreatePostModal from './create-post-modal';

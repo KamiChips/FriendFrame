@@ -13,8 +13,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import SearchBar from '@/components/ui/SearchBar';
-import SelectableUserRow from '@/components/ui/SelectableUserRow';
+import SearchBar from '@/components/ui/users/search-bar';
+import SelectableUserRow from '@/components/ui/users/selectable-user-row';
 import { useAuth } from '@/context/AuthContext';
 import { getFriends } from '@/services/supabase/social/social.relationship';
 import { SocialUser } from '@/services/supabase/social/social.types';

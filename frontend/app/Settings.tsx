@@ -10,15 +10,15 @@ import {
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import '../global.css';
-import { Toggle } from '@/components/ui/Toggle';
-import { EditProfileModal } from '@/components/ui/EditProfileModal';
+import { Toggle } from '@/components/ui/common/toggle';
+import { EditProfileModal } from '@/components/ui/common/edit-profile-modal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/AuthContext';
 import { useSettings } from '@/hooks/useSettings';
 import { Image } from 'expo-image';
-import ProfileIcon from '@/components/ui/ProfileIcon';
-import FeedCard from '@/components/ui/FeedCard';
-import NotificationButton from '@/components/ui/NotificationButton';
+import ProfileIcon from '@/components/ui/icons/profile-icon';
+import FeedCard from '@/components/ui/posts/feed-card';
+import NotificationButton from '@/components/ui/notifications/notification-button';
 
 export default function SettingsScreen() {
     const router = useRouter();

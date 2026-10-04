@@ -1,6 +1,6 @@
 import ChatHeader from '@/components/ui/ChatHeader';
 import ChatMessage from '@/components/ui/ChatMessage';
-import ChatMessageInput from '@/components/ui/ChatMessageInput';
+import ChatMessageInput from '@/components/ui/chat/ChatMessageInput';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     View,

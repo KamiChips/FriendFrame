@@ -12,8 +12,8 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import '../../global.css';
-import { TextField } from '../../components/ui/TextField';
-import { Button } from '../../components/ui/Button';
+import { TextField } from '../../components/ui/common/text-field';
+import { Button } from '../../components/ui/common/button';
 import { TERMS_AND_SERVICES_TEXT } from '../../constants/termsText';
 import { router, Stack } from 'expo-router';
 import { signUp } from '@/services/supabase/auth/auth.sign-up';

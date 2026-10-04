@@ -14,7 +14,7 @@ import {
     editFragment,
 } from '@/services/supabase/posts/fragment';
 import { deletePost, editPost } from '@/services/supabase/posts/posts';
-import ConfirmActionCard from './confirm-action-card';
+import ConfirmActionCard from '../actions/confirm-action-card';
 import EditPublicationCard from './edit-publication-card';
 
 type PublicationType = 'post' | 'fragment';
