@@ -19,8 +19,8 @@ import { PublicationTarget } from '@/services/supabase/interactions/types';
 
 // Hook para respetar las "zonas seguras" del celular (notch arriba, barra de navegación abajo)
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import CommentItem, { CommentType } from './CommentItem';
-import { AppComment } from '../../services/supabase/interactions/types';
+import CommentItem, { CommentType } from './comment-item';
+import { AppComment } from '@/services/supabase/interactions/types';
 
 // 1. INTERFAZ DE PROPIEDADES (CommentsModalProps)
 interface CommentsModalProps {

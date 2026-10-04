@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { IconSymbol } from '@/components/ui/icons/icon-symbol';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import Feather from '@expo/vector-icons/Feather';
 import { Colors } from '@/constants/theme';
