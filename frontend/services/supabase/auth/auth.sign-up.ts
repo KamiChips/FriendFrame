@@ -1,6 +1,6 @@
-import { supabase } from "@/lib/supabase/client";
-import { SignUpParams, AuthResult, AuthUser } from "./auth.types";
-import { parseAuthError } from "./auth.errors";
+import { supabase } from '@/lib/supabase/client';
+import { SignUpParams, AuthResult, AuthUser } from './auth.types';
+import { parseAuthError } from './auth.errors';
 import {
   validateEmail,
   validateFullName,
@@ -11,10 +11,10 @@ import {
 import safeLogger from "@/lib/logger/safeLogger";
 
 export async function signUp({
-  email,
-  password,
-  full_name,
-  username,
+    email,
+    password,
+    full_name,
+    username,
 }: SignUpParams): Promise<AuthResult<AuthUser>> {
   try {
     safeLogger.debug("[SIGNUP] Iniciando");
@@ -60,9 +60,9 @@ export async function signUp({
     if (authError) throw authError;
     if (!authData.user) throw new Error("No se pudo crear el usuario.");
 
-    const profile = await waitForProfile(authData.user.id);
-    return { data: profile, error: null };
-  } catch (err) {
-    return { data: null, error: parseAuthError(err) };
-  }
+        const profile = await waitForProfile(authData.user.id);
+        return { data: profile, error: null };
+    } catch (err) {
+        return { data: null, error: parseAuthError(err) };
+    }
 }

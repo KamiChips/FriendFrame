@@ -1,5 +1,5 @@
-import { supabase } from "@/lib/supabase/client";
-import { assertUUID, getAuthUser } from "../helpers/validation";
+import { supabase } from '@/lib/supabase/client';
+import { assertUUID, getAuthUser } from '../helpers/validation';
 import {
   assertFriendship,
   attachCountsBatch,
@@ -12,45 +12,45 @@ import { Post, PostResult, PostWithCounts } from "./types";
 import safeLogger from "@/lib/logger/safeLogger";
 
 export async function createPost(
-  profileOwnerId: string,
-  mediaUrl: string,
-  mediaType: string,
-  description?: string,
+    profileOwnerId: string,
+    mediaUrl: string,
+    mediaType: string,
+    description?: string
 ): Promise<PostResult<Post>> {
-  try {
-    assertUUID(profileOwnerId, "ID de perfil");
-    const sanitized = sanitizeDescription(description);
-    const currentUserId = await getAuthUser();
+    try {
+        assertUUID(profileOwnerId, 'ID de perfil');
+        const sanitized = sanitizeDescription(description);
+        const currentUserId = await getAuthUser();
 
-    await assertFriendship(currentUserId, profileOwnerId);
+        await assertFriendship(currentUserId, profileOwnerId);
 
-    const { data, error } = await supabase
-      .from("posts")
-      .insert({
-        author_id: currentUserId,
-        account_owner_id: profileOwnerId,
-        media: mediaUrl,
-        media_type: mediaType,
-        description: sanitized,
-      })
-      .select(
-        `
+        const { data, error } = await supabase
+            .from('posts')
+            .insert({
+                author_id: currentUserId,
+                account_owner_id: profileOwnerId,
+                media: mediaUrl,
+                media_type: mediaType,
+                description: sanitized,
+            })
+            .select(
+                `
         *,
         author:users!author_id (
           user_id, username, full_name, profile_pic
         )
-      `,
-      )
-      .single();
+      `
+            )
+            .single();
 
-    if (error) throw error;
+        if (error) throw error;
 
-    notifyNewPublication(
-      profileOwnerId,
-      currentUserId,
-      "new_post",
-      data.post_id,
-    );
+        notifyNewPublication(
+            profileOwnerId,
+            currentUserId,
+            'new_post',
+            data.post_id
+        );
 
     return { data: data as Post, error: null };
   } catch (err) {
@@ -60,120 +60,122 @@ export async function createPost(
 }
 
 export async function editPost(
-  postId: string,
-  newDescription: string | null,
+    postId: string,
+    newDescription: string | null
 ): Promise<PostResult<Post>> {
-  try {
-    assertUUID(postId, "postId");
-    const sanitized = sanitizeDescription(newDescription);
-    const currentUserId = await getAuthUser();
+    try {
+        assertUUID(postId, 'postId');
+        const sanitized = sanitizeDescription(newDescription);
+        const currentUserId = await getAuthUser();
 
-    const { data, error } = await supabase
-      .from("posts")
-      .update({ description: sanitized })
-      .eq("post_id", postId)
-      .eq("author_id", currentUserId)
-      .select(
-        `
+        const { data, error } = await supabase
+            .from('posts')
+            .update({ description: sanitized })
+            .eq('post_id', postId)
+            .eq('author_id', currentUserId)
+            .select(
+                `
         *,
         author:users!author_id (
           user_id, username, full_name, profile_pic
         )
-      `,
-      )
-      .single();
+      `
+            )
+            .single();
 
-    if (error) {
-      if (error.code === "PGRST116") {
-        throw new Error("Post no encontrado o sin permisos.");
-      }
-      throw error;
+        if (error) {
+            if (error.code === 'PGRST116') {
+                throw new Error('Post no encontrado o sin permisos.');
+            }
+            throw error;
+        }
+        if (!data) throw new Error('Post no encontrado o sin permisos.');
+
+        return { data: data as Post, error: null };
+    } catch (err) {
+        return { data: null, error: parseError(err) };
     }
-    if (!data) throw new Error("Post no encontrado o sin permisos.");
-
-    return { data: data as Post, error: null };
-  } catch (err) {
-    return { data: null, error: parseError(err) };
-  }
 }
 
 export async function deletePost(postId: string): Promise<PostResult> {
-  try {
-    assertUUID(postId, "postId");
-    const currentUserId = await getAuthUser();
+    try {
+        assertUUID(postId, 'postId');
+        const currentUserId = await getAuthUser();
 
-    const { data: existing, error: fetchError } = await supabase
-      .from("posts")
-      .select("media")
-      .eq("post_id", postId)
-      .eq("author_id", currentUserId)
-      .single();
+        const { data: existing, error: fetchError } = await supabase
+            .from('posts')
+            .select('media')
+            .eq('post_id', postId)
+            .eq('author_id', currentUserId)
+            .single();
 
-    if (fetchError || !existing)
-      throw new Error("Post no encontrado o sin permisos para eliminarlo.");
+        if (fetchError || !existing)
+            throw new Error(
+                'Post no encontrado o sin permisos para eliminarlo.'
+            );
 
-    const { error } = await supabase
-      .from("posts")
-      .delete()
-      .eq("post_id", postId)
-      .eq("author_id", currentUserId);
+        const { error } = await supabase
+            .from('posts')
+            .delete()
+            .eq('post_id', postId)
+            .eq('author_id', currentUserId);
 
-    if (error) throw error;
+        if (error) throw error;
 
-    deleteMediaFile(existing.media); // fire-and-forget
+        deleteMediaFile(existing.media); // fire-and-forget
 
-    return { data: null, error: null };
-  } catch (err) {
-    return { data: null, error: parseError(err) };
-  }
+        return { data: null, error: null };
+    } catch (err) {
+        return { data: null, error: parseError(err) };
+    }
 }
 
 export async function getPostWithCounts(
-  postId: string,
-  currentUserId: string,
+    postId: string,
+    currentUserId: string
 ): Promise<PostResult<PostWithCounts>> {
-  try {
-    assertUUID(postId, "postId");
-    assertUUID(currentUserId, "ID de usuario");
+    try {
+        assertUUID(postId, 'postId');
+        assertUUID(currentUserId, 'ID de usuario');
 
-    const { data, error } = await supabase
-      .from("posts")
-      .select(
-        `
+        const { data, error } = await supabase
+            .from('posts')
+            .select(
+                `
         *,
         author:users!author_id (
           user_id, username, full_name, profile_pic
         )
-      `,
-      )
-      .eq("post_id", postId)
-      .single();
+      `
+            )
+            .eq('post_id', postId)
+            .single();
 
-    if (error) throw error;
+        if (error) throw error;
 
-    const { postsMap } = await attachCountsBatch(
-      [data as Post],
-      [],
-      currentUserId,
-    );
-    const counts = postsMap.get(postId) ?? {
-      likes_count: 0,
-      comments_count: 0,
-      shares_count: 0,
-      liked_by_me: false,
-    };
+        const { postsMap } = await attachCountsBatch(
+            [data as Post],
+            [],
+            currentUserId
+        );
+        const counts = postsMap.get(postId) ?? {
+            likes_count: 0,
+            comments_count: 0,
+            shares_count: 0,
+            liked_by_me: false,
+        };
 
-    return { data: { ...(data as Post), ...counts }, error: null };
-  } catch (err) {
-    return { data: null, error: parseError(err) };
-  }
+        return { data: { ...(data as Post), ...counts }, error: null };
+    } catch (err) {
+        return { data: null, error: parseError(err) };
+    }
 }
 
 export const getUserPosts = async (userId: string) => {
-  return supabase
-    .from("posts")
-    .select(
-      `
+    return supabase
+        .from('posts')
+        .select(
+            `
       post_id,
       media,
       description,
@@ -185,8 +187,8 @@ export const getUserPosts = async (userId: string) => {
         full_name,
         profile_pic
       )
-    `,
-    )
-    .eq("author_id", userId)
-    .order("created_at", { ascending: false });
+    `
+        )
+        .eq('author_id', userId)
+        .order('created_at', { ascending: false });
 };

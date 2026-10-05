@@ -40,35 +40,35 @@ function ErrorFallback({ error, resetError }: ErrorFallbackProps) {
 }
 
 export const unstable_settings = {
-  anchor: "(tabs)",
+    anchor: '(tabs)',
 };
 
 function RootLayout() {
   const colorScheme = useColorScheme();
   const [appIsReady, setAppIsReady] = useState(false);
 
-  const [fontsLoaded, fontError] = useFonts({
-    "LeagueSpartan-Regular": require("../assets/fonts/LeagueSpartan-Regular.ttf"),
-    "LeagueSpartan-Bold": require("../assets/fonts/LeagueSpartan-Bold.ttf"),
-    "Borel-regular": require("../assets/fonts/Borel-Regular.ttf"), // Verifica que el archivo .ttf se llame así
-  });
+    const [fontsLoaded, fontError] = useFonts({
+        'LeagueSpartan-Regular': require('../assets/fonts/LeagueSpartan-Regular.ttf'),
+        'LeagueSpartan-Bold': require('../assets/fonts/LeagueSpartan-Bold.ttf'),
+        'Borel-regular': require('../assets/fonts/Borel-Regular.ttf'), // Verifica que el archivo .ttf se llame así
+    });
 
-  useEffect(() => {
-    // Simulador de carga
-    const timer = setTimeout(() => {
-      // Solo indicamos que la app está lista si las fuentes ya cargaron
-      if (fontsLoaded || fontError) {
-        setAppIsReady(true);
-      }
-    }, 2000);
+    useEffect(() => {
+        // Simulador de carga
+        const timer = setTimeout(() => {
+            // Solo indicamos que la app está lista si las fuentes ya cargaron
+            if (fontsLoaded || fontError) {
+                setAppIsReady(true);
+            }
+        }, 2000);
 
-    return () => clearTimeout(timer);
-  }, [fontsLoaded, fontError]); // Agregamos las fuentes a las dependencias
+        return () => clearTimeout(timer);
+    }, [fontsLoaded, fontError]); // Agregamos las fuentes a las dependencias
 
-  // Mostramos splash mientras la app "carga" o mientras las fuentes no estén listas
-  if (!appIsReady || (!fontsLoaded && !fontError)) {
-    return <SplashScreen />;
-  }
+    // Mostramos splash mientras la app "carga" o mientras las fuentes no estén listas
+    if (!appIsReady || (!fontsLoaded && !fontError)) {
+        return <SplashScreen />;
+    }
 
   // cuando carga, renderizamos la navegación de los temas
   return (

@@ -1,471 +1,521 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  ScrollView,
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-  RefreshControl,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Image } from "expo-image";
-import UserProfileHeader from "@/components/ui/UserProfileHeader";
-import "../../global.css";
-import { FloatingMenu } from "@/components/ui/FloatingMenu";
-import BlockUserWarning from "@/components/ui/BlockUserWarning";
-import ProfileTabs from "@/components/ui/ProfileTabs";
-import FeedCard from "@/components/ui/FeedCard";
-import { useAuth } from "@/context/AuthContext";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { FullProfile } from "@/services/supabase/profile/types";
-import { FeedItem } from "@/services/supabase/posts/types";
-import { getProfile } from "@/services/supabase/profile/queries";
-import { getProfileFeed } from "@/services/supabase/posts/feed";
-import { toggleFollow } from "@/services/supabase/social/social.follows";
+    ScrollView,
+    View,
+    Text,
+    TouchableOpacity,
+    Alert,
+    ActivityIndicator,
+    RefreshControl,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Image } from 'expo-image';
+import UserProfileHeader from '@/components/ui/UserProfileHeader';
+import '../../global.css';
+import { FloatingMenu } from '@/components/ui/FloatingMenu';
+import BlockUserWarning from '@/components/ui/BlockUserWarning';
+import ProfileTabs from '@/components/ui/ProfileTabs';
+import FeedCard from '@/components/ui/FeedCard';
+import { useAuth } from '@/context/AuthContext';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { FullProfile } from '@/services/supabase/profile/types';
+import { FeedItem } from '@/services/supabase/posts/types';
+import { getProfile } from '@/services/supabase/profile/queries';
+import { getProfileFeed } from '@/services/supabase/posts/feed';
+import { toggleFollow } from '@/services/supabase/social/social.follows';
 import {
-  blockUser,
-  unblockUser,
-} from "@/services/supabase/social/social.blocks";
-import { EditProfileModal } from "@/components/ui/EditProfileModal";
-import BlockedUserScreen from "@/components/ui/blocked-user-screen";
+    blockUser,
+    unblockUser,
+} from '@/services/supabase/social/social.blocks';
+import { EditProfileModal } from '@/components/ui/EditProfileModal';
+import BlockedUserScreen from '@/components/ui/blocked-user-screen';
 
-type TabType = "grid" | "list";
+type TabType = 'grid' | 'list';
 
 export default function ProfileScreen() {
-  const { user: currentUser } = useAuth();
-  const router = useRouter();
-  const { userId: paramUserId } = useLocalSearchParams<{ userId?: string }>();
-  const targetUserId = paramUserId ?? currentUser?.user_id ?? "";
-  const isOwnProfile = targetUserId === currentUser?.user_id;
+    const { user: currentUser } = useAuth();
+    const router = useRouter();
+    const { userId: paramUserId } = useLocalSearchParams<{ userId?: string }>();
+    const targetUserId = paramUserId ?? currentUser?.user_id ?? '';
+    const isOwnProfile = targetUserId === currentUser?.user_id;
 
-  const [profile, setProfile] = useState<FullProfile | null>(null);
-  const [feed, setFeed] = useState<FeedItem[]>([]);
-  const [activeTab, setActiveTab] = useState<TabType>("grid");
-  const [loadingProfile, setLoadingProfile] = useState(true);
-  const [loadingFeed, setLoadingFeed] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
-  const [editModalVisable, setEditModalVisible] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
+    const [profile, setProfile] = useState<FullProfile | null>(null);
+    const [feed, setFeed] = useState<FeedItem[]>([]);
+    const [activeTab, setActiveTab] = useState<TabType>('grid');
+    const [loadingProfile, setLoadingProfile] = useState(true);
+    const [loadingFeed, setLoadingFeed] = useState(true);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [editModalVisable, setEditModalVisible] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
-  const handleProfileSaved = async (
-    newName: string,
-    newUsername: string,
-    newPic?: string,
-  ) => {
-    setProfile((prev) =>
-      prev
-        ? {
-            ...prev,
-            full_name: newName,
-            username: newUsername,
-            profile_pic: newPic ?? prev.profile_pic,
-          }
-        : prev,
-    );
+    const handleProfileSaved = async (
+        newName: string,
+        newUsername: string,
+        newPic?: string
+    ) => {
+        setProfile((prev) =>
+            prev
+                ? {
+                      ...prev,
+                      full_name: newName,
+                      username: newUsername,
+                      profile_pic: newPic ?? prev.profile_pic,
+                  }
+                : prev
+        );
 
-    if (newPic) {
-      await loadProfile();
-    }
-  };
-
-  const loadProfile = useCallback(async () => {
-    if (!targetUserId || !currentUser) return;
-    setLoadingProfile(true);
-
-    const { data, error } = await getProfile(targetUserId, currentUser.user_id);
-
-    if (error) {
-      Alert.alert("Error", error);
-      setLoadingProfile(false);
-      return;
-    }
-
-    setProfile(data);
-    setLoadingProfile(false);
-  }, [targetUserId, currentUser]);
-
-  const loadFeed = useCallback(async () => {
-    if (!targetUserId || !currentUser) return;
-    setLoadingFeed(true);
-
-    const { data } = await getProfileFeed(targetUserId, currentUser.user_id);
-    if (data) setFeed(data);
-
-    setLoadingFeed(false);
-  }, [targetUserId, currentUser]);
-
-  useEffect(() => {
-    loadProfile();
-    loadFeed();
-  }, [loadProfile, loadFeed]);
-
-  const handleToggleFollow = async () => {
-    if (!profile || actionLoading) return;
-    setActionLoading(true);
-
-    const { data, error } = await toggleFollow(profile.user_id);
-
-    if (error) {
-      Alert.alert("Error", error);
-    } else if (data) {
-      setProfile((prev) =>
-        prev
-          ? {
-              ...prev,
-              i_follow_them: data.following,
-              is_friend: data.is_friend,
-              stats: {
-                ...prev.stats,
-                followers_count: data.following
-                  ? prev.stats.followers_count + 1
-                  : prev.stats.followers_count - 1,
-                friends_count: data.is_friend
-                  ? prev.stats.friends_count + 1
-                  : data.following
-                    ? prev.stats.friends_count
-                    : prev.stats.friends_count - 1,
-              },
-            }
-          : prev,
-      );
-    }
-    setActionLoading(false);
-  };
-
-  const handleBlock = async () => {
-    if (!profile || actionLoading) return;
-
-    setActionLoading(true);
-
-    const { error } = await blockUser(profile.user_id);
-    setActionLoading(false);
-
-    if (error) {
-      Alert.alert("Error", error);
-    } else {
-      router.back();
-    }
-  };
-
-  const handleUnblock = async () => {
-    if (!profile || actionLoading) return;
-    setActionLoading(true);
-
-    const { error } = await unblockUser(profile.user_id);
-    setActionLoading(false);
-
-    if (error) {
-      Alert.alert("Error", error);
-    } else {
-      await loadProfile();
-    }
-  };
-
-  if (loadingProfile || !profile) {
-    return (
-      <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240] items-center justify-center">
-        <ActivityIndicator size="large" color="#30C2D9" />
-      </SafeAreaView>
-    );
-  }
-
-  // CASO A: El usuario objetivo me bloqueó a mí
-  if (profile.blocked_me) {
-    return (
-      <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240] items-center justify-center px-8">
-        <Text className="text-xl font-spartan-bold text-gray-900 dark:text-white text-center">
-          No puedes ver este perfil.
-        </Text>
-      </SafeAreaView>
-    );
-  }
-
-  // CASO B: YO BLOQUEÉ al usuario objetivo
-  if (profile.is_blocked) {
-    return (
-      <BlockedUserScreen
-        fullName={profile.full_name}
-        onUnblock={handleUnblock}
-        actionLoading={actionLoading}
-      />
-    );
-  }
-
-  // CASO C: FLUJO NORMAL DEL PERFIL ACUMULADO
-  const gridPosts = feed.filter((item) => item.type === "post");
-
-  return (
-    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-semidark">
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={async () => {
-              setRefreshing(true);
-              await loadFeed();
-              setRefreshing(false);
-            }}
-          />
+        if (newPic) {
+            await loadProfile();
         }
-        className="flex-1 bg-gray-50 dark:bg-background-dark"
-        contentContainerStyle={{ flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <UserProfileHeader
-          name={profile.full_name}
-          username={profile.username}
-          profileImageSource={
-            profile.profile_pic ?? require("../../assets/images/Rick.jpg")
-          }
-          postsCount={profile.stats.publications_count}
-          friendsCount={profile.stats.friends_count}
-          followersCount={profile.stats.followers_count}
-        />
+    };
 
-        <View className="px-6 pb-4 bg-background-light dark:bg-[#182240]">
-          {isOwnProfile ? (
-            // ESCENARIO 1: Mi perfil/usuario
-            <TouchableOpacity
-              className="w-full py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
-              onPress={() => setEditModalVisible(true)}
-            >
-              <Text className="font-spartan-bold text-black dark:text-white text-base">
-                Editar Perfil
-              </Text>
-            </TouchableOpacity>
-          ) : profile.is_blocked ? (
-            // Yo bloquee a este usuario
-            <TouchableOpacity
-              className="w-full py-3.5 rounded-2xl bg-[#30C2D9] dark:bg-[#AA3E14] items-center"
-              onPress={handleUnblock}
-              disabled={actionLoading}
-            >
-              {actionLoading ? (
-                <ActivityIndicator color="ef4444" />
-              ) : (
-                <Text className="font-spartan-bold text-red-600 dark:text-red-300 text-base">
-                  Desbloquear
+    const loadProfile = useCallback(async () => {
+        if (!targetUserId || !currentUser) return;
+        setLoadingProfile(true);
+
+        const { data, error } = await getProfile(
+            targetUserId,
+            currentUser.user_id
+        );
+
+        if (error) {
+            Alert.alert('Error', error);
+            setLoadingProfile(false);
+            return;
+        }
+
+        setProfile(data);
+        setLoadingProfile(false);
+    }, [targetUserId, currentUser]);
+
+    const loadFeed = useCallback(async () => {
+        if (!targetUserId || !currentUser) return;
+        setLoadingFeed(true);
+
+        const { data } = await getProfileFeed(
+            targetUserId,
+            currentUser.user_id
+        );
+        if (data) setFeed(data);
+
+        setLoadingFeed(false);
+    }, [targetUserId, currentUser]);
+
+    useEffect(() => {
+        loadProfile();
+        loadFeed();
+    }, [loadProfile, loadFeed]);
+
+    const handleToggleFollow = async () => {
+        if (!profile || actionLoading) return;
+        setActionLoading(true);
+
+        const { data, error } = await toggleFollow(profile.user_id);
+
+        if (error) {
+            Alert.alert('Error', error);
+        } else if (data) {
+            setProfile((prev) =>
+                prev
+                    ? {
+                          ...prev,
+                          i_follow_them: data.following,
+                          is_friend: data.is_friend,
+                          stats: {
+                              ...prev.stats,
+                              followers_count: data.following
+                                  ? prev.stats.followers_count + 1
+                                  : prev.stats.followers_count - 1,
+                              friends_count: data.is_friend
+                                  ? prev.stats.friends_count + 1
+                                  : data.following
+                                    ? prev.stats.friends_count
+                                    : prev.stats.friends_count - 1,
+                          },
+                      }
+                    : prev
+            );
+        }
+        setActionLoading(false);
+    };
+
+    const handleBlock = async () => {
+        if (!profile || actionLoading) return;
+
+        setActionLoading(true);
+
+        const { error } = await blockUser(profile.user_id);
+        setActionLoading(false);
+
+        if (error) {
+            Alert.alert('Error', error);
+        } else {
+            router.back();
+        }
+    };
+
+    const handleUnblock = async () => {
+        if (!profile || actionLoading) return;
+        setActionLoading(true);
+
+        const { error } = await unblockUser(profile.user_id);
+        setActionLoading(false);
+
+        if (error) {
+            Alert.alert('Error', error);
+        } else {
+            await loadProfile();
+        }
+    };
+
+    if (loadingProfile || !profile) {
+        return (
+            <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240] items-center justify-center">
+                <ActivityIndicator size="large" color="#30C2D9" />
+            </SafeAreaView>
+        );
+    }
+
+    // CASO A: El usuario objetivo me bloqueó a mí
+    if (profile.blocked_me) {
+        return (
+            <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240] items-center justify-center px-8">
+                <Text className="text-xl font-spartan-bold text-gray-900 dark:text-white text-center">
+                    No puedes ver este perfil.
                 </Text>
-              )}
-            </TouchableOpacity>
-          ) : !profile.i_follow_them ? (
-            // No lo sigo: Seguir
-            <TouchableOpacity
-              className="w-full py-3.5 rounded-2xl bg-[#30C2D9] dark:bg-[#AA3E14] items-center"
-              onPress={handleToggleFollow}
-              disabled={actionLoading}
-            >
-              {actionLoading ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text className="font-spartan-bold text-white text-base">
-                  Seguir
-                </Text>
-              )}
-            </TouchableOpacity>
-          ) : (
-            // Lo sigo: Siguiendo + Mensaje
-            <View>
-              <View className="flex-row justify-between gap-3">
-                <TouchableOpacity
-                  className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
-                  onPress={handleToggleFollow}
-                  disabled={actionLoading}
-                >
-                  {actionLoading ? (
-                    <ActivityIndicator color="#6b7280" />
-                  ) : (
-                    <Text className="font-spartan-bold text-black dark:text-white text-base">
-                      {profile.is_friend ? "👥 Amigos" : "Siguiendo"}
-                    </Text>
-                  )}
-                </TouchableOpacity>
+            </SafeAreaView>
+        );
+    }
 
-                {profile.is_friend && (
-                  <TouchableOpacity
-                    className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
-                    onPress={() => {
-                      router.push({
-                        pathname: "/ChatScreen",
-                        params: { targetUserId: profile.user_id },
-                      });
-                    }}
-                  >
-                    <Text className="font-spartan-bold text-black dark:text-white text-base">
-                      Mensaje
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </View>
+    // CASO B: YO BLOQUEÉ al usuario objetivo
+    if (profile.is_blocked) {
+        return (
+            <BlockedUserScreen
+                fullName={profile.full_name}
+                onUnblock={handleUnblock}
+                actionLoading={actionLoading}
+            />
+        );
+    }
 
-              {/* Bloquear */}
-              <View className="mt-3">
-                <BlockUserWarning
-                  name={profile.username}
-                  onBlock={handleBlock}
-                />
-              </View>
-            </View>
-          )}
-        </View>
+    // CASO C: FLUJO NORMAL DEL PERFIL ACUMULADO
+    const gridPosts = feed.filter((item) => item.type === 'post');
 
-        {/* TABS */}
-        <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
-        {/* POSTS */}
-        <View className="flex-1 bg-background-light dark:bg-[#182240] pt-4 min-h-[500px] items-center">
-          {loadingFeed ? (
-            <ActivityIndicator size="small" color="#30C2D9" className="mt-8" />
-          ) : feed.length === 0 ? (
-            <View className="mt-12 items-center px-8">
-              <Text className="text-gray-400 text-center font-spartan">
-                {isOwnProfile
-                  ? "Nadie ha publicado en tu perfil todavía"
-                  : "No hay publicaciones aún"}
-              </Text>
-            </View>
-          ) : (
-            <View className="w-full px-4">
-              {activeTab === "grid" && (
-                <View className="flex-row flex-wrap gap-2">
-                  {gridPosts.length === 0 ? (
-                    <View className="w-full mt-8 items-center px-8">
-                      <Text className="text-gray-400 text-center font-spartan">
-                        No hay fotos en este perfil
-                      </Text>
-                    </View>
-                  ) : (
-                    gridPosts.map((post) => (
-                      <TouchableOpacity
-                        key={post.post_id}
-                        className="w-[32%] aspect-square bg-gray-200 dark:bg-[#2A3654]"
-                      >
-                        <Image
-                          source={{ uri: post.media }}
-                          style={{ width: "100%", height: "100%" }}
-                          contentFit="cover"
-                        />
-                      </TouchableOpacity>
-                    ))
-                  )}
-                </View>
-              )}
-
-              {activeTab === "list" && (
-                // NUEVO: Aseguramos que la lista también tome todo el ancho (w-full)
-                <View className="gap-y-4 w-full pb-10">
-                  {feed.map((item) => (
-                    <FeedCard
-                      key={
-                        item.type === "post" ? item.post_id : item.fragment_id
-                      }
-                      authorName={item.author.full_name}
-                      publicationId={
-                        item.type === "post" ? item.post_id : item.fragment_id
-                      }
-                      publicationType={item.type}
-                      authorImage={item.author.profile_pic}
-                      authorInitials={item.author.full_name
-                        .charAt(0)
-                        .toUpperCase()}
-                      timeAgo={new Date(item.created_at).toLocaleDateString(
-                        "es-MX",
-                        {
-                          day: "numeric",
-                          month: "short",
-                        },
-                      )}
-                      targetProfileName={profile.full_name}
-                      textContent={
-                        item.type === "post"
-                          ? (item.description ?? "")
-                          : item.content
-                      }
-                      imageSource={
-                        item.type === "post" && item.media
-                          ? { uri: item.media }
-                          : undefined
-                      }
-                      likesCount={item.likes_count}
-                      commentsCount={item.comments_count}
-                      isLiked={item.liked_by_me}
-                      isOwnPost={item.author.user_id === currentUser?.user_id}
-                      comments={[]}
-                      onDeleted={() => {
-                        setFeed((prev) =>
-                          prev.filter((feedItem) =>
-                            item.type === "post"
-                              ? !(
-                                  feedItem.type === "post" &&
-                                  feedItem.post_id === item.post_id
-                                )
-                              : !(
-                                  feedItem.type === "fragment" &&
-                                  feedItem.fragment_id === item.fragment_id
-                                ),
-                          ),
-                        );
-                        loadProfile();
-                      }}
-                      onEdited={(newContent) => {
-                        setFeed((prevFeed) =>
-                          prevFeed.map((feedItem) => {
-                            if (
-                              item.type === "post" &&
-                              feedItem.type === "post" &&
-                              feedItem.post_id === item.post_id
-                            ) {
-                              // Actualizamos la descripción si es un post
-                              return { ...feedItem, description: newContent };
-                            }
-                            if (
-                              item.type === "fragment" &&
-                              feedItem.type === "fragment" &&
-                              feedItem.fragment_id === item.fragment_id
-                            ) {
-                              // Actualizamos el contenido si es un fragment
-                              return { ...feedItem, content: newContent };
-                            }
-                            return feedItem;
-                          }),
-                        );
-                      }}
+    return (
+        <SafeAreaView className="flex-1 bg-background-light dark:bg-background-semidark">
+            <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={async () => {
+                            setRefreshing(true);
+                            await loadFeed();
+                            setRefreshing(false);
+                        }}
                     />
-                  ))}
+                }
+                className="flex-1 bg-gray-50 dark:bg-background-dark"
+                contentContainerStyle={{ flexGrow: 1 }}
+                showsVerticalScrollIndicator={false}
+            >
+                {/* Header */}
+                <UserProfileHeader
+                    name={profile.full_name}
+                    username={profile.username}
+                    profileImageSource={
+                        profile.profile_pic ??
+                        require('../../assets/images/Rick.jpg')
+                    }
+                    postsCount={profile.stats.publications_count}
+                    friendsCount={profile.stats.friends_count}
+                    followersCount={profile.stats.followers_count}
+                />
+
+                <View className="px-6 pb-4 bg-background-light dark:bg-[#182240]">
+                    {isOwnProfile ? (
+                        // ESCENARIO 1: Mi perfil/usuario
+                        <TouchableOpacity
+                            className="w-full py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
+                            onPress={() => setEditModalVisible(true)}
+                        >
+                            <Text className="font-spartan-bold text-black dark:text-white text-base">
+                                Editar Perfil
+                            </Text>
+                        </TouchableOpacity>
+                    ) : profile.is_blocked ? (
+                        // Yo bloquee a este usuario
+                        <TouchableOpacity
+                            className="w-full py-3.5 rounded-2xl bg-[#30C2D9] dark:bg-[#AA3E14] items-center"
+                            onPress={handleUnblock}
+                            disabled={actionLoading}
+                        >
+                            {actionLoading ? (
+                                <ActivityIndicator color="ef4444" />
+                            ) : (
+                                <Text className="font-spartan-bold text-red-600 dark:text-red-300 text-base">
+                                    Desbloquear
+                                </Text>
+                            )}
+                        </TouchableOpacity>
+                    ) : !profile.i_follow_them ? (
+                        // No lo sigo: Seguir
+                        <TouchableOpacity
+                            className="w-full py-3.5 rounded-2xl bg-[#30C2D9] dark:bg-[#AA3E14] items-center"
+                            onPress={handleToggleFollow}
+                            disabled={actionLoading}
+                        >
+                            {actionLoading ? (
+                                <ActivityIndicator color="white" />
+                            ) : (
+                                <Text className="font-spartan-bold text-white text-base">
+                                    Seguir
+                                </Text>
+                            )}
+                        </TouchableOpacity>
+                    ) : (
+                        // Lo sigo: Siguiendo + Mensaje
+                        <View>
+                            <View className="flex-row justify-between gap-3">
+                                <TouchableOpacity
+                                    className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
+                                    onPress={handleToggleFollow}
+                                    disabled={actionLoading}
+                                >
+                                    {actionLoading ? (
+                                        <ActivityIndicator color="#6b7280" />
+                                    ) : (
+                                        <Text className="font-spartan-bold text-black dark:text-white text-base">
+                                            {profile.is_friend
+                                                ? '👥 Amigos'
+                                                : 'Siguiendo'}
+                                        </Text>
+                                    )}
+                                </TouchableOpacity>
+
+                                {profile.is_friend && (
+                                    <TouchableOpacity
+                                        className="flex-1 py-3.5 rounded-2xl bg-gray-200 dark:bg-[#2A3654] items-center"
+                                        onPress={() => {
+                                            router.push({
+                                                pathname: '/ChatScreen',
+                                                params: {
+                                                    targetUserId:
+                                                        profile.user_id,
+                                                },
+                                            });
+                                        }}
+                                    >
+                                        <Text className="font-spartan-bold text-black dark:text-white text-base">
+                                            Mensaje
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+
+                            {/* Bloquear */}
+                            <View className="mt-3">
+                                <BlockUserWarning
+                                    name={profile.username}
+                                    onBlock={handleBlock}
+                                />
+                            </View>
+                        </View>
+                    )}
                 </View>
-              )}
-            </View>
-          )}
-        </View>
-      </ScrollView>
 
-      {!isOwnProfile && profile.is_friend && (
-        <View className="z-10 absolute bottom-6 right-6">
-          <FloatingMenu
-            onCreatePost={() => {
-              loadFeed(); // Recarga el feed al publicar post
-            }}
-            onCreateFragment={() => {
-              loadFeed(); // Recarga el feed al publicar fragment
-            }}
-            targetUserId={profile.user_id}
-            targetUserName={profile.full_name}
-            targetUserInitials={profile.full_name.charAt(0).toUpperCase()}
-            targetUserImage={profile.profile_pic}
-            currentUserId={currentUser?.user_id}
-          />
-        </View>
-      )}
+                {/* TABS */}
+                <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <EditProfileModal
-        visible={editModalVisable}
-        onClose={() => setEditModalVisible(false)}
-        currentName={profile.full_name}
-        currentUsername={profile.username}
-        onSaved={handleProfileSaved}
-      />
-    </SafeAreaView>
-  );
+                {/* POSTS */}
+                <View className="flex-1 bg-background-light dark:bg-[#182240] pt-4 min-h-[500px] items-center">
+                    {loadingFeed ? (
+                        <ActivityIndicator
+                            size="small"
+                            color="#30C2D9"
+                            className="mt-8"
+                        />
+                    ) : feed.length === 0 ? (
+                        <View className="mt-12 items-center px-8">
+                            <Text className="text-gray-400 text-center font-spartan">
+                                {isOwnProfile
+                                    ? 'Nadie ha publicado en tu perfil todavía'
+                                    : 'No hay publicaciones aún'}
+                            </Text>
+                        </View>
+                    ) : (
+                        <View className="w-full px-4">
+                            {activeTab === 'grid' && (
+                                <View className="flex-row flex-wrap gap-2">
+                                    {gridPosts.length === 0 ? (
+                                        <View className="w-full mt-8 items-center px-8">
+                                            <Text className="text-gray-400 text-center font-spartan">
+                                                No hay fotos en este perfil
+                                            </Text>
+                                        </View>
+                                    ) : (
+                                        gridPosts.map((post) => (
+                                            <TouchableOpacity
+                                                key={post.post_id}
+                                                className="w-[32%] aspect-square bg-gray-200 dark:bg-[#2A3654]"
+                                            >
+                                                <Image
+                                                    source={{ uri: post.media }}
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                    }}
+                                                    contentFit="cover"
+                                                />
+                                            </TouchableOpacity>
+                                        ))
+                                    )}
+                                </View>
+                            )}
+
+                            {activeTab === 'list' && (
+                                // NUEVO: Aseguramos que la lista también tome todo el ancho (w-full)
+                                <View className="gap-y-4 w-full pb-10">
+                                    {feed.map((item) => (
+                                        <FeedCard
+                                            key={
+                                                item.type === 'post'
+                                                    ? item.post_id
+                                                    : item.fragment_id
+                                            }
+                                            authorName={item.author.full_name}
+                                            publicationId={
+                                                item.type === 'post'
+                                                    ? item.post_id
+                                                    : item.fragment_id
+                                            }
+                                            publicationType={item.type}
+                                            authorImage={
+                                                item.author.profile_pic
+                                            }
+                                            authorInitials={item.author.full_name
+                                                .charAt(0)
+                                                .toUpperCase()}
+                                            timeAgo={new Date(
+                                                item.created_at
+                                            ).toLocaleDateString('es-MX', {
+                                                day: 'numeric',
+                                                month: 'short',
+                                            })}
+                                            targetProfileName={
+                                                profile.full_name
+                                            }
+                                            textContent={
+                                                item.type === 'post'
+                                                    ? (item.description ?? '')
+                                                    : item.content
+                                            }
+                                            imageSource={
+                                                item.type === 'post' &&
+                                                item.media
+                                                    ? { uri: item.media }
+                                                    : undefined
+                                            }
+                                            likesCount={item.likes_count}
+                                            commentsCount={item.comments_count}
+                                            isLiked={item.liked_by_me}
+                                            isOwnPost={
+                                                item.author.user_id ===
+                                                currentUser?.user_id
+                                            }
+                                            comments={[]}
+                                            onDeleted={() => {
+                                                setFeed((prev) =>
+                                                    prev.filter((feedItem) =>
+                                                        item.type === 'post'
+                                                            ? !(
+                                                                  feedItem.type ===
+                                                                      'post' &&
+                                                                  feedItem.post_id ===
+                                                                      item.post_id
+                                                              )
+                                                            : !(
+                                                                  feedItem.type ===
+                                                                      'fragment' &&
+                                                                  feedItem.fragment_id ===
+                                                                      item.fragment_id
+                                                              )
+                                                    )
+                                                );
+                                                loadProfile();
+                                            }}
+                                            onEdited={(newContent) => {
+                                                setFeed((prevFeed) =>
+                                                    prevFeed.map((feedItem) => {
+                                                        if (
+                                                            item.type ===
+                                                                'post' &&
+                                                            feedItem.type ===
+                                                                'post' &&
+                                                            feedItem.post_id ===
+                                                                item.post_id
+                                                        ) {
+                                                            // Actualizamos la descripción si es un post
+                                                            return {
+                                                                ...feedItem,
+                                                                description:
+                                                                    newContent,
+                                                            };
+                                                        }
+                                                        if (
+                                                            item.type ===
+                                                                'fragment' &&
+                                                            feedItem.type ===
+                                                                'fragment' &&
+                                                            feedItem.fragment_id ===
+                                                                item.fragment_id
+                                                        ) {
+                                                            // Actualizamos el contenido si es un fragment
+                                                            return {
+                                                                ...feedItem,
+                                                                content:
+                                                                    newContent,
+                                                            };
+                                                        }
+                                                        return feedItem;
+                                                    })
+                                                );
+                                            }}
+                                        />
+                                    ))}
+                                </View>
+                            )}
+                        </View>
+                    )}
+                </View>
+            </ScrollView>
+
+            {!isOwnProfile && profile.is_friend && (
+                <View className="z-10 absolute bottom-6 right-6">
+                    <FloatingMenu
+                        onCreatePost={() => {
+                            loadFeed(); // Recarga el feed al publicar post
+                        }}
+                        onCreateFragment={() => {
+                            loadFeed(); // Recarga el feed al publicar fragment
+                        }}
+                        targetUserId={profile.user_id}
+                        targetUserName={profile.full_name}
+                        targetUserInitials={profile.full_name
+                            .charAt(0)
+                            .toUpperCase()}
+                        targetUserImage={profile.profile_pic}
+                        currentUserId={currentUser?.user_id}
+                    />
+                </View>
+            )}
+
+            <EditProfileModal
+                visible={editModalVisable}
+                onClose={() => setEditModalVisible(false)}
+                currentName={profile.full_name}
+                currentUsername={profile.username}
+                onSaved={handleProfileSaved}
+            />
+        </SafeAreaView>
+    );
 }
