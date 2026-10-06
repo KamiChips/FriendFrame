@@ -140,8 +140,8 @@ export default function CommentsModal({
             />
 
             {/* KeyboardAvoidingView: En iOS usa 'padding' para que el modal suba completo junto con el teclado.
-        En Android usa 'height'. Esto evita que el teclado tape la barra de escribir.
-      */}
+                En Android usa 'height'. Esto evita que el teclado tape la barra de escribir.
+            */}
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 className="flex-1 justify-end"
