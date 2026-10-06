@@ -10,12 +10,9 @@ interface SafeLogger {
 }
 
 // Lista de palabras clave sensibles que deben ser ocultadas en los logs
-const SENSITIVE_KEYS = [
-    "token",
-    "password",
-    "email",
-    "user_id",
-].map((k) => k.toLowerCase());
+const SENSITIVE_KEYS = ['token', 'password', 'email', 'user_id'].map((k) =>
+    k.toLowerCase()
+);
 
 const StringLengthLimit = 1000; // Limite para strings
 const isDev = () => __DEV__; // Determina si el entorno es de desarrollo
@@ -63,7 +60,7 @@ function sanitizeData(value: any, seen = new WeakSet<object>()): LogData {
         ); // Verifica si la clave contiene alguna palabra sensible
 
         if (isSensitive) {
-            sanitized[key] = "[REDACTED]";
+            sanitized[key] = '[REDACTED]';
             continue;
         }
 
@@ -87,20 +84,36 @@ function formatLogMessage(level: string, msg: string): string {
 
 // Implementación del logger seguro
 export const safeLogger: SafeLogger = {
-    debug(msg, data) { // log tipo debug solo en desarrollo
-        if(!isDev()) return;
-        console.debug(formatLogMessage("debug", msg), data != undefined ? sanitizeData(data) : "");
+    debug(msg, data) {
+        // log tipo debug solo en desarrollo
+        if (!isDev()) return;
+        console.debug(
+            formatLogMessage('debug', msg),
+            data != undefined ? sanitizeData(data) : ''
+        );
     },
-    info(msg, data) { // Log para información general 
-        if(!isDev()) return;
-        console.info(formatLogMessage("info", msg), data != undefined ? sanitizeData(data) : "");
+    info(msg, data) {
+        // Log para información general
+        if (!isDev()) return;
+        console.info(
+            formatLogMessage('info', msg),
+            data != undefined ? sanitizeData(data) : ''
+        );
     },
-    warn(msg, data) { // Log para advertencias
-        console.warn(formatLogMessage("warn", msg), data != undefined ? sanitizeData(data) : "");
+    warn(msg, data) {
+        // Log para advertencias
+        console.warn(
+            formatLogMessage('warn', msg),
+            data != undefined ? sanitizeData(data) : ''
+        );
     },
-    error(msg, error) { // Log para errores
+    error(msg, error) {
+        // Log para errores
         //const sanitized = error !== undefined ? sanitizeData(error) : "";
-        console.error(formatLogMessage("error", msg), error != undefined ? sanitizeData(error) : "");
+        console.error(
+            formatLogMessage('error', msg),
+            error != undefined ? sanitizeData(error) : ''
+        );
 
         /*
         try {

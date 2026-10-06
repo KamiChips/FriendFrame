@@ -1,12 +1,12 @@
 import { supabase } from '@/lib/supabase/client';
 import {
-  Chat,
-  ChatMember,
-  DEFAULT_MSG_LIMIT,
-  MAX_PAGE_LIMIT,
-} from "./chat.types";
-import { UUID_REGEX } from "../helpers/validation";
-import safeLogger from "@/lib/logger/safeLogger";
+    Chat,
+    ChatMember,
+    DEFAULT_MSG_LIMIT,
+    MAX_PAGE_LIMIT,
+} from './chat.types';
+import { UUID_REGEX } from '../helpers/validation';
+import safeLogger from '@/lib/logger/safeLogger';
 
 export function assertUUIDs(values: string[], label = 'ID'): void {
     values.forEach((v, i) => {
@@ -195,12 +195,12 @@ export async function markMessagesAsRead(
     chatId: string,
     userId: string
 ): Promise<void> {
-  const { error, count } = await supabase
-    .from("messages")
-    .update({ is_read: true }, { count: "exact" })
-    .eq("chat_id", chatId)
-    .eq("is_read", false)
-    .neq("sender_id", userId);
+    const { error, count } = await supabase
+        .from('messages')
+        .update({ is_read: true }, { count: 'exact' })
+        .eq('chat_id', chatId)
+        .eq('is_read', false)
+        .neq('sender_id', userId);
 
-    safeLogger.debug("markMessagesAsRead:", { chatId, userId, error, count });
+    safeLogger.debug('markMessagesAsRead:', { chatId, userId, error, count });
 }
