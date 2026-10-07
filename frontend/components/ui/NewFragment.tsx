@@ -140,7 +140,7 @@ export const NewFragment = ({
                         {/* El botón ahora se desactiva si está cargando y muestra un spinner */}
                         <TouchableOpacity
                             onPress={handlePublish}
-                            disabled={canPublish}
+                            disabled={!canPublish}
                         >
                             <LinearGradient
                                 colors={['#06b6d4', '#f97316']}
@@ -148,7 +148,7 @@ export const NewFragment = ({
                                 end={{ x: 1, y: 1 }}
                                 className="px-5 py-2 rounded-full items-center justify-center min-w-[90px]"
                                 style={{
-                                    opacity: canPublish ? 0.5 : 1,
+                                    opacity: canPublish ? 1 : 0.5,
                                 }}
                             >
                                 {isLoading ? (
