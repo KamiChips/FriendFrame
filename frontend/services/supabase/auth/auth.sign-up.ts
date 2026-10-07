@@ -68,7 +68,6 @@ export async function signUp({
 
         return { data: profile, error: null };
     } catch (err) {
-        console.error('NOSE QUE ERROR EN SIGNUP:', err);
         return { data: null, error: parseAuthError(err) };
     }
 }
