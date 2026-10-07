@@ -1,7 +1,8 @@
 import { supabase } from '@/lib/supabase/client';
 import { extractPathFromUrl, parseError } from './storage.helpers';
 import { BUCKETS, StorageResul } from './types.storage';
-import { assertUUID } from '../helpers/validation';
+import { assertUUID, getAuthUser } from '../helpers/validation';
+import { validatePostOwnership, validateProfileOwnership } from '../helpers/authorization';
 
 export async function deletePostImage(
     publicUrl: string
@@ -11,6 +12,9 @@ export async function deletePostImage(
 
         const filePath = extractPathFromUrl(publicUrl, BUCKETS.POST_IMAGES);
         if (!filePath) return { data: null, error: null }; // URL inválida o de otro bucket
+
+        const currentUserId = await getAuthUser()
+        await validatePostOwnership(publicUrl, currentUserId)
 
         const { error } = await supabase.storage
             .from(BUCKETS.POST_IMAGES)
@@ -54,6 +58,9 @@ export async function deleteProfilePic(userId: string): Promise<StorageResul> {
             .eq('user_id', userId);
 
         if (dbError) throw dbError;
+
+        const currentUserId = await getAuthUser()
+        await validateProfileOwnership(userId, currentUserId)
 
         return { data: null, error: null };
     } catch (err) {

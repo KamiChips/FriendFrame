@@ -17,6 +17,7 @@ import {
     GetCommentsParams,
 } from './types';
 import { assertUUID, getAuthUser } from '../helpers/validation';
+import { validateCommentOwnership } from '../helpers/authorization';
 
 // Agregar comentario a un post o fragmento
 //Y cuando hay un parent comment se crea una respuesta anidada
@@ -139,6 +140,7 @@ export async function deleteComment(
     try {
         assertUUID(commentId, 'commentId');
         const currentUserId = await getAuthUser();
+        await validateCommentOwnership(commentId, currentUserId)
 
         const { error } = await supabase
             .from('comments')
