@@ -78,7 +78,7 @@ export async function assertFriendship(
     profileOwnerId: string
 ): Promise<void> {
     if (authorId === profileOwnerId)
-        throw new Error('No puedes publicar en tu propio perfil.');
+        throw new Error("You can't post on your own profile.");
 
     const { data, error } = (await supabase.rpc('assert_friendship', {
         author_id: authorId,
@@ -86,7 +86,7 @@ export async function assertFriendship(
     })) as { data: boolean | null; error: any };
 
     if (error) throw error;
-    if (!data) throw new Error('Solo puedes publicar en perfiles de amigos.');
+    if (!data) throw new Error("You can only post on friends' profiles.");
 }
 
 //conteos de posts y fragments

@@ -82,8 +82,8 @@ describe('parseError', () => {
         expect(parseError(new Error('No active session.'))).toBe(
             'No active session.'
         );
-        expect(parseError(new Error('Post no encontrado.'))).toBe(
-            'Post no encontrado.'
+        expect(parseError(new Error('Post not found.'))).toBe(
+            'Post not found.'
         );
         expect(
             parseError(
@@ -101,14 +101,14 @@ describe('parseError', () => {
 describe('assertFriendship', () => {
     it('throws if author is the profile owner', async () => {
         await expect(assertFriendship('uid-1', 'uid-1')).rejects.toThrow(
-            'No puedes publicar en tu propio perfil.'
+            "You can't post on your own profile."
         );
     });
 
     it('throws if rpc returns false', async () => {
         mockRpc.mockResolvedValue({ data: false, error: null });
         await expect(assertFriendship('uid-1', 'uid-2')).rejects.toThrow(
-            'Solo puedes publicar en perfiles de amigos.'
+            "You can only post on friends' profiles."
         );
     });
 
