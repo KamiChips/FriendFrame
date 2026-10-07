@@ -7,6 +7,8 @@ import {
     validatePassword,
     validateUsername,
     waitForProfile,
+    resendVerificationEmail,
+    savePendingVerificationEmail,
 } from './auth.helpers';
 
 export async function signUp({
@@ -51,6 +53,19 @@ export async function signUp({
         if (!authData.user) throw new Error('No se pudo crear el usuario.');
 
         const profile = await waitForProfile(authData.user.id);
+
+        if (!authData.user.confirmation_sent_at) {
+            try {
+                await resendVerificationEmail(authData.user.email);
+            } catch (resendError) {
+                console.error(
+                    'Failed to resend verification email after signup',
+                    resendError
+                );
+            }
+        }
+        await savePendingVerificationEmail(cleanEmail);
+
         return { data: profile, error: null };
     } catch (err) {
         return { data: null, error: parseAuthError(err) };
