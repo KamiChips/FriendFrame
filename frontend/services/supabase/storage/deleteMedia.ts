@@ -38,6 +38,9 @@ export async function deleteProfilePic(userId: string): Promise<StorageResul> {
     try {
         assertUUID(userId, 'ID de usuario');
 
+        const currentUserId = await getAuthUser()
+        validateProfileOwnership(userId, currentUserId)
+
         const filePath = `${userId}.jpg`;
 
         const { error: storageError } = await supabase.storage
@@ -58,9 +61,6 @@ export async function deleteProfilePic(userId: string): Promise<StorageResul> {
             .eq('user_id', userId);
 
         if (dbError) throw dbError;
-
-        const currentUserId = await getAuthUser()
-        await validateProfileOwnership(userId, currentUserId)
 
         return { data: null, error: null };
     } catch (err) {
