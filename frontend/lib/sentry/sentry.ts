@@ -10,7 +10,8 @@ function resolveEnvironment(): Environment {
     if (__DEV__) return 'development';
 
     const updatesConfig = Constants.expoConfig?.updates as
-        { channel?: string } | undefined;
+        | { channel?: string }
+        | undefined;
     const channel =
         updatesConfig?.channel ??
         (Constants.manifest2 as { metadata?: { channel?: string } } | undefined)
