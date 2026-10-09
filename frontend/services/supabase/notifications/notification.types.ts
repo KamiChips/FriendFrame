@@ -1,5 +1,8 @@
 export type NotificationType =
-    'new_follow' | 'new_post' | 'new_fragment' | 'new_message';
+    | 'new_follow'
+    | 'new_post'
+    | 'new_fragment'
+    | 'new_message';
 
 export interface AppNotification {
     notification_id: string;
