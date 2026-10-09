@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
     View,
     Text,
@@ -20,6 +20,7 @@ import {
     editUsername,
     updateProfilePic,
 } from '@/services/supabase/auth/auth.profile';
+import { loadStaticParamsAsync } from 'expo-router/build/loadStaticParamsAsync';
 import { Image } from 'expo-image';
 
 interface EditProfileModalProps {
@@ -42,7 +43,7 @@ export function EditProfileModal({
     const [loading, setLoading] = useState(false);
     const [picLoading, setPicLoading] = useState(false);
     const { user, setProfilePic } = useAuth();
-    const isDark = useColorScheme() === 'dark';
+    const [isDark, setIsDark] = useState(useColorScheme() === 'dark');
     const size = 80; // Tamaño del avatar
 
     useEffect(() => {
@@ -126,7 +127,7 @@ export function EditProfileModal({
                         {/* Encabezado del modal */}
                         <View className="flex-row justify-between items-center mb-8">
                             <Text className="text-xl font-bold text-[#1D2A4F] dark:text-white">
-                                Editar Perfil
+                                Edit Profile
                             </Text>
                             <TouchableOpacity
                                 onPress={onClose}
@@ -223,7 +224,7 @@ export function EditProfileModal({
                                         className="dark:text-background-light mr-2"
                                     />
                                     <Text className="font-bold text- dark:text-[#FAFAFA] text-base">
-                                        Nombre completo
+                                        Full name
                                     </Text>
                                 </View>
                                 <TextInput
@@ -246,7 +247,7 @@ export function EditProfileModal({
                                         className="dark:text-neutral-400 mr-2"
                                     />
                                     <Text className="font-bold text-[#1D2A4F] dark:text-white text-base">
-                                        Nombre de usuario
+                                        Username
                                     </Text>
                                 </View>
                                 <TextInput
@@ -264,7 +265,7 @@ export function EditProfileModal({
                                     maxLength={30}
                                 />
                                 <Text className="text-gray-400 text-xs mt-1.5 ml-1">
-                                    Solo letras, números y guiones bajos
+                                    Letters, numbers, and underscores only
                                 </Text>
                             </View>
                         </View>
@@ -293,7 +294,7 @@ export function EditProfileModal({
                                             className="mr-2 flex"
                                         />
                                         <Text className=" text-white font-bold text-base">
-                                            Guardar Cambios
+                                            Save Changes
                                         </Text>
                                     </View>
                                 )}

@@ -88,10 +88,10 @@ export default function EditPublicationCard({
                     </View>
 
                     <Text className="mb-2 text-center font-spartan-bold text-xl text-black dark:text-white">
-                        Editar publicación
+                        Edit post
                     </Text>
                     <Text className="mb-4 text-center font-spartan text-lg text-gray-500 dark:text-gray-400">
-                        Actualiza el texto de tu publicación.
+                        Update the text of your post.
                     </Text>
 
                     {/* Caja de texto: background-gray para light, background-dark para dark */}
@@ -104,8 +104,8 @@ export default function EditPublicationCard({
                             onChangeText={setContent}
                             placeholder={
                                 isFragment
-                                    ? 'Escribe tu fragment...'
-                                    : 'Escribe una descripción...'
+                                    ? 'Write your fragment...'
+                                    : 'Write a caption...'
                             }
                             placeholderTextColor={
                                 isDark ? '#8A8A8E' : '#6B6B6B'
@@ -127,7 +127,7 @@ export default function EditPublicationCard({
                             onPress={onCancel}
                         >
                             <Text className="text-center font-spartan text-lg text-black dark:text-white">
-                                Cancelar
+                                Cancel
                             </Text>
                         </Pressable>
 
@@ -142,7 +142,7 @@ export default function EditPublicationCard({
                                 <ActivityIndicator color="white" />
                             ) : (
                                 <Text className="text-center font-spartan-bold text-lg text-white">
-                                    Guardar
+                                    Save
                                 </Text>
                             )}
                         </Pressable>

@@ -59,11 +59,7 @@ export default function ShareChatModal({
     const toggleSelect = (userId: string) => {
         setSelected((prev) => {
             const next = new Set(prev);
-            if (next.has(userId)) {
-                next.delete(userId);
-            } else {
-                next.add(userId);
-            }
+            next.has(userId) ? next.delete(userId) : next.add(userId);
             return next;
         });
     };
@@ -109,7 +105,7 @@ export default function ShareChatModal({
                         {/* Header */}
                         <View className="flex-row items-center justify-between mb-4">
                             <Text className="text-xl font-spartan-bold text-black dark:text-white">
-                                Compartir
+                                Share
                             </Text>
                             <TouchableOpacity
                                 onPress={handleClose}
@@ -134,7 +130,7 @@ export default function ShareChatModal({
                             />
                             <TextInput
                                 className="flex-1 text-[15px] h-11 text-black dark:text-white font-spartan"
-                                placeholder="Buscar amigos..."
+                                placeholder="Search friends..."
                                 placeholderTextColor={
                                     isDark ? '#8A8A8E' : '#6B6B6B'
                                 }
@@ -159,8 +155,8 @@ export default function ShareChatModal({
                                 ListEmptyComponent={
                                     <Text className="text-center font-spartan text-sm mt-6 text-gray-500">
                                         {search
-                                            ? 'No se encontraron resultados'
-                                            : 'Aún no tienes amigos para compartir'}
+                                            ? 'No results found'
+                                            : "You don't have any friends to share with yet"}
                                     </Text>
                                 }
                                 ItemSeparatorComponent={() => (
@@ -292,7 +288,7 @@ export default function ShareChatModal({
                                                       : 'text-[#9CA3AF]'
                                             }`}
                                         >
-                                            {`Enviar (${selected.size})`}
+                                            {`Send (${selected.size})`}
                                         </Text>
                                     </>
                                 )}

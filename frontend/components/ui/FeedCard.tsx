@@ -73,6 +73,12 @@ export default function FeedCard({
     // ✅ Hook siempre en el nivel superior, nunca en condicional
     const isDark = useColorScheme() === 'dark';
 
+    // ✅ Lógica del avatar en una variable, sin duplicar el componente
+    const hasImage =
+        authorImage &&
+        typeof authorImage === 'string' &&
+        authorImage.trim() !== '';
+
     const handleLike = async () => {
         if (!publicationId || isTogglingLike) return;
 
@@ -131,10 +137,11 @@ export default function FeedCard({
                             {timeAgo}
                         </Text>
                         <Text className="mt-1 font-spartan text-sm text-gray-600 dark:text-gray-300">
-                            → en el perfil de{' '}
+                            → on{' '}
                             <Text className="font-spartan-bold">
                                 {targetProfileName}
                             </Text>
+                            {"'s profile"}
                         </Text>
                     </View>
                 </View>

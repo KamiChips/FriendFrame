@@ -26,8 +26,8 @@ export async function getProfileFeed(
     params: PaginationParams = {}
 ): Promise<PostResult<FeedItem[]>> {
     try {
-        assertUUID(profileOwnerId, 'ID de perfil');
-        assertUUID(currentUserId, 'ID de usuario');
+        assertUUID(profileOwnerId, 'profile ID');
+        assertUUID(currentUserId, 'user ID');
 
         const { from, to } = normalizePagination(params);
 

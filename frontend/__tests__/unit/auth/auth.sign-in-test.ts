@@ -60,7 +60,7 @@ describe('singIn', () => {
             email: 'nitomail@nito.com',
             password: '',
         });
-        expect(result.error).toBe('La contraseña es requerida.');
+        expect(result.error).toBe('Password is required.');
     });
 
     it('throws error if the credentials are invalid', async () => {
@@ -73,7 +73,7 @@ describe('singIn', () => {
             email: 'nitomail@nito.com',
             password: 'noesestajajasequivoco',
         });
-        expect(result.error).toBe('Email o contraseña incorrectos.');
+        expect(result.error).toBe('Invalid email or password.');
     });
 
     it('throws error when email is invalid', async () => {
@@ -120,7 +120,7 @@ describe('signOut', () => {
         });
 
         const result = await signOut();
-        expect(result.error).toBe('Error de red. Verifica tu conexión.');
+        expect(result.error).toBe('Network error. Check your connection.');
     });
 
     it('logs out successfully when user is active', async () => {
@@ -180,7 +180,7 @@ describe('getCurrentUser', () => {
 describe('signInWithGoogle', () => {
     it('throws error if the redirection URL is invalid', async () => {
         const result = await signInWithGoogle('nosequevaaqui');
-        expect(result.error).toBe('La URL de redirección no es válida.');
+        expect(result.error).toBe('Invalid redirect URL.');
     });
 
     it('calls signInWithOAuth with google provider', async () => {

@@ -108,7 +108,7 @@ describe('getProfile', () => {
 
         const result = await getProfile(targetUserId, currentUserId);
 
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
         expect(result.data).toBeNull();
     });
 
@@ -129,7 +129,7 @@ describe('getProfile', () => {
 
         const result = await getProfile(targetUserId, currentUserId);
 
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
         expect(result.data).toBeNull();
     });
 
@@ -155,7 +155,7 @@ describe('getProfileStats', () => {
 
         const result = await getProfileStats(targetUserId);
 
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
         expect(result.data).toBeNull();
     });
 
@@ -202,16 +202,16 @@ describe('getMyProfile', () => {
 
         const result = await getMyProfile();
 
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
         expect(result.data).toBeNull();
     });
 
     it('returns error when there is no active session', async () => {
-        mockGetAuthUser.mockRejectedValue(new Error('No hay sesión activa.'));
+        mockGetAuthUser.mockRejectedValue(new Error('No active session.'));
 
         const result = await getMyProfile();
 
-        expect(result.error).toBe('No hay sesión activa.');
+        expect(result.error).toBe('No active session.');
         expect(result.data).toBeNull();
     });
 });
@@ -274,7 +274,7 @@ describe('searchUsers', () => {
 
         const result = await searchUsers('target', currentUserId);
 
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
         expect(result.data).toBeNull();
     });
 

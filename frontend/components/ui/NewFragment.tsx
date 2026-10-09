@@ -8,13 +8,11 @@ import {
     Platform,
     ActivityIndicator,
     Alert,
-    SafeAreaView,
-    KeyboardAvoidingView,
-    ScrollView,
-    useColorScheme,
 } from 'react-native';
+import { SafeAreaView, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useColorScheme } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { Image } from 'expo-image';
 import { useCreateFragment } from '@/hooks/useCreateFragment';
@@ -113,7 +111,7 @@ export const NewFragment = ({
                                 maskElement={
                                     <Text className="text-lg font-bold">
                                         {' '}
-                                        Nuevo Fragment{' '}
+                                        New Fragment{' '}
                                     </Text>
                                 }
                             >
@@ -124,7 +122,7 @@ export const NewFragment = ({
                                 >
                                     <Text className="text-lg font-bold opacity-0">
                                         {' '}
-                                        Nuevo Fragment{' '}
+                                        New Fragment{' '}
                                     </Text>
                                 </LinearGradient>
                             </MaskedView>
@@ -154,7 +152,7 @@ export const NewFragment = ({
                                     />
                                 ) : (
                                     <Text className="font-semibold text-white">
-                                        Publicar
+                                        Post
                                     </Text>
                                 )}
                             </LinearGradient>
@@ -202,7 +200,7 @@ export const NewFragment = ({
                                     {targetUserName}
                                 </Text>
                                 <Text className="text-xs text-gray-400">
-                                    Fragment para {targetUserName.split(' ')[0]}
+                                    Fragment for {targetUserName.split(' ')[0]}
                                 </Text>
                             </View>
                         </View>
@@ -220,7 +218,7 @@ export const NewFragment = ({
                             style={{ overflow: 'hidden' }}
                         >
                             <TextInput
-                                placeholder="¿Qué piensas sobre tu amigo?"
+                                placeholder="What do you think about your friend?"
                                 placeholderTextColor={
                                     colorScheme === 'dark'
                                         ? '#9ca3af'
@@ -267,7 +265,7 @@ export const NewFragment = ({
 
                             <View className="items-end">
                                 <Text className="text-xs font-semibold text-gray-700 dark:text-white">
-                                    Comienza a escribir
+                                    Start writing
                                 </Text>
                                 <Text className="text-[10px] text-gray-400">
                                     Expresa tu pensamiento
@@ -309,7 +307,7 @@ export const NewFragment = ({
                                     }}
                                     className="text-sm font-bold ml-2"
                                 >
-                                    Tips para un gran Fragment
+                                    Tips for a great Fragment
                                 </Text>
                             </View>
                             <View className="space-y-2">
@@ -332,7 +330,7 @@ export const NewFragment = ({
                                         }}
                                         className="text-sm flex-1 ml-1"
                                     >
-                                        Sé auténtico y genuino con tus palabras
+                                        Be authentic and genuine with your words
                                     </Text>
                                 </View>
                                 <View className="flex-row items-center space-x-2 mb-1">
@@ -354,7 +352,7 @@ export const NewFragment = ({
                                         }}
                                         className="text-sm flex-1 ml-1"
                                     >
-                                        Comparte un recuerdo o momento especial
+                                        Share a memory or a special moment
                                     </Text>
                                 </View>
                                 <View className="flex-row items-center space-x-2 mb-1">
@@ -376,7 +374,7 @@ export const NewFragment = ({
                                         }}
                                         className="text-sm flex-1 ml-1"
                                     >
-                                        Hazlo personal y significativo
+                                        Make it personal and meaningful
                                     </Text>
                                 </View>
                             </View>

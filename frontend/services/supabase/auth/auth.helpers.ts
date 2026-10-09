@@ -11,43 +11,41 @@ import {
 
 export function validateEmail(email: string): string {
     const trimmed = email.trim().toLowerCase();
-    if (!trimmed) throw new Error('El email es requerido.');
-    if (!EMAIL_REGEX.test(trimmed))
-        throw new Error('El email no tiene un formato válido.');
+    if (!trimmed) throw new Error('Email is required.');
+    if (!EMAIL_REGEX.test(trimmed)) throw new Error('Invalid email format.');
     return trimmed;
 }
 
 export function validatePassword(password: string): void {
-    if (!password) throw new Error('La contraseña es requerida.');
+    if (!password) throw new Error('Password is required.');
     if (password.length < MIN_PASSWORD_LEN)
         throw new Error(
-            `La contraseña debe tener al menos ${MIN_PASSWORD_LEN} caracteres.`
+            `Password must be at least ${MIN_PASSWORD_LEN} characters.`
         );
 }
 
 export function validateUsername(username: string): string {
     const trimmed = username.trim().toLowerCase();
-    if (!trimmed) throw new Error('El nombre de usuario es requerido.');
+    if (!trimmed) throw new Error('Username is required.');
     if (!USERNAME_REGEX.test(trimmed))
         throw new Error(
-            'El username solo puede contener letras minúsculas, números y guiones bajos (3-30 caracteres).'
+            'Username can only contain lowercase letters, numbers, and underscores (3-30 characters).'
         );
     return trimmed;
 }
 
 export function validateFullName(fullName: string): string {
     const trimmed = fullName.trim();
-    if (!trimmed) throw new Error('El nombre completo es requerido.');
+    if (!trimmed) throw new Error('Full name is required.');
     if (trimmed.length > MAX_FULL_NAME_LEN)
         throw new Error(
-            `El nombre no puede superar ${MAX_FULL_NAME_LEN} caracteres.`
+            `Full name cannot exceed ${MAX_FULL_NAME_LEN} characters.`
         );
     return trimmed;
 }
 
 export function validateRedirectUrl(url: string): void {
-    if (!url || !url.includes('://'))
-        throw new Error('La URL de redirección no es válida.');
+    if (!url || !url.includes('://')) throw new Error('Invalid redirect URL.');
 }
 
 export async function fetchProfile(userId: string): Promise<AuthUser> {
@@ -60,7 +58,7 @@ export async function fetchProfile(userId: string): Promise<AuthUser> {
         .single();
 
     if (error) throw error;
-    if (!data) throw new Error('No se encontró el perfil del usuario.');
+    if (!data) throw new Error('User profile not found.');
 
     return data as AuthUser;
 }
@@ -82,5 +80,5 @@ export async function waitForProfile(userId: string): Promise<AuthUser> {
         if (data) return data as AuthUser;
     }
 
-    throw new Error('No se pudo crear el perfil. Intenta de nuevo.');
+    throw new Error('Could not create profile. Please try again.');
 }
