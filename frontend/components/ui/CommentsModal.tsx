@@ -140,8 +140,8 @@ export default function CommentsModal({
             />
 
             {/* KeyboardAvoidingView: En iOS usa 'padding' para que el modal suba completo junto con el teclado.
-        En Android usa 'height'. Esto evita que el teclado tape la barra de escribir.
-      */}
+                En Android usa 'height'. Esto evita que el teclado tape la barra de escribir.
+            */}
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 className="flex-1 justify-end"
@@ -229,7 +229,6 @@ export default function CommentsModal({
                             className="ml-3 h-10 w-10 items-center justify-center rounded-full bg-primary-light dark:bg-[#FF9B42]"
                             disabled={newComment.length === 0}
                             style={{ opacity: newComment.length > 0 ? 1 : 0.5 }} // Se pone medio transparente si no hay texto
-
                             onPress={handlePost}
                         >
                             <Ionicons
