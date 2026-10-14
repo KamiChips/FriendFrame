@@ -222,6 +222,14 @@ describe('Comments Service — Unit', () => {
             const result = await deleteComment(commentId);
             expect(result.error).toBe('Auth error');
         });
+
+        it('returns error if comment does not belong to current user', async () => {
+            (getAuthUser as jest.Mock).mockRejectedValueOnce(
+                new Error('Auth error')
+            );
+            const result = await deleteComment(commentId);
+            expect(result.error).toBe('Auth error');
+        });
     });
 
     // ─── getComments ────────────────────────────────────────────────────────────

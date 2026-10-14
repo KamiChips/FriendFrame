@@ -126,6 +126,23 @@ describe('addMemberToGroup', () => {
         expect(result.error).toBe('Insert failed');
     });
 
+    it('returns error if user is not group admin', async () => {
+        const mockSelectFn = setupChatQuery(true);
+        const mockInsertResult = jest
+            .fn()
+            .mockResolvedValueOnce({ error: new Error('Insert failed') });
+
+        mockFrom.mockImplementation((table: string) => {
+            if (table === 'chat') return { select: mockSelectFn };
+            if (table === 'chat_members') return { insert: mockInsertResult };
+        });
+
+        const result = await addMemberToGroup(CHAT_ID, NEW_USER);
+
+        expect(result.data).toBeNull();
+        expect(result.error).toBe('Insert failed');
+    });
+
     it('llama a assertUUID para chatId y newUserId', async () => {
         const mockSelectFn = setupChatQuery(true);
         const mockInsertResult = jest
