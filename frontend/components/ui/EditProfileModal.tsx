@@ -20,7 +20,6 @@ import {
     editUsername,
     updateProfilePic,
 } from '@/services/supabase/auth/auth.profile';
-import { loadStaticParamsAsync } from 'expo-router/build/loadStaticParamsAsync';
 import { Image } from 'expo-image';
 
 interface EditProfileModalProps {

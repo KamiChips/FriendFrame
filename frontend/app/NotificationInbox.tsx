@@ -11,7 +11,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import '../global.css';
 import GoBackButton from '../components/ui/GoBackButton';
 import NotificationCard, {
-    NotificationCardProps,
     NotificationType,
 } from '../components/ui/NotificationCard';
 import { router, useFocusEffect } from 'expo-router';

@@ -4,7 +4,6 @@ import {
     View,
     Text,
     TouchableOpacity,
-    Image,
     useColorScheme,
     Modal,
     ScrollView,
@@ -17,7 +16,6 @@ import { TextField } from '../../components/ui/TextField';
 import { Button } from '../../components/ui/Button';
 import { TERMS_AND_SERVICES_TEXT } from '../../constants/termsText';
 import { router, Stack } from 'expo-router';
-import { useSafeArea } from 'react-native-safe-area-context';
 import { signUp } from '@/services/supabase/auth/auth.sign-up';
 
 export default function SignUpScreen() {

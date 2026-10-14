@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -8,11 +8,13 @@ import {
     Platform,
     ActivityIndicator,
     Alert,
+    SafeAreaView,
+    KeyboardAvoidingView,
+    ScrollView,
+    useColorScheme,
 } from 'react-native';
-import { SafeAreaView, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { Image } from 'expo-image';
 import { useCreateFragment } from '@/hooks/useCreateFragment';
