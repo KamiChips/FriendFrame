@@ -146,7 +146,7 @@ describe('createPost', () => {
             'a'.repeat(2001)
         );
         expect(result.error).toBe(
-            'La descripción no puede superar 2000 caracteres.'
+            'The description cannot exceed 2000 characters.'
         );
     });
 
@@ -158,11 +158,11 @@ describe('createPost', () => {
             'hola'
         );
         expect(result.data).toBeNull();
-        expect(result.error).toContain('ID de perfil');
+        expect(result.error).toContain('profile ID');
     });
 
     it('returns error if user is not authenticated', async () => {
-        mockGetAuthUser.mockRejectedValue(new Error('No hay sesión activa.'));
+        mockGetAuthUser.mockRejectedValue(new Error('No active session.'));
 
         const result = await createPost(
             profileOwnerId,
@@ -170,13 +170,13 @@ describe('createPost', () => {
             'image',
             'hola'
         );
-        expect(result).toEqual({ data: null, error: 'No hay sesión activa.' });
+        expect(result).toEqual({ data: null, error: 'No active session.' });
         expect(mockAssertFriendship).not.toHaveBeenCalled();
     });
 
     it('returns error if friendship validation fails', async () => {
         mockAssertFriendship.mockRejectedValue(
-            new Error('Solo puedes publicar en el perfil de tus amigos.')
+            new Error("You can only post on your friends' profiles.")
         );
 
         const result = await createPost(
@@ -186,7 +186,7 @@ describe('createPost', () => {
             'hola'
         );
         expect(result.error).toBe(
-            'Solo puedes publicar en el perfil de tus amigos.'
+            "You can only post on your friends' profiles."
         );
     });
 
@@ -199,7 +199,7 @@ describe('createPost', () => {
             'image',
             'hola'
         );
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
     });
 });
 
@@ -221,14 +221,14 @@ describe('editPost', () => {
         mockFrom.mockReturnValue(updateChain(null));
 
         const result = await editPost(postId, 'Nueva descripción');
-        expect(result.error).toBe('Post no encontrado o sin permisos.');
+        expect(result.error).toBe('Post not found or no permissions.');
     });
 
     it('returns error when update fails', async () => {
         mockFrom.mockReturnValue(updateChain(null, new Error('DB Error')));
 
         const result = await editPost(postId, 'Nueva descripción');
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
     });
 });
 
@@ -243,14 +243,14 @@ describe('deletePost', () => {
         mockFrom.mockReturnValue(selectDoubleEqChain(null));
         const result = await deletePost(postId);
         expect(result.error).toBe(
-            'Post no encontrado o sin permisos para eliminarlo.'
+            'Post not found or no permissions to delete.'
         );
     });
 
     it('returns error when delete query fails', async () => {
         makeDeleteMocks(new Error('DB Error'));
         const result = await deletePost(postId);
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
     });
 });
 

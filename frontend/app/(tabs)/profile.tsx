@@ -178,7 +178,7 @@ export default function ProfileScreen() {
         return (
             <SafeAreaView className="flex-1 bg-background-light dark:bg-[#182240] items-center justify-center px-8">
                 <Text className="text-xl font-spartan-bold text-gray-900 dark:text-white text-center">
-                    No puedes ver este perfil.
+                    {"You can't view this profile."}
                 </Text>
             </SafeAreaView>
         );
@@ -236,7 +236,7 @@ export default function ProfileScreen() {
                             onPress={() => setEditModalVisible(true)}
                         >
                             <Text className="font-spartan-bold text-black dark:text-white text-base">
-                                Editar Perfil
+                                Edit Profile
                             </Text>
                         </TouchableOpacity>
                     ) : profile.is_blocked ? (
@@ -250,7 +250,7 @@ export default function ProfileScreen() {
                                 <ActivityIndicator color="ef4444" />
                             ) : (
                                 <Text className="font-spartan-bold text-red-600 dark:text-red-300 text-base">
-                                    Desbloquear
+                                    Unblock
                                 </Text>
                             )}
                         </TouchableOpacity>
@@ -265,7 +265,7 @@ export default function ProfileScreen() {
                                 <ActivityIndicator color="white" />
                             ) : (
                                 <Text className="font-spartan-bold text-white text-base">
-                                    Seguir
+                                    Follow
                                 </Text>
                             )}
                         </TouchableOpacity>
@@ -283,8 +283,8 @@ export default function ProfileScreen() {
                                     ) : (
                                         <Text className="font-spartan-bold text-black dark:text-white text-base">
                                             {profile.is_friend
-                                                ? '👥 Amigos'
-                                                : 'Siguiendo'}
+                                                ? '👥 Friends'
+                                                : 'Following'}
                                         </Text>
                                     )}
                                 </TouchableOpacity>
@@ -303,7 +303,7 @@ export default function ProfileScreen() {
                                         }}
                                     >
                                         <Text className="font-spartan-bold text-black dark:text-white text-base">
-                                            Mensaje
+                                            Message
                                         </Text>
                                     </TouchableOpacity>
                                 )}
@@ -335,8 +335,8 @@ export default function ProfileScreen() {
                         <View className="mt-12 items-center px-8">
                             <Text className="text-gray-400 text-center font-spartan">
                                 {isOwnProfile
-                                    ? 'Nadie ha publicado en tu perfil todavía'
-                                    : 'No hay publicaciones aún'}
+                                    ? 'Nobody has posted on your profile yet'
+                                    : 'No posts yet'}
                             </Text>
                         </View>
                     ) : (
@@ -346,7 +346,7 @@ export default function ProfileScreen() {
                                     {gridPosts.length === 0 ? (
                                         <View className="w-full mt-8 items-center px-8">
                                             <Text className="text-gray-400 text-center font-spartan">
-                                                No hay fotos en este perfil
+                                                No photos on this profile
                                             </Text>
                                         </View>
                                     ) : (

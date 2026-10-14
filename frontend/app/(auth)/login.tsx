@@ -16,6 +16,7 @@ import {
     signIn,
     signInWithGoogle,
 } from '@/services/supabase/auth/auth.sign-in';
+import { LOCATION_ID } from 'expo-router/build/rsc/router/common';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -30,12 +31,12 @@ export default function LoginScreen() {
         setError(null);
 
         if (!email.trim() || !password) {
-            setError('Completa todos los campos.');
+            setError('Please fill in all fields.');
             return;
         }
 
         setLoading(true);
-        const { error: authError } = await signIn({ email, password });
+        const { data, error: authError } = await signIn({ email, password });
         setLoading(false);
 
         if (authError) {
@@ -112,12 +113,6 @@ export default function LoginScreen() {
                             secureTextEntry
                         />
 
-                        {error && (
-                            <Text className="text-red-500 text-sm mt-1">
-                                {error.charAt(0).toUpperCase() + error.slice(1)}
-                            </Text>
-                        )}
-
                         {/* Remember me / Forgot Password? */}
                         <View className="flex-row justify-between mb-12">
                             <Text className="dark:text-background-light">
@@ -128,6 +123,12 @@ export default function LoginScreen() {
                                 Forgot Password?
                             </Text>
                         </View>
+
+                        {error && (
+                            <Text className="text-red-500 text-sm mb-4 text-center">
+                                {error}
+                            </Text>
+                        )}
 
                         <View className="items-center mb-18 mt-12">
                             <Button
@@ -140,7 +141,7 @@ export default function LoginScreen() {
                                 {loading ? (
                                     <ActivityIndicator testID="loading-indicator" />
                                 ) : (
-                                    <Text>Iniciando Sesión</Text>
+                                    <Text>Log In</Text>
                                 )}
                             </Button>
                         </View>
@@ -163,7 +164,7 @@ export default function LoginScreen() {
                             />
                         </TouchableOpacity>
                         <Text className="dark:text-background-light mt-10">
-                            Don&apos;t have an account?{' '}
+                            {"Don't have an account?{' '}"}
                             <Text
                                 className="font-semibold dark:text-background-light"
                                 onPress={() => router.push('/(auth)/signup')}

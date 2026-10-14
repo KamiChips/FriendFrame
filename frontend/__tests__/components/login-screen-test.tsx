@@ -44,7 +44,7 @@ describe('<LoginScreen />', () => {
 
     test('renders login button', () => {
         const { getByText } = render(<LoginScreen />);
-        expect(getByText('Iniciando Sesión')).toBeTruthy();
+        expect(getByText('Log In')).toBeTruthy();
     });
 
     test('renders "Sign up" link', () => {
@@ -75,7 +75,7 @@ describe('<LoginScreen />', () => {
         const { getByTestId, getByText } = render(<LoginScreen />);
         fireEvent.press(getByTestId('login-button'));
         await waitFor(() => {
-            expect(getByText('Completa todos los campos.')).toBeTruthy();
+            expect(getByText('Please fill in all fields.')).toBeTruthy();
         });
     });
 
@@ -88,7 +88,7 @@ describe('<LoginScreen />', () => {
         // password vacío
         fireEvent.press(getByTestId('login-button'));
         await waitFor(() => {
-            expect(getByText('Completa todos los campos.')).toBeTruthy();
+            expect(getByText('Please fill in all fields.')).toBeTruthy();
         });
     });
 
@@ -98,7 +98,7 @@ describe('<LoginScreen />', () => {
         fireEvent.changeText(getByTestId('password-textfield'), 'password123');
         fireEvent.press(getByTestId('login-button'));
         await waitFor(() => {
-            expect(getByText('Completa todos los campos.')).toBeTruthy();
+            expect(getByText('Please fill in all fields.')).toBeTruthy();
         });
     });
 
@@ -177,7 +177,7 @@ describe('<LoginScreen />', () => {
     test('shows error when email and password are valid but not exist in database', async () => {
         (signIn as jest.Mock).mockResolvedValue({
             data: null,
-            error: 'invalid login credentials',
+            error: 'Invalid email or password.',
         });
 
         const { getByTestId, getByText } = render(<LoginScreen />);
@@ -189,14 +189,14 @@ describe('<LoginScreen />', () => {
         fireEvent.press(getByTestId('login-button'));
 
         await waitFor(() => {
-            expect(getByText('Invalid login credentials')).toBeTruthy();
+            expect(getByText('Invalid email or password.')).toBeTruthy();
         });
     });
 
     test('shows error message when signIn fails', async () => {
         (signIn as jest.Mock).mockResolvedValue({
             data: null,
-            error: 'Credenciales incorrectas',
+            error: 'Invalid login credentials',
         });
 
         const { getByTestId, getByText } = render(<LoginScreen />);
@@ -211,7 +211,7 @@ describe('<LoginScreen />', () => {
         fireEvent.press(getByTestId('login-button'));
 
         await waitFor(() => {
-            expect(getByText('Credenciales incorrectas')).toBeTruthy();
+            expect(getByText('Invalid login credentials')).toBeTruthy();
         });
     });
 
@@ -253,16 +253,14 @@ describe('<LoginScreen />', () => {
 
     test('shows error when Google sing in fails', async () => {
         (signInWithGoogle as jest.Mock).mockResolvedValue({
-            error: 'Error al iniciar sesión con Google',
+            error: 'Google sign in failed',
         });
 
         const { getByTestId, getByText } = render(<LoginScreen />);
         fireEvent.press(getByTestId('google-signin-button'));
 
         await waitFor(() => {
-            expect(
-                getByText('Error al iniciar sesión con Google')
-            ).toBeTruthy();
+            expect(getByText('Google sign in failed')).toBeTruthy();
         });
     });
 

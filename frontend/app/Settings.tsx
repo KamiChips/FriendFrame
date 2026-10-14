@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -17,6 +17,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useSettings } from '@/hooks/useSettings';
 import { Image } from 'expo-image';
 import ProfileIcon from '@/components/ui/ProfileIcon';
+import { MyPost } from '@/types/settings.types';
 import FeedCard from '@/components/ui/FeedCard';
 import NotificationButton from '@/components/ui/NotificationButton';
 
@@ -26,17 +27,20 @@ export default function SettingsScreen() {
     const isSystemDark = systemColorScheme === 'dark';
 
     const [activeTab, setActiveTab] = useState('General');
-    const [isDark] = useState(isSystemDark);
+    const [isDark, setIsDark] = useState(isSystemDark);
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [myTabFragments, setMyFragments] = useState<any[]>([]);
+    const [myTabPosts, setMyPosts] = useState<any[]>([]);
+
     const [modalVisible, setModalVisible] = useState(false);
 
     const { user, refreshUser } = useAuth();
-    const tabs = ['General', 'Bloqueados', 'Mis Posts', 'Mis Fragments'];
+    const tabs = ['General', 'Blocked', 'My Posts', 'My Fragments'];
 
     const {
         blockedUsers,
         loadingBlocked,
-        loading,
         loadBlockedUsers,
         loadMyPosts,
         loadMyFragments,
@@ -49,10 +53,10 @@ export default function SettingsScreen() {
     } = useSettings(user?.user_id);
 
     useEffect(() => {
-        if (activeTab === 'Bloqueados') loadBlockedUsers();
-        if (activeTab === 'Mis Posts') loadMyPosts();
-        if (activeTab === 'Mis Fragments') loadMyFragments();
-    }, [activeTab, loadBlockedUsers, loadMyPosts, loadMyFragments]);
+        if (activeTab === 'Blocked') loadBlockedUsers();
+        if (activeTab === 'My Posts') loadMyPosts();
+        if (activeTab === 'My Fragments') loadMyFragments();
+    }, [activeTab]);
 
     const handleProfileSaved = async (newName: string, newUsername: string) => {
         await refreshUser();
@@ -86,7 +90,7 @@ export default function SettingsScreen() {
             >
                 {/* Título Principal */}
                 <Text className="text-3xl font-bold text-[#1D2A4F] dark:text-white mb-6">
-                    Configuración
+                    Settings
                 </Text>
 
                 {/* Pestañas Horizontales */}
@@ -137,10 +141,10 @@ export default function SettingsScreen() {
                                 />
                                 <View>
                                     <Text className="text-lg font-bold text-[#1D2A4F] dark:text-white">
-                                        Notificaciones
+                                        Notifications
                                     </Text>
                                     <Text className="text-gray-400 text-sm mt-0.5">
-                                        Mensajes, posts y likes
+                                        Messages, posts, and likes
                                     </Text>
                                 </View>
                             </View>
@@ -158,7 +162,7 @@ export default function SettingsScreen() {
                         {/* Perfil */}
                         <View className="bg-white dark:bg-background-semidark p-5 rounded-2xl border-2 border-gray-100 dark:border-[#27345C] mb-4 shadow-sm">
                             <Text className="text-lg font-bold text-[#1D2A4F] dark:text-white mb-1">
-                                Perfil
+                                Profile
                             </Text>
                             <Text className="text-gray-400 text-sm mb-4">
                                 {user?.full_name} (@{user?.username})
@@ -168,7 +172,7 @@ export default function SettingsScreen() {
                                 className="active:opacity-60"
                             >
                                 <Text className="text-[#34C2DD] font-semibold text-base">
-                                    Editar perfil
+                                    Edit profile
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -191,7 +195,7 @@ export default function SettingsScreen() {
                                         style={{ marginRight: 8 }}
                                     />
                                     <Text className="text-red-600 font-semibold text-base">
-                                        Cerrar sesión
+                                        Log out
                                     </Text>
                                 </>
                             )}
@@ -200,7 +204,7 @@ export default function SettingsScreen() {
                 )}
 
                 {/* Contenido de pestaña Bloqueados */}
-                {activeTab === 'Bloqueados' && (
+                {activeTab === 'Blocked' && (
                     <View className="py-5">
                         {loadingBlocked ? (
                             <ActivityIndicator
@@ -210,7 +214,7 @@ export default function SettingsScreen() {
                         ) : blockedUsers.length === 0 ? (
                             <View className="py-20 items-center">
                                 <Text className="text-gray-400 dark:text-neutral-500 text-center">
-                                    No has bloqueado a ningún usuario
+                                    {"You haven't blocked any users"}
                                 </Text>
                             </View>
                         ) : (
@@ -254,7 +258,7 @@ export default function SettingsScreen() {
                                         className="bg-primary-light dark:bg-tertiary-dark px-3 py-2 rounded-xl"
                                     >
                                         <Text className="text-background-light text-sm font-semibold">
-                                            Desbloquear
+                                            Unblock
                                         </Text>
                                     </TouchableOpacity>
                                 </View>
@@ -263,7 +267,7 @@ export default function SettingsScreen() {
                     </View>
                 )}
 
-                {activeTab === 'Mis Posts' && (
+                {activeTab === 'My Posts' && (
                     <View className="items-center w-full">
                         {loadingPosts ? (
                             <ActivityIndicator
@@ -272,7 +276,7 @@ export default function SettingsScreen() {
                             />
                         ) : myPosts.length === 0 ? (
                             <Text className="text-gray-400 font-medium dark:text-neutral-500">
-                                No has publicado ningún post todavía.
+                                {"You haven't published any posts yet."}
                             </Text>
                         ) : (
                             myPosts.map((post) => (
@@ -309,7 +313,15 @@ export default function SettingsScreen() {
                                         isLiked={post.liked_by_me ?? false}
                                         isOwnPost={true}
                                         comments={[]}
-                                        onDeleted={() => loadMyPosts()}
+                                        onDeleted={() =>
+                                            setMyPosts((prev) =>
+                                                prev.filter(
+                                                    (p) =>
+                                                        p.post_id !==
+                                                        post.post_id
+                                                )
+                                            )
+                                        }
                                     />
                                 </View>
                             ))
@@ -317,7 +329,7 @@ export default function SettingsScreen() {
                     </View>
                 )}
 
-                {activeTab === 'Mis Fragments' && (
+                {activeTab === 'My Fragments' && (
                     <View className="items-center w-full">
                         {loadingFragments ? (
                             <ActivityIndicator
@@ -327,7 +339,7 @@ export default function SettingsScreen() {
                         ) : myFragments.length === 0 ? (
                             <View className="py-20 items-center">
                                 <Text className="text-gray-400 dark:text-neutral-500 text-center">
-                                    No has publicado ningún fragment todavía
+                                    {"You haven't published any fragments yet"}
                                 </Text>
                             </View>
                         ) : (
@@ -365,7 +377,15 @@ export default function SettingsScreen() {
                                         isLiked={fragment.liked_by_me ?? false}
                                         isOwnPost={true}
                                         comments={[]}
-                                        onDeleted={() => loadMyFragments()}
+                                        onDeleted={() =>
+                                            setMyFragments((prev) =>
+                                                prev.filter(
+                                                    (f) =>
+                                                        f.fragment_id !==
+                                                        fragment.fragment_id
+                                                )
+                                            )
+                                        }
                                     />
                                 </View>
                             ))

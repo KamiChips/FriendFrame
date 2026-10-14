@@ -53,7 +53,7 @@ describe('sanitizeDescription', () => {
         expect(sanitizeDescription('  hola  ')).toBe('hola'));
     it('throws if description exceeds max length', () => {
         expect(() => sanitizeDescription('a'.repeat(2001))).toThrow(
-            'La descripción no puede superar 2000 caracteres.'
+            'The description cannot exceed 2000 characters.'
         );
     });
 });
@@ -61,39 +61,39 @@ describe('sanitizeDescription', () => {
 // parseError
 describe('parseError', () => {
     it('returns unknown error for null', () =>
-        expect(parseError(null)).toBe('Error desconocido'));
+        expect(parseError(null)).toBe('Unknown error'));
     it('maps row-level security error', () =>
         expect(parseError(new Error('row-level security policy'))).toBe(
-            'No tienes permiso para realizar esta acción.'
+            'You do not have permission to perform this action.'
         ));
     it('maps foreign key error', () =>
         expect(parseError(new Error('violates foreign key constraint'))).toBe(
-            'El usuario o perfil no existe.'
+            'The user or profile does not exist.'
         ));
     it('maps NetworkError', () =>
         expect(parseError(new Error('NetworkError occurred'))).toBe(
-            'Error de red. Verifica tu conexión.'
+            'Network error. Check your connection.'
         ));
     it('maps Failed to fetch', () =>
         expect(parseError(new Error('Failed to fetch'))).toBe(
-            'Error de red. Verifica tu conexión.'
+            'Network error. Check your connection.'
         ));
     it('passes through known prefixes', () => {
-        expect(parseError(new Error('No hay sesión activa.'))).toBe(
-            'No hay sesión activa.'
+        expect(parseError(new Error('No active session.'))).toBe(
+            'No active session.'
         );
-        expect(parseError(new Error('Post no encontrado.'))).toBe(
-            'Post no encontrado.'
+        expect(parseError(new Error('Post not found.'))).toBe(
+            'Post not found.'
         );
         expect(
             parseError(
-                new Error('Solo puedes publicar en el perfil de tus amigos.')
+                new Error("You can only post on your friends' profiles.")
             )
-        ).toBe('Solo puedes publicar en el perfil de tus amigos.');
+        ).toBe("You can only post on your friends' profiles.");
     });
     it('returns generic error for unknown messages', () =>
         expect(parseError(new Error('algo raro'))).toBe(
-            'Ocurrió un error inesperado.'
+            'An unexpected error occurred.'
         ));
 });
 
@@ -101,14 +101,14 @@ describe('parseError', () => {
 describe('assertFriendship', () => {
     it('throws if author is the profile owner', async () => {
         await expect(assertFriendship('uid-1', 'uid-1')).rejects.toThrow(
-            'No puedes publicar en tu propio perfil.'
+            "You can't post on your own profile."
         );
     });
 
     it('throws if rpc returns false', async () => {
         mockRpc.mockResolvedValue({ data: false, error: null });
         await expect(assertFriendship('uid-1', 'uid-2')).rejects.toThrow(
-            'Solo puedes publicar en el perfil de tus amigos.'
+            "You can only post on friends' profiles."
         );
     });
 

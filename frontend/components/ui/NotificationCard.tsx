@@ -44,8 +44,8 @@ const NotificationCard = ({
         case NotificationType.LIKE:
             message = (
                 <>
-                    <Text className="font-spartan-bold">{name}</Text> le dio
-                    like a tu post
+                    <Text className="font-spartan-bold">{name}</Text> liked your
+                    post
                 </>
             );
             icon = (
@@ -59,9 +59,8 @@ const NotificationCard = ({
         case NotificationType.COMMENT:
             message = (
                 <>
-                    <Text className="font-spartan-bold">{name}</Text> comentó:
-                    &quot;
-                    {comment}&quot;
+                    <Text className="font-spartan-bold">{name}</Text> commented:
+                    {`"${comment}"`}
                 </>
             );
             icon = (
@@ -75,8 +74,8 @@ const NotificationCard = ({
         case NotificationType.POST:
             message = (
                 <>
-                    <Text className="font-spartan-bold">{name}</Text> publicó en
-                    tu perfil
+                    <Text className="font-spartan-bold">{name}</Text> posted on
+                    your profile
                 </>
             );
             icon = (
@@ -90,8 +89,8 @@ const NotificationCard = ({
         case NotificationType.FOLLOW:
             message = (
                 <>
-                    <Text className="font-spartan-bold">{name}</Text> comenzó a
-                    seguirte
+                    <Text className="font-spartan-bold">{name}</Text> started
+                    following you
                 </>
             );
             icon = (
@@ -105,8 +104,8 @@ const NotificationCard = ({
         case NotificationType.MENTION:
             message = (
                 <>
-                    <Text className="font-spartan-bold">{name}</Text> te envió
-                    un mensaje: &quot;{comment}&quot;
+                    <Text className="font-spartan-bold">{name}</Text> sent you a
+                    {`message: "${comment}"`}
                 </>
             );
             icon = (
@@ -122,7 +121,11 @@ const NotificationCard = ({
     return (
         <TouchableOpacity
             onPress={onPress}
-            className={`flex-row items-center w-full ${unread ? 'bg-[#30C2D9]/5 dark:bg-background-semidark/70' : 'bg-background-light dark:bg-background-semidark'} px-4 py-5 border-y border-[#e6e6e6] dark:border-[#404b65]`}
+            className={`flex-row items-center w-full ${
+                unread
+                    ? 'bg-[#30C2D9]/5 dark:bg-background-semidark/70'
+                    : 'bg-background-light dark:bg-background-semidark'
+            } px-4 py-5 border-y border-[#e6e6e6] dark:border-background-semidark`}
             activeOpacity={0.7}
             style={{
                 shadowColor: '#000',
