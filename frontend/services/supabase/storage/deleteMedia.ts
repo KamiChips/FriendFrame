@@ -36,7 +36,7 @@ export async function deletePostImage(
 
 export async function deleteProfilePic(userId: string): Promise<StorageResul> {
     try {
-        assertUUID(userId, 'ID de usuario');
+        assertUUID(userId, 'user ID');
 
         const currentUserId = await getAuthUser()
         validateProfileOwnership(userId, currentUserId)

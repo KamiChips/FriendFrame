@@ -141,12 +141,12 @@ export default function PostOptionsModal({
                     />
                 ) : showDeleteConfirm ? (
                     <ConfirmActionCard
-                        title="Eliminar publicacion"
+                        title="Delete post"
                         message={[
-                            'Esta accion no se puede deshacer.',
-                            'La publicacion se eliminara de este perfil.',
+                            'This action cannot be undone.',
+                            'The post will be removed from this profile.',
                         ]}
-                        confirmText="Eliminar"
+                        confirmText="Delete"
                         iconName="trash-outline"
                         loading={isDeleting}
                         destructive
@@ -173,7 +173,7 @@ export default function PostOptionsModal({
                                     />
                                 </View>
                                 <Text className="ml-4 font-spartan-bold text-lg text-black dark:text-white">
-                                    Editar publicacion
+                                    Edit post
                                 </Text>
                             </Pressable>
 
@@ -190,7 +190,7 @@ export default function PostOptionsModal({
                                     />
                                 </View>
                                 <Text className="ml-4 font-spartan-bold text-lg text-[#EF4444]">
-                                    Eliminar publicacion
+                                    Delete post
                                 </Text>
                             </Pressable>
                         </View>

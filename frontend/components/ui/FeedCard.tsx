@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, Pressable, useColorScheme } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -134,10 +134,11 @@ export default function FeedCard({
                             {timeAgo}
                         </Text>
                         <Text className="mt-1 font-spartan text-sm text-gray-600 dark:text-gray-300">
-                            → en el perfil de{' '}
+                            → on{' '}
                             <Text className="font-spartan-bold">
                                 {targetProfileName}
                             </Text>
+                            {"'s profile"}
                         </Text>
                     </View>
                 </View>

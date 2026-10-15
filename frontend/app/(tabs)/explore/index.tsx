@@ -43,10 +43,10 @@ export default function ExploreScreen() {
             <View className="flex-1 bg-background-light dark:bg-[#182240]">
                 <View className="px-6 pt-6 pb-4">
                     <Text className="font-spartan-bold text-2xl text-black dark:text-white mb-6">
-                        Buscar Usuarios
+                        Search Users
                     </Text>
                     <SearchBar
-                        placeholder="Buscar por nombre o usuario..."
+                        placeholder="Search by name or username..."
                         value={query}
                         onChangeText={setQuery}
                         autoCapitalize="none"
@@ -79,8 +79,7 @@ export default function ExploreScreen() {
                     {showEmpty && (
                         <View className="mt-10 items-center justify-center">
                             <Text className="font-spartan text-gray-400 text-center">
-                                No se encontraron usuarios con &quot;{query}
-                                &quot;
+                                {`No users found for "${query}"`}
                             </Text>
                         </View>
                     )}
@@ -88,8 +87,7 @@ export default function ExploreScreen() {
                     {showHint && (
                         <View className="mt-10 items-center justify-center">
                             <Text className="font-spartan text-gray-400 text-center">
-                                Ingresa al menos 2 caracteres para buscar
-                                usuarios.
+                                Enter at least 2 characters to search for users.
                             </Text>
                         </View>
                     )}

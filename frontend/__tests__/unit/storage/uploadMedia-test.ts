@@ -81,15 +81,13 @@ beforeEach(() => {
 describe('uploadProfilePic', () => {
     it('returns error if userId is invalid', async () => {
         const result = await uploadProfilePic('no-es-uuid');
-        expect(result.error).toContain('ID de usuario');
+        expect(result.error).toContain('user ID');
     });
 
     it('returns error if gallery permission denied', async () => {
         mockRequestPermissions.mockResolvedValue({ status: 'denied' });
         const result = await uploadProfilePic(userId);
-        expect(result.error).toBe(
-            'Se necesita permiso para acceder a la galería.'
-        );
+        expect(result.error).toBe('Permission required to access gallery.');
     });
 
     it('returns null if user cancels', async () => {
@@ -104,7 +102,7 @@ describe('uploadProfilePic', () => {
         mockLaunchLibrary.mockResolvedValue({ canceled: false, assets: [] });
 
         const result = await uploadProfilePic(userId);
-        expect(result.error).toBe('No se seleccióno ningún archivo');
+        expect(result.error).toBe('No file selected.');
     });
 
     it('returns error if file is too large', async () => {
@@ -115,7 +113,7 @@ describe('uploadProfilePic', () => {
         });
         mockGetFileSize.mockResolvedValue(999 * 1024 * 1024);
         const result = await uploadProfilePic(userId);
-        expect(result.error).toContain('demasiado grande');
+        expect(result.error).toContain('too large');
     });
 
     it('returns error if db update fails', async () => {
@@ -138,7 +136,7 @@ describe('uploadProfilePic', () => {
 describe('uploadPostImage', () => {
     it('returns error if authorId is invalid', async () => {
         const result = await uploadPostImage('no-es-uuid', mockAsset);
-        expect(result.error).toContain('ID de autor');
+        expect(result.error).toContain('author ID');
     });
 
     it('uploads image successfully', async () => {
@@ -151,7 +149,7 @@ describe('uploadPostImage', () => {
     it('returns error if image is too large', async () => {
         mockGetFileSize.mockResolvedValue(999 * 1024 * 1024);
         const result = await uploadPostImage(userId, mockAsset);
-        expect(result.error).toContain('demasiado grande');
+        expect(result.error).toContain('too large');
     });
 
     it('returns error if resized image is too large', async () => {
@@ -159,7 +157,7 @@ describe('uploadPostImage', () => {
             .mockResolvedValueOnce(1024)
             .mockResolvedValueOnce(999 * 1024 * 1024);
         const result = await uploadPostImage(userId, mockAsset);
-        expect(result.error).toBe('La imagen procesada es demasiado grande.');
+        expect(result.error).toBe('The processed image is too large.');
     });
 
     it('uploads video successfully', async () => {
@@ -182,21 +180,21 @@ describe('uploadPostImage', () => {
         };
         mockGetFileSize.mockResolvedValue(999 * 1024 * 1024);
         const result = await uploadPostImage(userId, videoAsset);
-        expect(result.error).toContain('demasiado grande');
+        expect(result.error).toContain('too large');
     });
 
     it('returns error if getMimeType throws', async () => {
         mockGetMimeType.mockImplementation(() => {
-            throw new Error('Tipo de archivo no permitido.');
+            throw new Error('File type not allowed.');
         });
         const result = await uploadPostImage(userId, mockAsset);
-        expect(result.error).toBe('Tipo de archivo no permitido.');
+        expect(result.error).toBe('File type not allowed.');
     });
 
     it('returns error if uploadToStorage fails', async () => {
         mockUploadToStorage.mockRejectedValue(new Error('NetworkError'));
         const result = await uploadPostImage(userId, mockAsset);
-        expect(result.error).toBe('Error de red. Verifica tu conexión.');
+        expect(result.error).toBe('Network error. Check your connection.');
     });
 
     it('respects custom maxWidth option', async () => {
@@ -213,7 +211,7 @@ describe('uploadPostImage', () => {
 describe('uploadMultiple', () => {
     it('returns error if authorId is invalid', async () => {
         const result = await uploadMultiple('no-es-uuid', [mockAsset]);
-        expect(result.error).toContain('ID de autor');
+        expect(result.error).toContain('author ID');
     });
 
     it('returns empty result for empty assets array', async () => {
@@ -227,7 +225,7 @@ describe('uploadMultiple', () => {
     it('returns error if assets exceed max batch size', async () => {
         const assets = Array(11).fill(mockAsset);
         const result = await uploadMultiple(userId, assets);
-        expect(result.error).toContain('Máximo');
+        expect(result.error).toContain('Maximum');
     });
 
     it('uploads multiple assets successfully', async () => {

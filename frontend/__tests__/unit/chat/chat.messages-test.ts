@@ -129,7 +129,7 @@ describe('sendMessage', () => {
         const result = await sendMessage(CHAT_ID, '   ');
         expect(result.data).toBeNull();
         expect(result.data).toBeNull();
-        expect(result.error).toMatch(/vacío/i);
+        expect(result.error).toMatch(/empty/i);
     });
 
     it('devuelve error si Supabase falla al insertar', async () => {
@@ -229,13 +229,13 @@ describe('shareToChat', () => {
             [CHAT_ID]
         );
         expect(result.data).toBeNull();
-        expect(result.error).toMatch(/postId o fragmentId/i);
+        expect(result.error).toMatch(/postId or fragmentId/i);
     });
 
     it('devuelve error si chatIds está vacío', async () => {
         const result = await shareToChat({ postId: POST_ID }, []);
         expect(result.data).toBeNull();
-        expect(result.error).toMatch(/al menos un chat/i);
+        expect(result.error).toMatch(/at least one chat/i);
     });
 
     it('devuelve error si supera el máximo de chats', async () => {
@@ -243,7 +243,7 @@ describe('shareToChat', () => {
         const result = await shareToChat({ postId: POST_ID }, manyChats);
 
         expect(result.data).toBeNull();
-        expect(result.error).toMatch(/máximo/i);
+        expect(result.error).toMatch(/maximum/i);
     });
 
     it('comparte un post correctamente', async () => {
@@ -321,7 +321,7 @@ describe('shareToChat', () => {
         const messageInsertCall = mockInsertFn.mock.calls.find((call) =>
             call[0]?.content?.includes('📷')
         );
-        expect(messageInsertCall![0].content).toBe('📷 Publicación compartida');
+        expect(messageInsertCall![0].content).toBe('📷 Shared post');
     });
 });
 

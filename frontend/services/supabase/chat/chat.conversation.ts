@@ -24,7 +24,7 @@ export async function createDirectChat(
         assertUUID(targetUserId, 'ID de usuario');
         const currentUserId = await getAuthUser();
         if (currentUserId === targetUserId)
-            throw new Error('No puedes chatear contigo mismo.');
+            throw new Error('You cannot chat with yourself.');
 
         await assertFriendship(currentUserId, targetUserId);
 
@@ -73,16 +73,15 @@ export async function createGroupChat(
         const currentUserId = await getAuthUser();
 
         const cleanName = groupName.trim();
-        if (!cleanName) throw new Error('El grupo necesita un nombre.');
+        if (!cleanName) throw new Error('The group needs a name.');
         if (cleanName.length > MAX_GROUP_NAME_LEN)
             throw new Error(
-                `El nombre del grupo no puede superar ${MAX_GROUP_NAME_LEN} caracteres.`
+                `The group name cannot exceed ${MAX_GROUP_NAME_LEN} characters.`
             );
-        if (memberIds.length === 0)
-            throw new Error('Agrega al menos un miembro.');
+        if (memberIds.length === 0) throw new Error('Add at least one member.');
         if (memberIds.length > MAX_GROUP_MEMBERS - 1)
             throw new Error(
-                `Máximo ${MAX_GROUP_MEMBERS - 1} miembros adicionales por grupo.`
+                `Maximum ${MAX_GROUP_MEMBERS - 1} additional members per group.`
             );
 
         // Excluir al creador si está en la lista y validar UUIDs

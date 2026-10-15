@@ -20,7 +20,7 @@ export async function signIn({
 }: SignInParams): Promise<AuthResult<AuthUser>> {
     try {
         const cleanEmail = validateEmail(email);
-        if (!password) throw new Error('La contraseña es requerida.');
+        if (!password) throw new Error('Password is required.');
 
         const { data: authData, error: authError } =
             await supabase.auth.signInWithPassword({

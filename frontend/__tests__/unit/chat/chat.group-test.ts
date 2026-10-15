@@ -96,7 +96,7 @@ describe('addMemberToGroup', () => {
         const result = await addMemberToGroup(CHAT_ID, NEW_USER);
 
         expect(result.data).toBeNull();
-        expect(result.error).toMatch(/grupos/i);
+        expect(result.error).toMatch(/groups?/i);
     });
 
     it('devuelve error si el chat no existe (data null)', async () => {
@@ -106,7 +106,7 @@ describe('addMemberToGroup', () => {
         const result = await addMemberToGroup(CHAT_ID, NEW_USER);
 
         expect(result.data).toBeNull();
-        expect(result.error).toMatch(/grupos/i);
+        expect(result.error).toMatch(/groups?/i);
     });
 
     it('devuelve error si Supabase falla al insertar el miembro', async () => {
