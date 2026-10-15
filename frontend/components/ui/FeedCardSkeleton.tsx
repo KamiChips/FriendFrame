@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Animated, useColorScheme } from 'react-native';
 
 function SkeletonBox({
@@ -21,7 +21,7 @@ function SkeletonBox({
 }
 
 export default function FeedCardSkeleton() {
-    const pulse = useRef(new Animated.Value(0)).current;
+    const [pulse] = useState(() => new Animated.Value(0));
 
     useEffect(() => {
         const anim = Animated.loop(

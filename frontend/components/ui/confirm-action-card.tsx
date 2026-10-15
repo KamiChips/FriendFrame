@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import {
     ActivityIndicator,
     Animated,
@@ -35,8 +35,8 @@ export default function ConfirmActionCard({
     onConfirm,
 }: ConfirmActionCardProps) {
     const isDark = useColorScheme() === 'dark';
-    const scaleAnim = React.useRef(new Animated.Value(0)).current;
-    const opacityAnim = React.useRef(new Animated.Value(0)).current;
+    const [scaleAnim] = useState(() => new Animated.Value(0));
+    const [opacityAnim] = useState(() => new Animated.Value(0));
     const accentColor = destructive ? '#D4183D' : '#30C2D9';
     const darkAccentColor = destructive ? '#82181A' : '#30C2D9';
     const confirmBg = destructive && isDark ? '#82181A' : accentColor;
@@ -49,7 +49,7 @@ export default function ConfirmActionCard({
           : '#30C2D91A';
     const messageLines = Array.isArray(message) ? message : [message];
 
-    React.useEffect(() => {
+    useEffect(() => {
         Animated.parallel([
             Animated.spring(scaleAnim, {
                 toValue: 1,

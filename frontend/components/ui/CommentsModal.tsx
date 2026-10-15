@@ -30,6 +30,16 @@ interface CommentsModalProps {
     onCommentAdded?: () => void; // Función puente para inyectar nuevos comentarios al Feed
 }
 
+function timeAgo(isoDate: string): string {
+    const diff = Date.now() - new Date(isoDate).getTime();
+    const mins = Math.floor(diff / 60_000);
+    if (mins < 1) return 'ahora mismo';
+    if (mins < 60) return `hace ${mins} min`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `hace ${hrs} h`;
+    return `hace ${Math.floor(hrs / 24)} d`;
+}
+
 // 2. COMPONENTE PRINCIPAL (CommentsModal)
 // Renderiza un "Bottom Sheet" nativo que sube desde abajo y bloquea la pantalla.
 export default function CommentsModal({
@@ -64,16 +74,6 @@ export default function CommentsModal({
             onCommentAdded?.();
         }
     };
-
-    function timeAgo(isoDate: string): string {
-        const diff = Date.now() - new Date(isoDate).getTime();
-        const mins = Math.floor(diff / 60_000);
-        if (mins < 1) return 'just now';
-        if (mins < 60) return `${mins} min ago`;
-        const hrs = Math.floor(mins / 60);
-        if (hrs < 24) return `${hrs} h ago`;
-        return `${Math.floor(hrs / 24)} d ago`;
-    }
 
     function initials(fullName: string): string {
         return fullName

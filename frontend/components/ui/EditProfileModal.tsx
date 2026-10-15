@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import { useState } from 'react';
 import {
     View,
     Text,
@@ -20,7 +20,6 @@ import {
     editUsername,
     updateProfilePic,
 } from '@/services/supabase/auth/auth.profile';
-import { loadStaticParamsAsync } from 'expo-router/build/loadStaticParamsAsync';
 import { Image } from 'expo-image';
 
 interface EditProfileModalProps {
@@ -46,12 +45,14 @@ export function EditProfileModal({
     const [isDark, setIsDark] = useState(useColorScheme() === 'dark');
     const size = 80; // Tamaño del avatar
 
-    useEffect(() => {
+    const [prevVisible, setPrevVisible] = useState(visible);
+    if (visible !== prevVisible) {
+        setPrevVisible(visible);
         if (visible) {
             setName(currentName);
             setUsername(currentUsername);
         }
-    }, [visible, currentName, currentUsername]);
+    }
 
     const handleSave = async () => {
         if (loading) return;

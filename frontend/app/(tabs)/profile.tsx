@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
     ScrollView,
     View,
@@ -17,7 +17,7 @@ import BlockUserWarning from '@/components/ui/BlockUserWarning';
 import ProfileTabs from '@/components/ui/ProfileTabs';
 import FeedCard from '@/components/ui/FeedCard';
 import { useAuth } from '@/context/AuthContext';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { FullProfile } from '@/services/supabase/profile/types';
 import { FeedItem } from '@/services/supabase/posts/types';
 import { getProfile } from '@/services/supabase/profile/queries';
@@ -38,6 +38,7 @@ export default function ProfileScreen() {
     const { userId: paramUserId } = useLocalSearchParams<{ userId?: string }>();
     const targetUserId = paramUserId ?? currentUser?.user_id ?? '';
     const isOwnProfile = targetUserId === currentUser?.user_id;
+    const currentUserId = currentUser?.user_id;
 
     const [profile, setProfile] = useState<FullProfile | null>(null);
     const [feed, setFeed] = useState<FeedItem[]>([]);
@@ -47,6 +48,32 @@ export default function ProfileScreen() {
     const [actionLoading, setActionLoading] = useState(false);
     const [editModalVisable, setEditModalVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+
+    const loadProfile = useCallback(async () => {
+        if (!targetUserId || !currentUserId) return;
+        setLoadingProfile(true);
+
+        const { data, error } = await getProfile(targetUserId, currentUserId);
+
+        if (error) {
+            Alert.alert('Error', error);
+            setLoadingProfile(false);
+            return;
+        }
+
+        setProfile(data);
+        setLoadingProfile(false);
+    }, [targetUserId, currentUserId]);
+
+    const loadFeed = useCallback(async () => {
+        if (!targetUserId || !currentUserId) return;
+        setLoadingFeed(true);
+
+        const { data } = await getProfileFeed(targetUserId, currentUserId);
+        if (data) setFeed(data);
+
+        setLoadingFeed(false);
+    }, [targetUserId, currentUserId]);
 
     const handleProfileSaved = async (
         newName: string,
@@ -69,42 +96,12 @@ export default function ProfileScreen() {
         }
     };
 
-    const loadProfile = useCallback(async () => {
-        if (!targetUserId || !currentUser) return;
-        setLoadingProfile(true);
-
-        const { data, error } = await getProfile(
-            targetUserId,
-            currentUser.user_id
-        );
-
-        if (error) {
-            Alert.alert('Error', error);
-            setLoadingProfile(false);
-            return;
-        }
-
-        setProfile(data);
-        setLoadingProfile(false);
-    }, [targetUserId, currentUser]);
-
-    const loadFeed = useCallback(async () => {
-        if (!targetUserId || !currentUser) return;
-        setLoadingFeed(true);
-
-        const { data } = await getProfileFeed(
-            targetUserId,
-            currentUser.user_id
-        );
-        if (data) setFeed(data);
-
-        setLoadingFeed(false);
-    }, [targetUserId, currentUser]);
-
-    useEffect(() => {
-        loadProfile();
-        loadFeed();
-    }, [loadProfile, loadFeed]);
+    useFocusEffect(
+        useCallback(() => {
+            loadProfile();
+            loadFeed();
+        }, [loadProfile, loadFeed])
+    );
 
     const handleToggleFollow = async () => {
         if (!profile || actionLoading) return;

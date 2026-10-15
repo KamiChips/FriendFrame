@@ -47,7 +47,6 @@ const ChatInboxScreen = () => {
     }, []);
 
     useEffect(() => {
-        loadChats();
         const unsub = subscribeToChatList(loadChats);
         return unsub;
     }, [loadChats]);

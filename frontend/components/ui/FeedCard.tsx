@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { View, Text, Pressable, useColorScheme } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -65,6 +65,19 @@ export default function FeedCard({
 
     const [commentCount, setCommentCount] = useState(commentsCount);
 
+    const [prevComments, setPrevComments] = useState(commentsCount);
+    if (commentsCount !== prevComments) {
+        setPrevComments(commentsCount);
+        setCommentCount(commentsCount);
+    }
+
+    const [prevLikes, setPrevLikes] = useState({ isLiked, likesCount });
+    if (prevLikes.isLiked !== isLiked || prevLikes.likesCount !== likesCount) {
+        setPrevLikes({ isLiked, likesCount });
+        setLiked(isLiked);
+        setCount(likesCount);
+    }
+
     const target: PublicationTarget =
         publicationType === 'fragment'
             ? { fragmentId: publicationId! }
@@ -72,12 +85,6 @@ export default function FeedCard({
 
     // ✅ Hook siempre en el nivel superior, nunca en condicional
     const isDark = useColorScheme() === 'dark';
-
-    // ✅ Lógica del avatar en una variable, sin duplicar el componente
-    const hasImage =
-        authorImage &&
-        typeof authorImage === 'string' &&
-        authorImage.trim() !== '';
 
     const handleLike = async () => {
         if (!publicationId || isTogglingLike) return;
@@ -106,16 +113,6 @@ export default function FeedCard({
 
         setIsTogglingLike(false);
     };
-
-    useEffect(() => {
-        setCommentCount(commentsCount);
-    }, [commentsCount]);
-
-    // Lo mismo para likes por consistencia:
-    useEffect(() => {
-        setLiked(isLiked);
-        setCount(likesCount);
-    }, [isLiked, likesCount]);
 
     return (
         <View className="mb-4 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-transparent dark:bg-background-semidark">

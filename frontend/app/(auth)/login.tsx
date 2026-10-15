@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
     View,
@@ -16,7 +16,6 @@ import {
     signIn,
     signInWithGoogle,
 } from '@/services/supabase/auth/auth.sign-in';
-import { LOCATION_ID } from 'expo-router/build/rsc/router/common';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
