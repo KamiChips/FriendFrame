@@ -13,7 +13,7 @@ export async function addMemberToGroup(
         assertUUID(chatId, 'chatId');
         assertUUID(newUserId, 'ID de usuario');
         const currentUserId = await getAuthUser();
-        await validateGroupOwnership(chatId, currentUserId)
+        await validateGroupOwnership(chatId, currentUserId);
 
         const { data: chat } = await supabase
             .from('chat')

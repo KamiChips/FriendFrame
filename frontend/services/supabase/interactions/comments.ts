@@ -140,7 +140,7 @@ export async function deleteComment(
     try {
         assertUUID(commentId, 'commentId');
         const currentUserId = await getAuthUser();
-        await validateCommentOwnership(commentId, currentUserId)
+        await validateCommentOwnership(commentId, currentUserId);
 
         const { error } = await supabase
             .from('comments')

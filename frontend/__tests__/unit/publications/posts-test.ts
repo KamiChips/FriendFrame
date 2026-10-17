@@ -257,7 +257,7 @@ describe('deletePost', () => {
     it('returns error when attempting to delete a post from another user', async () => {
         makeDeleteMocks(new Error('DB Error'));
         const result = await deletePost(postId);
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
     });
 });
 

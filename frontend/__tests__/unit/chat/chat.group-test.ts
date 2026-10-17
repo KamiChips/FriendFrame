@@ -3,6 +3,7 @@ import {
     addMemberToGroup,
     leaveGroup,
 } from '@/services/supabase/chat/chat.group';
+import { validateGroupOwnership } from '@/services/supabase/helpers/authorization';
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 
@@ -28,6 +29,10 @@ jest.mock('@/services/supabase/chat/chat.helpers', () => ({
     assertFriendship: jest.fn(),
     assertMembership: jest.fn(),
     parseError: jest.fn((err: any) => err?.message ?? String(err)),
+}));
+
+jest.mock('@/services/supabase/helpers/authorization', () => ({
+    validateGroupOwnership: jest.fn(),
 }));
 
 import {
@@ -87,6 +92,10 @@ describe('addMemberToGroup', () => {
             chat_id: CHAT_ID,
             user_id: NEW_USER,
         });
+        expect(validateGroupOwnership).toHaveBeenCalledWith(
+            CHAT_ID,
+            CURRENT_USER
+        );
     });
 
     it('devuelve error si el chat no es un grupo', async () => {
