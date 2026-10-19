@@ -5,7 +5,7 @@ import {
     useColorScheme,
     View,
 } from 'react-native';
-import '../../global.css';
+import '../../../global.css';
 import { useEffect, useRef, useState } from 'react';
 
 export function TextField({
