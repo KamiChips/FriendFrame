@@ -11,6 +11,8 @@ import {
     buildCommentTree,
     assertTarget,
 } from '@/services/supabase/interactions/helper';
+import { validateCommentOwnership } from '@/services/supabase/helpers/authorization';
+import { deletePost } from '@/services/supabase/posts/posts';
 
 // ─── CHAINABLE SUPABASE MOCK ──────────────────────────────────────────────────
 // Se define como Record para poder iterar las keys y restaurar la cadena en cada test.
@@ -43,6 +45,10 @@ jest.mock('@/services/supabase/helpers/validation', () => ({
     __esModule: true,
     assertUUID: jest.fn(),
     getAuthUser: jest.fn(),
+}));
+
+jest.mock('@/services/supabase/helpers/authorization', () => ({
+    validateCommentOwnership: jest.fn(),
 }));
 
 jest.mock('@/services/supabase/interactions/helper', () => ({
@@ -203,6 +209,10 @@ describe('Comments Service — Unit', () => {
                 .mockResolvedValueOnce({ error: null }); // segunda: .eq('user_id', ...) — termina
             const result = await deleteComment(commentId);
             expect(result.error).toBeNull();
+            expect(validateCommentOwnership).toHaveBeenCalledWith(
+                commentId,
+                userId
+            );
         });
 
         it('retorna error al fallar eliminación', async () => {
@@ -219,6 +229,24 @@ describe('Comments Service — Unit', () => {
             );
             const result = await deleteComment(commentId);
             expect(result.error).toBe('Auth error');
+        });
+
+        it('returns error if comment does not belong to current user', async () => {
+            (getAuthUser as jest.Mock).mockRejectedValueOnce(
+                new Error('Auth error')
+            );
+            const result = await deleteComment(commentId);
+            expect(result.error).toBe('Auth error');
+        });
+
+        it('stops deletion if user is not owner of comment', async () => {
+            (validateCommentOwnership as jest.Mock).mockRejectedValueOnce(
+                new Error('Comment Not found')
+            );
+            const result = await deleteComment(commentId);
+
+            expect(result.error).toBeTruthy();
+            expect(mockSupabase.delete).not.toHaveBeenCalled();
         });
     });
 
