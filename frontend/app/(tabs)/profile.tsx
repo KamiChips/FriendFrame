@@ -14,7 +14,7 @@ import UserProfileHeader from '@/components/ui/profile/user-profile-header';
 import '../../global.css';
 import { FloatingMenu } from '@/components/ui/posts/floating-menu';
 import BlockUserWarning from '@/components/ui/users/block-user-warning';
-import ProfileTabs from '@/components/ui/profile/ProfileTabs';
+import ProfileTabs from '@/components/ui/profile/profile-tabs';
 import FeedCard from '@/components/ui/posts/feed-card';
 import { useAuth } from '@/context/AuthContext';
 import { useLocalSearchParams, useRouter } from 'expo-router';

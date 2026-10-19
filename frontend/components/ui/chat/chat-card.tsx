@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 import '../../global.css';
-import ProfileIcon from './ProfileIcon';
+import ProfileIcon from '../icons/profile-icon';
 import { router } from 'expo-router';
 
 type ChatCardProps = {

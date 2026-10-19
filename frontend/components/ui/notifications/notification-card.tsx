@@ -1,5 +1,5 @@
 import { TouchableOpacity, View, Text } from 'react-native';
-import ProfileIcon from './ProfileIcon';
+import ProfileIcon from '../icons/profile-icon';
 import { Ionicons } from '@expo/vector-icons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';

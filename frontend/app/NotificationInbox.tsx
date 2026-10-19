@@ -12,7 +12,7 @@ import '../global.css';
 import GoBackButton from '../components/ui/actions/go-back-button';
 import NotificationCard, {
     NotificationType,
-} from '../components/ui/NotificationCard';
+} from '../components/ui/notifications/notification-card';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
