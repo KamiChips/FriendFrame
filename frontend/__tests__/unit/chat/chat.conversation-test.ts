@@ -72,7 +72,7 @@ describe('createDirectChat', () => {
     it('devuelve error si el targetUserId es el mismo usuario', async () => {
         const result = await createDirectChat(CURRENT_USER);
         expect(result.data).toBeNull();
-        expect(result.error).toMatch(/yourself/i);
+        expect(result.error).toMatch(/contigo mismo/i);
     });
 
     it('abre el chat existente si ya existe uno con ese usuario', async () => {
@@ -168,13 +168,13 @@ describe('createGroupChat', () => {
     it('devuelve error si el nombre del grupo está vacío', async () => {
         const result = await createGroupChat('  ', [MEMBER_1]);
         expect(result.data).toBeNull();
-        expect(result.error).toMatch(/name/i);
+        expect(result.error).toMatch(/nombre/i);
     });
 
     it('devuelve error si no se agregan miembros', async () => {
         const result = await createGroupChat('Mi grupo', []);
         expect(result.data).toBeNull();
-        expect(result.error).toMatch(/member/i);
+        expect(result.error).toMatch(/miembro/i);
     });
 
     it('excluye al creador de la lista de miembros si aparece en ella', async () => {

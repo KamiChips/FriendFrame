@@ -23,28 +23,28 @@ export function getNotificationText(notification: AppNotification): {
     const name =
         notification.actor?.full_name ??
         notification.actor?.username ??
-        'Someone';
+        'Alguien';
 
     const map: Record<NotificationType, { title: string; body: string }> = {
         new_follow: {
-            title: 'New follower',
-            body: `${name} started following you`,
+            title: 'Nuevo seguidor',
+            body: `${name} empezó a seguirte`,
         },
         new_post: {
-            title: 'New post on your profile',
-            body: `${name} posted a photo on your profile`,
+            title: 'Nueva publicación en tu perfil',
+            body: `${name} publicó una foto en tu perfil`,
         },
         new_fragment: {
-            title: 'New fragment on your profile',
-            body: `${name} posted a fragment on your profile`,
+            title: 'Nuevo fragment en tu perfil',
+            body: `${name} publicó un fragment en tu perfil`,
         },
         new_message: {
-            title: 'New message',
+            title: 'Nuevo mensaje',
             body: `${name}: ${notification.message?.content?.slice(0, 60) ?? ''}`,
         },
     };
 
-    return map[notification.type] ?? { title: 'Notification', body: '' };
+    return map[notification.type] ?? { title: 'Notificación', body: '' };
 }
 
 export async function getNotifications({
@@ -106,7 +106,7 @@ export async function markAsRead(
     notificationId: string
 ): Promise<NotificationsResult> {
     try {
-        assertUUID(notificationId, 'notification ID');
+        assertUUID(notificationId, 'ID de notificación');
         const currentUserId = await getAuthUser();
 
         const { error } = await supabase
@@ -131,7 +131,7 @@ export async function markMultipleAsRead(
         if (notificationIds.length > MAX_BATCH_IDS) {
             return {
                 data: null,
-                error: `Maximum ${MAX_BATCH_IDS} IDs per batch.`,
+                error: `Máximo ${MAX_BATCH_IDS} IDs por lote.`,
             };
         }
 
@@ -199,7 +199,7 @@ export async function deleteNotification(
     notificationId: string
 ): Promise<NotificationsResult> {
     try {
-        assertUUID(notificationId, 'notification ID');
+        assertUUID(notificationId, 'ID de notificación');
         const currentUserId = await getAuthUser();
 
         const { error } = await supabase

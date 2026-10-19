@@ -11,7 +11,7 @@ export async function pickMedia(
         if (status !== 'granted')
             return {
                 data: null,
-                error: 'Permission required to access gallery.',
+                error: 'Se necesita permiso para acceder a la galería.',
             };
 
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -23,7 +23,7 @@ export async function pickMedia(
 
         if (result.canceled) return { data: null, error: null };
         if (!result.assets?.length)
-            return { data: null, error: 'No file selected.' };
+            return { data: null, error: 'No se selecciono ningun archivo.' };
 
         return { data: result.assets[0], error: null };
     } catch (err) {
@@ -40,7 +40,7 @@ export async function pickFromCamera(
         if (status !== 'granted')
             return {
                 data: null,
-                error: 'Permission required to access camera.',
+                error: 'Se necesita permiso para acceder a la cámara.',
             };
 
         const result = await ImagePicker.launchCameraAsync({
@@ -51,7 +51,7 @@ export async function pickFromCamera(
         if (result.canceled) return { data: null, error: null };
 
         if (!result.assets?.length)
-            return { data: null, error: 'No file captured.' };
+            return { data: null, error: 'No se capturó ningún archivo.' };
 
         return { data: result.assets[0], error: null };
     } catch (err) {

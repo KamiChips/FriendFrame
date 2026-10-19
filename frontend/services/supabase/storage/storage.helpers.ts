@@ -20,46 +20,49 @@ export function clampSize(s?: number): number {
 }
 
 export function parseError(err: unknown): string {
-    if (!err) return 'Unknown error';
+    if (!err) return 'Error desconocido';
     const msg = (err as Error).message ?? String(err);
 
     const known: [string, string][] = [
-        ['Payload too large', 'The file is too large.'],
-        ['413', 'The file is too large.'],
-        ['Invalid mime type', 'File type not allowed.'],
-        ['mime', 'File type not allowed.'],
-        ['row-level security', 'You do not have permission to upload files.'],
-        ['403', 'You do not have permission to upload files.'],
-        ['Bucket not found', 'Storage bucket is not configured.'],
-        ['NetworkError', 'Network error. Check your connection.'],
-        ['network', 'Network error. Check your connection.'],
-        ['Failed to fetch', 'Network error. Check your connection.'],
-        ['The file does not exist', 'The file does not exist.'],
-        ['too large', msg],
-        ['not allowed', msg],
-        ['does not exist', msg],
-        ['Invalid', msg],
-        ['Permission required', msg],
-        ['Could not', msg],
+        ['Payload too large', 'El archivo es demasiado grande.'],
+        ['413', 'El archivo es demasiado grande.'],
+        ['Invalid mime type', 'Tipo de archivo no permitido.'],
+        ['mime', 'Tipo de archivo no permitido.'],
+        ['row-level security', 'No tienes permiso para subir archivos.'],
+        ['403', 'No tienes permiso para subir archivos.'],
+        [
+            'Bucket not found',
+            'El bucket de almacenamiento no está configurado.',
+        ],
+        ['NetworkError', 'Error de red. Verifica tu conexión.'],
+        ['network', 'Error de red. Verifica tu conexión.'],
+        ['Failed to fetch', 'Error de red. Verifica tu conexión.'],
+        ['El archivo no existe', 'El archivo no existe.'],
+        ['demasiado grande', msg],
+        ['no permitido', msg],
+        ['no existe', msg],
+        ['inválido', msg],
+        ['Se necesita permiso', msg],
+        ['No se pudo', msg],
     ];
 
     for (const [key, value] of known) {
         if (msg.includes(key)) return value;
     }
 
-    return 'An unexpected error occurred while processing the file.';
+    return 'Ocurrió un error inesperado al procesar el archivo.';
 }
 
 export async function uriToArrayBuffer(uri: string): Promise<ArrayBuffer> {
     const response = await fetch(uri);
-    if (!response.ok) throw new Error('Could not read file.');
+    if (!response.ok) throw new Error('No se pudo leer el archivo.');
     return response.arrayBuffer();
 }
 
 export async function getFileSize(uri: string): Promise<number> {
     const info = await FileSystem.getInfoAsync(uri);
 
-    if (!info.exists) throw new Error('The file does not exist.');
+    if (!info.exists) throw new Error('El archivo no existe.');
     return (info as FileSystem.FileInfo & { size: number }).size ?? 0;
 }
 
@@ -70,7 +73,7 @@ export function getMimeType(uri: string, mediaType: MediaType): string {
     if (mediaType === 'video') {
         mime = lower.includes('.mov') ? 'video/quicktime' : 'video/mp4';
         if (!ALLOWED_VIDEO_TYPES.has(mime))
-            throw new Error('Video type not allowed.');
+            throw new Error('Tipo de video no permitido.');
         return mime;
     }
 
@@ -80,7 +83,7 @@ export function getMimeType(uri: string, mediaType: MediaType): string {
     else mime = 'image/jpeg';
 
     if (!ALLOWED_IMAGE_TYPES.has(mime))
-        throw new Error('Image type not allowed.');
+        throw new Error('Tipo de imagen no permitido.');
     return mime;
 }
 
