@@ -8,7 +8,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import '../../global.css';
-import ChatCard from '@/components/ui/ChatCard';
+import ChatCard from '@/components/ui/chat/chat-card';
 import FriendframeHeader from '@/components/ui/FriendframeHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
