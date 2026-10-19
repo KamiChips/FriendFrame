@@ -82,7 +82,7 @@ export async function signUp({
 
         return { data: profile, error: null };
     } catch (err) {
-        console.error('NOSE QUE ERROR EN SIGNUP:', err);
+        console.error('An unexpected error occurred during signup', err);
         return { data: null, error: parseAuthError(err) };
     }
 }

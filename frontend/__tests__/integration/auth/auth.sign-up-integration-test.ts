@@ -57,7 +57,7 @@ describe('signUp - Integration', () => {
             email: 'otro_integration@gmail.com',
         });
 
-        expect(result.error).toBe('Ese nombre de usuario ya está en uso.');
+        expect(result.error).toBe('That username is already taken.');
     });
 
     it('throw error if email is already registered', async () => {
@@ -78,7 +78,7 @@ describe('signUp - Integration', () => {
             username: 'otro_integration_username',
         });
 
-        expect(result.error).toBe('Ya existe una cuenta con ese email.');
+        expect(result.error).toBe('An account with that email already exists.');
     });
 });
 
