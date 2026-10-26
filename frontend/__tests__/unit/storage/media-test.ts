@@ -38,7 +38,7 @@ describe('pickMedia', () => {
         const result = await pickMedia();
         expect(result).toEqual({
             data: null,
-            error: 'Se necesita permiso para acceder a la galería.',
+            error: 'Permission required to access gallery.',
         });
     });
 
@@ -57,7 +57,7 @@ describe('pickMedia', () => {
         const result = await pickMedia();
         expect(result).toEqual({
             data: null,
-            error: 'No se selecciono ningun archivo.',
+            error: 'No file selected.',
         });
     });
 
@@ -131,7 +131,7 @@ describe('pickMedia', () => {
         mockRequestLibrary.mockRejectedValue(new Error('NetworkError'));
 
         const result = await pickMedia();
-        expect(result.error).toBe('Error de red. Verifica tu conexión.');
+        expect(result.error).toBe('Network error. Check your connection.');
     });
 });
 
@@ -142,7 +142,7 @@ describe('pickFromCamera', () => {
         const result = await pickFromCamera();
         expect(result).toEqual({
             data: null,
-            error: 'Se necesita permiso para acceder a la cámara.',
+            error: 'Permission required to access camera.',
         });
     });
 
@@ -161,7 +161,7 @@ describe('pickFromCamera', () => {
         const result = await pickFromCamera();
         expect(result).toEqual({
             data: null,
-            error: 'No se capturó ningún archivo.',
+            error: 'No file captured.',
         });
     });
 
@@ -197,6 +197,6 @@ describe('pickFromCamera', () => {
         mockRequestCamera.mockRejectedValue(new Error('NetworkError'));
 
         const result = await pickFromCamera();
-        expect(result.error).toBe('Error de red. Verifica tu conexión.');
+        expect(result.error).toBe('Network error. Check your connection.');
     });
 });

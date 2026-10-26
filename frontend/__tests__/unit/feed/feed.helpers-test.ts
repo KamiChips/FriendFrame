@@ -2,30 +2,30 @@ import { parseError, mapRow } from '@/services/supabase/feed/feed.helpers';
 
 // parseError
 describe('parseError', () => {
-    it('devuelve error desconocido si no  hay error', () => {
-        expect(parseError(null)).toBe('Error desconocido');
+    it('devuelve Unknown error. si no  hay error', () => {
+        expect(parseError(null)).toBe('Unknown error');
     });
 
     it('mapea Failed to fetch al mensaje correcto', () => {
         expect(parseError(new Error('NetworkError occured'))).toBe(
-            'Error de red. Verifica tu conexión.'
+            'Network error. Check your connection.'
         );
     });
 
     it('mapea Failed to fetch al mensaje correcto', () => {
         expect(parseError(new Error('Failed to fetch'))).toBe(
-            'Error de red. Verifica tu conexión.'
+            'Network error. Check your connection.'
         );
     });
 
     it('devuelve mensaje para errores desconocidos', () => {
         expect(parseError(new Error('algún error raro'))).toBe(
-            'No se pudo cargar el feed.'
+            'Could not load the feed.'
         );
     });
 
-    it('devuelve error desconocido si se pasa undefined', () => {
-        expect(parseError(undefined)).toBe('Error desconocido');
+    it('devuelve Unknown error. si se pasa undefined', () => {
+        expect(parseError(undefined)).toBe('Unknown error');
     });
 });
 

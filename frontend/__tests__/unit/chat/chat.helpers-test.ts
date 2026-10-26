@@ -49,7 +49,7 @@ describe('assertUUIDs', () => {
     });
 
     it('lanza error con un UUID inválido', () => {
-        expect(() => assertUUIDs(['not-a-uuid'])).toThrow(/inválido/i);
+        expect(() => assertUUIDs(['not-a-uuid'])).toThrow(/invalid/i);
     });
 
     it('incluye el índice en el mensaje de error', () => {
@@ -89,31 +89,31 @@ describe('normalizePagination', () => {
 
 // parseError
 describe('parseError', () => {
-    it('devuelve error desconocido si no hay error', () => {
-        expect(parseError(null)).toBe('Error desconocido');
+    it('devuelve Unknown error. si no hay error', () => {
+        expect(parseError(null)).toBe('Unknown error');
     });
 
     it('mapea row-level security al mensaje correcto', () => {
         expect(parseError(new Error('row-level security policy'))).toBe(
-            'No tienes permiso para acceder a este chat.'
+            'You do not have permission to access this chat.'
         );
     });
 
     it('mapea duplicate key al mensaje correcto', () => {
         expect(parseError(new Error('duplicate key value'))).toBe(
-            'Ya eres miembro de este chat.' // era "miembros"
+            'You are already a member of this chat.' // era "miembros"
         );
     });
 
     it('mapea violates foreign key al mensaje correto', () => {
         expect(parseError(new Error('NetworkError occured'))).toBe(
-            'Error de red. Verifica tu conexión.'
+            'Network error. Check your connection.'
         );
     });
 
     it('mapea Failed to fetch al mensaje correcto', () => {
         expect(parseError(new Error('Failed to fetch'))).toBe(
-            'Error de red. Verifica tu conexión.'
+            'Network error. Check your connection.'
         );
     });
 
@@ -124,7 +124,7 @@ describe('parseError', () => {
 
     it('devuelve error genérico para mensajes desconocidos', () => {
         expect(parseError(new Error('algún error raro'))).toBe(
-            'Ocurrió un error inesperado.'
+            'An unexpected error occurred.'
         );
     });
 });
@@ -143,7 +143,7 @@ describe('assertFriendship', () => {
     it('lanza error si no son amigos (data false)', async () => {
         mockRpc.mockResolvedValueOnce({ data: false, error: null }); // era true
         await expect(assertFriendship(USER_A, USER_B)).rejects.toThrow(
-            /amigos/i
+            /friends/i
         );
     });
 
@@ -180,7 +180,7 @@ describe('assertMembership', () => {
     it('lanza error si el usuario no es miembro', async () => {
         setupMembership(null);
         await expect(assertMembership(CHAT_ID, USER_A)).rejects.toThrow(
-            /miembro/i
+            /member/i
         );
     });
 });
