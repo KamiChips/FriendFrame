@@ -13,8 +13,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import SearchBar from '@/components/ui/SearchBar';
-import SelectableUserRow from '@/components/ui/SelectableUserRow';
+import SearchBar from '@/components/ui/users/search-bar';
+import SelectableUserRow from '@/components/ui/users/selectable-user-row';
 import { useAuth } from '@/context/AuthContext';
 import { getFriends } from '@/services/supabase/social/social.relationship';
 import { SocialUser } from '@/services/supabase/social/social.types';
@@ -100,7 +100,7 @@ export default function CreateGroupScreen() {
                 {/* HEADER DEL MODAL */}
                 <View className="flex-row items-center justify-between mb-6">
                     <Text className="font-spartan-bold text-2xl text-background-dark dark:text-background-light">
-                        Create Group
+                        Crear Grupo
                     </Text>
                     <TouchableOpacity onPress={() => router.back()}>
                         <Ionicons
@@ -118,12 +118,12 @@ export default function CreateGroupScreen() {
                     {/* INPUT: NOMBRE DEL GRUPO */}
                     <View className="mb-6">
                         <Text className="font-spartan-bold text-sm text-background-dark dark:text-background-light mb-2">
-                            Group Name
+                            Nombre del grupo
                         </Text>
                         <TextInput
                             value={groupName}
                             onChangeText={setGroupName}
-                            placeholder="e.g., Best Friends"
+                            placeholder="Ej: Los mejores amigos"
                             placeholderTextColor="#8A8A8E"
                             maxLength={30}
                             className="w-full h-14 bg-transparent border border-gray-300 dark:border-gray-600 rounded-xl px-4 font-spartan text-base text-background-dark dark:text-background-light"
@@ -133,7 +133,8 @@ export default function CreateGroupScreen() {
                     {/* SECCIÓN: AGREGAR MIEMBROS */}
                     <View className="mb-2">
                         <Text className="font-spartan-bold text-sm text-background-dark dark:text-background-light mb-2">
-                            Add members ({selectedFriends.length} selected)
+                            Agregar miembros ({selectedFriends.length}{' '}
+                            seleccionados)
                         </Text>
 
                         {/* Buscador (Reutilizable) */}
@@ -141,7 +142,7 @@ export default function CreateGroupScreen() {
                             <SearchBar
                                 value={searchQuery}
                                 onChangeText={setSearchQuery}
-                                placeholder="Search friends..."
+                                placeholder="Buscar amigos..."
                             />
                         </View>
 
@@ -155,8 +156,8 @@ export default function CreateGroupScreen() {
                             ) : filteredFriends.length === 0 ? (
                                 <Text className="text-gray-400 text-center font-spartan mt-4">
                                     {searchQuery
-                                        ? `No results for "${searchQuery}"`
-                                        : "You don't have any friends to add to the group"}
+                                        ? `Sin resultados para "${searchQuery}"`
+                                        : 'No tienes amigos para añadir al grupo'}
                                 </Text>
                             ) : (
                                 filteredFriends.map((friend) => (
@@ -196,7 +197,7 @@ export default function CreateGroupScreen() {
                         <ActivityIndicator color="white" />
                     ) : (
                         <Text className="font-spartan-bold text-white text-lg">
-                            Create
+                            Crear
                         </Text>
                     )}
                 </TouchableOpacity>

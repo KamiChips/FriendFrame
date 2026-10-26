@@ -1,6 +1,6 @@
 import { Link } from 'expo-router';
 import '../global.css';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/common/button';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { View, Text, useColorScheme } from 'react-native';

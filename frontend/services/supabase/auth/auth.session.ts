@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase/client';
 import { AuthUser } from '@/services/supabase/auth/auth.types';
-import { clearPendingVerificationEmail, fetchProfile } from './auth.helpers';
+import { fetchProfile } from './auth.helpers';
 
 export function onAuthStateChange(
     callback: (user: AuthUser | null) => void
@@ -20,7 +20,6 @@ export function onAuthStateChange(
         ) {
             try {
                 const profile = await fetchProfile(session.user.id);
-                await clearPendingVerificationEmail();
                 callback(profile);
             } catch {
                 callback(null);

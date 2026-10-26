@@ -62,7 +62,9 @@ describe('updateProfilePic', () => {
         mockRequestPermissions.mockResolvedValue({ status: 'denied' });
 
         const result = await updateProfilePic('uid-1');
-        expect(result.error).toBe('Permission required to access gallery.');
+        expect(result.error).toBe(
+            'Se necesita permiso para acceder a la galería.'
+        );
     });
 
     it('returns null if user cancels picker', async () => {
@@ -177,7 +179,7 @@ describe('editUsername', () => {
         mockFrom.mockReturnValue({ select });
 
         const result = await editUsername('elnito7');
-        expect(result.error).toBe('Username is the same as current.');
+        expect(result.error).toBe('El username es igual al actual.');
     });
 
     it('returns error if username is already taken', async () => {
@@ -207,7 +209,7 @@ describe('editUsername', () => {
         });
 
         const result = await editUsername('elnito7');
-        expect(result.error).toBe('That username is already taken.');
+        expect(result.error).toBe('Ese nombre de usuario ya está en uso.');
     });
 
     it('updates username successfully', async () => {

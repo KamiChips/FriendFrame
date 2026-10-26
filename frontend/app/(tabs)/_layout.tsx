@@ -2,26 +2,22 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { IconSymbol } from '@/components/ui/icons/icon-symbol';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import Feather from '@expo/vector-icons/Feather';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { getUnreadCount } from '@/services/supabase/notifications/notification.queries';
 import { useChatBadge } from '@/context/ChatContext';
-import { useNotificationsBadge } from '@/context/NotificationContext';
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
-    const theme = isDark ? 'dark' : 'light';
     const { unreadMessages } = useChatBadge();
-    const { counts } = useNotificationsBadge();
 
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: Colors[theme].tint,
+                tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
                 tabBarInactiveTintColor: isDark ? '#6B7280' : '#9CA3AF',
                 headerShown: false,
                 tabBarButton: HapticTab,
@@ -43,7 +39,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="Feed"
                 options={{
-                    title: 'Home',
+                    title: 'Inicio',
                     tabBarIcon: ({ color }) => (
                         <IconSymbol size={28} name="house.fill" color={color} />
                     ),
@@ -52,7 +48,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="explore"
                 options={{
-                    title: 'Search',
+                    title: 'Buscar',
                     tabBarIcon: ({ color }) => (
                         <SimpleLineIcons
                             name="magnifier"
@@ -65,7 +61,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="ChatInbox"
                 options={{
-                    title: 'Messages',
+                    title: 'Mensajes',
                     tabBarBadge:
                         unreadMessages > 0 ? unreadMessages : undefined,
                     tabBarIcon: ({ color }) => (
@@ -80,7 +76,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="profile"
                 options={{
-                    title: 'Profile',
+                    title: 'Perfil',
                     tabBarIcon: ({ color }) => (
                         <Feather name="user" size={28} color={color} />
                     ),

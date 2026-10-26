@@ -3,7 +3,6 @@ export interface AuthUser {
     full_name: string;
     username: string;
     email: string;
-    email_confirmed_at: string;
     profile_pic: string | null;
     created_at: string;
     updated_at: string;
@@ -24,17 +23,6 @@ export interface SignInParams {
 export interface AuthResult<T = null> {
     data: T | null;
     error: string | null;
-}
-
-export interface EmailVerificationRetryResult {
-    emailVerificationSent: boolean;
-    timestamp: string;
-}
-
-export interface RetryCheckResult {
-    can_retry: boolean;
-    retry_after_seconds: number;
-    attempts_used: number;
 }
 
 export const USERNAME_REGEX = /^[a-z0-9_]{3,30}$/;

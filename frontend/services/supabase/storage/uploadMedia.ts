@@ -26,7 +26,7 @@ export async function uploadProfilePic(
     options: UploadProfilePicOptions = {}
 ): Promise<StorageResul<UploadResult>> {
     try {
-        assertUUID(userId, 'user ID');
+        assertUUID(userId, 'ID de usuario');
 
         const quality = clampQuality(options.quality ?? 0.8);
         const size = clampSize(options.size ?? limits.avatar_size);
@@ -36,7 +36,7 @@ export async function uploadProfilePic(
         if (status !== 'granted')
             return {
                 data: null,
-                error: 'Permission required to access gallery.',
+                error: 'Se necesita permiso para acceder a la galería.',
             };
 
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -48,7 +48,7 @@ export async function uploadProfilePic(
 
         if (result.canceled) return { data: null, error: null };
         if (!result.assets?.length)
-            return { data: null, error: 'No file selected.' };
+            return { data: null, error: 'No se seleccióno ningún archivo' };
 
         const asset = result.assets[0];
         const resizedUri = await resizeImage(asset.uri, size, quality);
@@ -58,7 +58,7 @@ export async function uploadProfilePic(
         if (fileSize > limits.image_max_bytes) {
             return {
                 data: null,
-                error: `The image is too large (maximum ${limits.image_max_bytes / 1024 / 1024} MB)`,
+                error: `La imagen es demasiado grande (máximo ${limits.image_max_bytes / 1024 / 1024} MB)`,
             };
         }
 
@@ -98,7 +98,7 @@ export async function uploadPostImage(
     options: Pick<ImagePickerOptions, 'quality' | 'maxWidth'> = {}
 ): Promise<StorageResul<UploadResult>> {
     try {
-        assertUUID(authorId, 'author ID');
+        assertUUID(authorId, 'ID de autor');
 
         const isVideo = asset.type === 'video';
         const mediaType = isVideo ? 'video' : 'image';
@@ -113,7 +113,7 @@ export async function uploadPostImage(
             const mb = maxBytes / 1024 / 1024;
             return {
                 data: null,
-                error: `The file is too large (maximum ${mb} MB).`,
+                error: `El archivo es demasiado grande (máximo ${mb} MB).`,
             };
         }
 
@@ -135,7 +135,7 @@ export async function uploadPostImage(
             if (resizedSize > limits.image_max_bytes) {
                 return {
                     data: null,
-                    error: 'The processed image is too large.',
+                    error: 'La imagen procesada es demasiado grande.',
                 };
             }
         }
@@ -165,7 +165,7 @@ export async function uploadMultiple(
     assets: ImagePicker.ImagePickerAsset[]
 ): Promise<StorageResul<{ successful: UploadResult[]; failed: string[] }>> {
     try {
-        assertUUID(authorId, 'author ID');
+        assertUUID(authorId, 'ID de autor');
 
         if (assets.length === 0)
             return { data: { successful: [], failed: [] }, error: null };
@@ -173,7 +173,7 @@ export async function uploadMultiple(
         if (assets.length > limits.max_batch_files) {
             return {
                 data: null,
-                error: `Maximum ${limits.max_batch_files} files per batch.`,
+                error: `Máximo ${limits.max_batch_files} archivos por lote.`,
             };
         }
 
