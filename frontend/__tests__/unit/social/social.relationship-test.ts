@@ -64,7 +64,7 @@ describe('getRelationshipStatus', () => {
 
         const result = await getRelationshipStatus(targetUserId);
 
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
         expect(result.data).toBeNull();
     });
 
@@ -74,7 +74,7 @@ describe('getRelationshipStatus', () => {
 
         const result = await getRelationshipStatus(targetUserId);
 
-        expect(result.error).toBe('Error desconocido');
+        expect(result.error).toBe('Unknown error');
         expect(result.data).toBeNull();
     });
 
@@ -139,7 +139,7 @@ describe('getFriends', () => {
 
         const result = await getFriends(currentUserId);
 
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
         expect(result.data).toBeNull();
     });
 

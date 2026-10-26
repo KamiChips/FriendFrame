@@ -1,6 +1,6 @@
-import ChatHeader from '@/components/ui/chat/chat-header';
-import ChatMessage from '@/components/ui/chat/chat-message';
-import ChatMessageInput from '@/components/ui/chat/ChatMessageInput';
+import ChatHeader from '@/components/ui/ChatHeader';
+import ChatMessage from '@/components/ui/ChatMessage';
+import ChatMessageInput from '@/components/ui/ChatMessageInput';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     View,
@@ -26,15 +26,21 @@ const ChatScreen = () => {
     const scrollRef = useRef<ScrollView>(null);
     const { user } = useAuth();
 
-    const { chatId, chatName, chatInitials, profilePic } =
-        useLocalSearchParams<{
-            chatId: string;
-            chatName: string;
-            chatInitials: string;
-            isGroup: string;
-            targetUserId?: string;
-            profilePic?: string;
-        }>();
+    const {
+        chatId,
+        chatName,
+        chatInitials,
+        isGroup,
+        targetUserId,
+        profilePic,
+    } = useLocalSearchParams<{
+        chatId: string;
+        chatName: string;
+        chatInitials: string;
+        isGroup: string;
+        targetUserId?: string;
+        profilePic?: string;
+    }>();
 
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(true);
@@ -63,7 +69,7 @@ const ChatScreen = () => {
         };
 
         load();
-    }, [chatId, user?.user_id]);
+    }, [chatId]);
 
     useEffect(() => {
         if (!chatId) return;
@@ -86,7 +92,7 @@ const ChatScreen = () => {
 
     const handleLoadMore = useCallback(async () => {
         if (loadingMore || !hasMore || !chatId) return;
-        setLoadingMore(true);
+        setLoading(true);
         pageRef.current += 1;
 
         const { data } = await getMessages(chatId, {
@@ -99,7 +105,7 @@ const ChatScreen = () => {
             setHasMore(data.length === 30);
         }
 
-        setLoadingMore(false);
+        setLoading(false);
     }, [chatId, loadingMore, hasMore]);
 
     const handleSend = async (text: string) => {
@@ -150,7 +156,7 @@ const ChatScreen = () => {
                 isDark={isDark}
                 username={chatName ?? 'Chat'}
                 initials={chatInitials ?? ''}
-                lastActive="En línea"
+                lastActive="Online"
                 profilePic={profilePic}
             />
 

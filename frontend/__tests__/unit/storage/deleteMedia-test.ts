@@ -72,7 +72,7 @@ describe('deletePostImage', () => {
         });
 
         const result = await deletePostImage(validUrl);
-        expect(result.error).toBe('Error de red. Verifica tu conexión.');
+        expect(result.error).toBe('Network error. Check your connection.');
     });
 });
 
@@ -87,7 +87,7 @@ describe('deleteProfilePic', () => {
 
     it('returns error if userId is invalid', async () => {
         const result = await deleteProfilePic('no-es-uuid');
-        expect(result.error).toContain('ID de usuario');
+        expect(result.error).toContain('user ID');
     });
 
     it('deletes profile pic and updates db successfully', async () => {
@@ -127,7 +127,7 @@ describe('deleteProfilePic', () => {
         });
 
         const result = await deleteProfilePic(userId);
-        expect(result.error).toBe('Error de red. Verifica tu conexión.');
+        expect(result.error).toBe('Network error. Check your connection.');
     });
 
     it('returns error if db update fails', async () => {

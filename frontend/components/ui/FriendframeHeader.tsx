@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import '../../global.css';
-import NotificationButton from './notifications/notification-button';
+import NotificationButton from './NotificationButton';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 

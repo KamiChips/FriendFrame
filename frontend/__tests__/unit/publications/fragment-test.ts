@@ -90,43 +90,43 @@ describe('createFragment', () => {
 
     it('returns error when content is empty', async () => {
         const result = await createFragment(profileOwnerId, '      ');
-        expect(result.error).toBe('El fragment no puede estar vacío.');
+        expect(result.error).toBe('The fragment cannot be empty.');
     });
 
     it('returns error when content exceeds max length', async () => {
         const result = await createFragment(profileOwnerId, 'a'.repeat(2001));
         expect(result.error).toBe(
-            'El fragment no puede superar 2000 caracteres.'
+            'The fragment cannot exceed 2000 characters.'
         );
     });
 
     it('returns error if profileOwnerId is invalid', async () => {
         const result = await createFragment('no-es-uuid', 'hola');
         expect(result.data).toBeNull();
-        expect(result.error).toContain('ID de perfil');
+        expect(result.error).toContain('profile ID');
     });
 
     it('returns error if user is not authenticated', async () => {
-        mockGetAuthUser.mockRejectedValue(new Error('No hay sesión activa.'));
+        mockGetAuthUser.mockRejectedValue(new Error('No active session.'));
         const result = await createFragment(profileOwnerId, 'hola');
-        expect(result).toEqual({ data: null, error: 'No hay sesión activa.' });
+        expect(result).toEqual({ data: null, error: 'No active session.' });
         expect(mockAssertFriendship).not.toHaveBeenCalled();
     });
 
     it('returns error when friendship check fails', async () => {
         mockAssertFriendship.mockRejectedValue(
-            new Error('Solo puedes publicar en el perfil de tus amigos.')
+            new Error("You can only post on your friends' profiles.")
         );
         const result = await createFragment(profileOwnerId, 'hola');
         expect(result.error).toBe(
-            'Solo puedes publicar en el perfil de tus amigos.'
+            "You can only post on your friends' profiles."
         );
     });
 
     it('returns error if insert fails', async () => {
         mockFrom.mockReturnValue(insertChain(null, new Error('DB Error')));
         const result = await createFragment(profileOwnerId, 'hola');
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
     });
 });
 
@@ -142,7 +142,7 @@ describe('editFragment', () => {
 
     it('returns error when content is empty', async () => {
         const result = await editFragment(fragment.fragment_id, '   ');
-        expect(result.error).toBe('El fragment no puede estar vacío.');
+        expect(result.error).toBe('The fragment cannot be empty.');
     });
 
     it('returns error when content exceeds max length', async () => {
@@ -151,7 +151,7 @@ describe('editFragment', () => {
             'a'.repeat(2001)
         );
         expect(result.error).toBe(
-            'El fragment no puede superar 2000 caracteres.'
+            'The fragment cannot exceed 2000 characters.'
         );
     });
 
@@ -161,7 +161,7 @@ describe('editFragment', () => {
             fragment.fragment_id,
             'nuevo contenido'
         );
-        expect(result.error).toBe('Fragment no encontrado o sin permisos.');
+        expect(result.error).toBe('Fragment not found or no permissions.');
     });
 
     it('returns error when update fails with DB error', async () => {
@@ -170,7 +170,7 @@ describe('editFragment', () => {
             fragment.fragment_id,
             'nuevo contenido'
         );
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
     });
 });
 
@@ -184,7 +184,7 @@ describe('deleteFragment', () => {
     it('returns error when delete fails', async () => {
         mockFrom.mockReturnValue(deleteChain(new Error('DB Error')));
         const result = await deleteFragment(fragment.fragment_id);
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
     });
 
     it('returns error if user is not authenticated', async () => {
@@ -251,7 +251,7 @@ describe('getFragmentWithCounts', () => {
             'no-es-uuid'
         );
         expect(result.data).toBeNull();
-        expect(result.error).toContain('ID de usuario');
+        expect(result.error).toContain('user ID');
     });
 
     it('returns error if query fails', async () => {

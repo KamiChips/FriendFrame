@@ -6,10 +6,11 @@ import {
     MAX_PAGE_LIMIT,
 } from './chat.types';
 import { UUID_REGEX } from '../helpers/validation';
+import safeLogger from '@/lib/logger/safeLogger';
 
 export function assertUUIDs(values: string[], label = 'ID'): void {
     values.forEach((v, i) => {
-        if (!UUID_REGEX.test(v)) throw new Error(`${label}[${i}] inválido.`);
+        if (!UUID_REGEX.test(v)) throw new Error(`Invalid ${label}[${i}].`);
     });
 }
 
@@ -23,15 +24,18 @@ export function normalizePagination(
 }
 
 export function parseError(err: unknown): string {
-    if (!err) return 'Error desconocido';
+    if (!err) return 'Unknown error';
     const msg = (err as Error).message ?? String(err);
 
     const known: [string, string][] = [
-        ['row-level security', 'No tienes permiso para acceder a este chat.'],
-        ['duplicate key', 'Ya eres miembro de este chat.'],
-        ['violates foreign key', 'El usuario o chat no existe.'],
-        ['NetworkError', 'Error de red. Verifica tu conexión.'],
-        ['Failed to fetch', 'Error de red. Verifica tu conexión.'],
+        [
+            'row-level security',
+            'You do not have permission to access this chat.',
+        ],
+        ['duplicate key', 'You are already a member of this chat.'],
+        ['violates foreign key', 'The user or chat does not exist.'],
+        ['NetworkError', 'Network error. Check your connection.'],
+        ['Failed to fetch', 'Network error. Check your connection.'],
     ];
 
     for (const [key, value] of known) {
@@ -51,7 +55,7 @@ export function parseError(err: unknown): string {
     )
         return msg;
 
-    return 'Ocurrió un error inesperado.';
+    return 'An unexpected error occurred.';
 }
 
 //Helpers internos
@@ -66,7 +70,7 @@ export async function assertFriendship(
     })) as { data: boolean | null; error: any };
 
     if (error) throw error;
-    if (!data) throw new Error('Solo puedes iniciar chats con tus amigos.');
+    if (!data) throw new Error('You can only start chats with your friends.');
 }
 
 //Verifica si es miembro de un chat
@@ -81,7 +85,7 @@ export async function assertMembership(
         .eq('user_id', userId)
         .maybeSingle();
 
-    if (!data) throw new Error('No eres miembro de este chat.');
+    if (!data) throw new Error('You are not a member of this chat.');
 }
 
 //Buscar un chat directo entre dos usuarios
@@ -200,4 +204,6 @@ export async function markMessagesAsRead(
         .eq('chat_id', chatId)
         .eq('is_read', false)
         .neq('sender_id', userId);
+
+    safeLogger.debug('markMessagesAsRead:', { chatId, userId, error, count });
 }
