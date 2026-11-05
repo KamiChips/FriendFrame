@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ComponentRef } from 'react';
 import {
     View,
     Text,
@@ -53,7 +53,7 @@ export default function CommentsModal({
     // ESTADOS Y REFERENCIAS
     const [newComment, setNewComment] = useState(''); // Almacena el texto que el usuario está escribiendo
     const insets = useSafeAreaInsets(); // Obtenemos los márgenes seguros nativos del dispositivo
-    const inputRef = useRef<TextInput>(null); // Referencia directa a la caja de texto (para forzar el teclado)
+    const inputRef = useRef<ComponentRef<typeof TextInput>>(null); // Referencia directa a la caja de texto (para forzar el teclado)
     const { comments, load, post } = useComments(target);
     const [replyingTo, setReplyingTo] = useState<{
         commentId: string;
@@ -116,7 +116,7 @@ export default function CommentsModal({
     const handleReply = (authorName: string, commentId: string) => {
         setReplyingTo({ commentId, authorName });
         setNewComment(`@${authorName} `); // Pre-llena la caja de texto con el @nombre del usuario
-        inputRef.current?.State.focusTextInput; // Obliga a que el teclado del celular salte automáticamente
+        inputRef.current?.focus(); // Obliga a que el teclado del celular salte automáticamente
     };
 
     return (
@@ -210,7 +210,7 @@ export default function CommentsModal({
                         {/* CONTENEDOR DEL TEXT INPUT: Define la forma gris de pastilla (rounded-full) */}
                         <View className="flex-1 flex-row items-center bg-gray-100 dark:bg-[#272B40] rounded-full px-4 h-12">
                             <TextInput
-                                ref={inputRef.current?.arguments} // Conectamos la referencia para el focus automático
+                                ref={inputRef} // Conectamos la referencia para el focus automático
                                 placeholder="Escribe un comentario..."
                                 placeholderTextColor="#8A8A8E"
                                 value={newComment}

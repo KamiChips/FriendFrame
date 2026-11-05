@@ -118,10 +118,7 @@ const ChatInboxScreen = () => {
         <SafeAreaView
             className={`flex-1 bg-background-light ${isDark ? 'dark' : ''} dark:bg-background-semidark `}
         >
-            <StatusBar
-                barStyle={isDark ? 'light-content' : 'dark-content'}
-                backgroundColor={isDark ? '#1a1a1a' : '#fafafa'}
-            />
+            <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
             {/* Header */}
             <FriendframeHeader isDark={isDark} />

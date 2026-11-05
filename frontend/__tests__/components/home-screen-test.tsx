@@ -35,50 +35,50 @@ jest.mock('expo-router', () => ({
 
 describe('<HomeScreen />', () => {
     // Tests de contenido
-    test('Title "friendframe" renders correctly on HomeScreen', () => {
-        const { getByText } = render(<HomeScreen />);
+    test('Title "friendframe" renders correctly on HomeScreen', async () => {
+        const { getByText } = await render(<HomeScreen />);
         expect(getByText('friendframe')).toBeTruthy();
     });
 
-    test('"Get Started" button is rendered', () => {
-        const { getByText } = render(<HomeScreen />);
+    test('"Get Started" button is rendered', async () => {
+        const { getByText } = await render(<HomeScreen />);
         expect(getByText('Get Started')).toBeTruthy();
     });
 
-    test('"Have an Account?" button is rendered', () => {
-        const { getByText } = render(<HomeScreen />);
+    test('"Have an Account?" button is rendered', async () => {
+        const { getByText } = await render(<HomeScreen />);
         expect(getByText('Have an Account?')).toBeTruthy();
     });
 
     // Tests de interacción
-    test('"Get Started" button is pressable', () => {
-        const { getByText } = render(<HomeScreen />);
+    test('"Get Started" button is pressable', async () => {
+        const { getByText } = await render(<HomeScreen />);
         expect(() => fireEvent.press(getByText('Get Started'))).not.toThrow();
     });
 
-    test('"Have an Account?" button is pressable', () => {
-        const { getByText } = render(<HomeScreen />);
+    test('"Have an Account?" button is pressable', async () => {
+        const { getByText } = await render(<HomeScreen />);
         expect(() =>
             fireEvent.press(getByText('Have an Account?'))
         ).not.toThrow();
     });
 
     // Tests de temas
-    test("Applies 'dark' class when dark theme is on", () => {
+    test("Applies 'dark' class when dark theme is on", async () => {
         (useColorScheme as jest.Mock).mockReturnValue('dark');
-        const { getByText } = render(<HomeScreen />);
+        const { getByText } = await render(<HomeScreen />);
         expect(getByText('friendframe')).toBeTruthy();
     });
 
-    test("Doesn't apply 'dark' class when light theme is on", () => {
+    test("Doesn't apply 'dark' class when light theme is on", async () => {
         (useColorScheme as jest.Mock).mockReturnValue('light');
-        const { getByText } = render(<HomeScreen />);
+        const { getByText } = await render(<HomeScreen />);
         expect(getByText('friendframe')).toBeTruthy();
     });
 
     // Snapshot
-    test('Matches with snapshot', () => {
-        const { toJSON } = render(<HomeScreen />);
+    test('Matches with snapshot', async () => {
+        const { toJSON } = await render(<HomeScreen />);
         expect(toJSON()).toMatchSnapshot();
     });
 });
@@ -88,20 +88,20 @@ describe('<HomeScreen /> - Navigation', () => {
         mockPush.mockClear();
     });
 
-    test("'Get Started' navigates to /signup", () => {
-        const { getByText } = render(<HomeScreen />);
+    test("'Get Started' navigates to /signup", async () => {
+        const { getByText } = await render(<HomeScreen />);
         fireEvent.press(getByText('Get Started'));
         expect(mockPush).toHaveBeenCalledWith('/(auth)/signup');
     });
 
-    test("'Have an Account?' navigates to /login", () => {
-        const { getByText } = render(<HomeScreen />);
+    test("'Have an Account?' navigates to /login", async () => {
+        const { getByText } = await render(<HomeScreen />);
         fireEvent.press(getByText('Have an Account?'));
         expect(mockPush).toHaveBeenCalledWith('/(auth)/login');
     });
 
-    test('Buttons navigate to different routes', () => {
-        const { getByText } = render(<HomeScreen />);
+    test('Buttons navigate to different routes', async () => {
+        const { getByText } = await render(<HomeScreen />);
         fireEvent.press(getByText('Get Started'));
         fireEvent.press(getByText('Have an Account?'));
         expect(mockPush).toHaveBeenCalledTimes(2);
