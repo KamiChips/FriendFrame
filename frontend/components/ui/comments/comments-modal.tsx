@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
     View,
     Text,
@@ -30,6 +30,16 @@ interface CommentsModalProps {
     onClose: () => void; // Función para cerrar el modal al tocar fuera o en la 'X'
     target: PublicationTarget; // El arreglo de comentarios que se va a mapear
     onCommentAdded?: () => void; // Función puente para inyectar nuevos comentarios al Feed
+}
+
+function timeAgo(isoDate: string): string {
+    const diff = Date.now() - new Date(isoDate).getTime();
+    const mins = Math.floor(diff / 60_000);
+    if (mins < 1) return 'ahora mismo';
+    if (mins < 60) return `hace ${mins} min`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `hace ${hrs} h`;
+    return `hace ${Math.floor(hrs / 24)} d`;
 }
 
 // 2. COMPONENTE PRINCIPAL (CommentsModal)
@@ -66,16 +76,6 @@ export default function CommentsModal({
             onCommentAdded?.();
         }
     };
-
-    function timeAgo(isoDate: string): string {
-        const diff = Date.now() - new Date(isoDate).getTime();
-        const mins = Math.floor(diff / 60_000);
-        if (mins < 1) return 'ahora mismo';
-        if (mins < 60) return `hace ${mins} min`;
-        const hrs = Math.floor(mins / 60);
-        if (hrs < 24) return `hace ${hrs} h`;
-        return `hace ${Math.floor(hrs / 24)} d`;
-    }
 
     function initials(fullName: string): string {
         return fullName
@@ -116,7 +116,7 @@ export default function CommentsModal({
     const handleReply = (authorName: string, commentId: string) => {
         setReplyingTo({ commentId, authorName });
         setNewComment(`@${authorName} `); // Pre-llena la caja de texto con el @nombre del usuario
-        inputRef.current?.focus(); // Obliga a que el teclado del celular salte automáticamente
+        inputRef.current?.State.focusTextInput; // Obliga a que el teclado del celular salte automáticamente
     };
 
     return (
@@ -210,7 +210,7 @@ export default function CommentsModal({
                         {/* CONTENEDOR DEL TEXT INPUT: Define la forma gris de pastilla (rounded-full) */}
                         <View className="flex-1 flex-row items-center bg-gray-100 dark:bg-[#272B40] rounded-full px-4 h-12">
                             <TextInput
-                                ref={inputRef} // Conectamos la referencia para el focus automático
+                                ref={inputRef.current?.arguments} // Conectamos la referencia para el focus automático
                                 placeholder="Escribe un comentario..."
                                 placeholderTextColor="#8A8A8E"
                                 value={newComment}

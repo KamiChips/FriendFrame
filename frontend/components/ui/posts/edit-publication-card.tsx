@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import {
     ActivityIndicator,
     Animated,
@@ -32,9 +32,15 @@ export default function EditPublicationCard({
     onConfirm,
 }: EditPublicationCardProps) {
     const isDark = useColorScheme() === 'dark';
-    const [content, setContent] = React.useState(initialContent);
-    const scaleAnim = React.useRef(new Animated.Value(0)).current;
-    const opacityAnim = React.useRef(new Animated.Value(0)).current;
+    const [content, setContent] = useState(initialContent);
+    const [scaleAnim] = useState(() => new Animated.Value(0));
+    const [opacityAnim] = useState(() => new Animated.Value(0));
+
+    const [prevContent, setPrevContent] = useState(initialContent);
+    if (initialContent !== prevContent) {
+        setPrevContent(initialContent);
+        setContent(initialContent);
+    }
 
     const trimmed = content.trim();
     const isFragment = publicationType === 'fragment';
@@ -42,11 +48,7 @@ export default function EditPublicationCard({
     const canSave =
         hasChanges && (!isFragment || trimmed.length > 0) && !loading;
 
-    React.useEffect(() => {
-        setContent(initialContent);
-    }, [initialContent]);
-
-    React.useEffect(() => {
+    useEffect(() => {
         Animated.parallel([
             Animated.spring(scaleAnim, {
                 toValue: 1,

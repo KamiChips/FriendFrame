@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -38,7 +38,7 @@ export function FloatingMenu({
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isPostModalVisible, setIsPostModalVisible] = useState(false);
 
-    const animation = useRef(new Animated.Value(0)).current;
+    const [animation] = useState(() => new Animated.Value(0));
     const insets = useSafeAreaInsets();
 
     const toggleMenu = () => {

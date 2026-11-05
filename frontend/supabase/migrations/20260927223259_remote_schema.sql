@@ -118,6 +118,64 @@ $$;
 ALTER FUNCTION "public"."check_blocks_between"("user_a" "uuid", "user_b" "uuid") OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."check_email_retry_limit"("user_email" "text") RETURNS TABLE("can_retry" boolean, "retry_after_seconds" integer, "attempts_used" integer)
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+declare
+  rec email_verification_retries%rowtype;
+  base_wait_seconds int := 60;
+  max_attempts int := 3;
+  required_wait int;
+  elapsed_since_last int;
+begin
+  select * into rec
+  from email_verification_retries
+  where email = user_email
+  for update;
+
+  if rec is null then
+    insert into email_verification_retries (email, attempt_count, window_started_at, last_attempt_at)
+    values (user_email, 1, now(), now());
+    return query select true, 0, 1;
+    return;
+  end if;
+
+  if now() - rec.window_started_at > interval '1 hour' then
+    update email_verification_retries
+      set attempt_count = 1, window_started_at = now(), last_attempt_at = now()
+      where email = user_email;
+    return query select true, 0, 1;  -- ← corregido: punto y coma agregado
+    return;
+  end if;
+
+  if rec.attempt_count >= max_attempts then
+    return query select false,
+      ceil(extract(epoch from (rec.window_started_at + interval '1 hour' - now())))::int,
+      rec.attempt_count;
+    return;
+  end if;
+
+  required_wait := base_wait_seconds * power(2, rec.attempt_count - 1);
+  elapsed_since_last := extract(epoch from (now() - rec.last_attempt_at));
+
+  if elapsed_since_last < required_wait then
+    return query select false, (required_wait - elapsed_since_last)::int, rec.attempt_count;
+    return;
+  end if;
+
+  update email_verification_retries
+    set attempt_count = attempt_count + 1, last_attempt_at = now()
+    where email = user_email;
+
+  return query select true, 0, rec.attempt_count + 1;
+end;
+$$;
+
+
+ALTER FUNCTION "public"."check_email_retry_limit"("user_email" "text") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."count_friends"("target_user_id" "uuid") RETURNS bigint
     LANGUAGE "sql" STABLE SECURITY DEFINER
     SET "search_path" TO 'public', 'pg_catalog'
@@ -657,6 +715,22 @@ $$;
 ALTER FUNCTION "public"."set_updated_at"() OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."sync_email_confirmation_status"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+begin
+  update public.users
+  set email_confirmed_at = new.email_confirmed_at
+  where user_id = new.id;
+  return new;
+end;
+$$;
+
+
+ALTER FUNCTION "public"."sync_email_confirmation_status"() OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."toggle_like"("p_user_id" "uuid", "p_post_id" "uuid" DEFAULT NULL::"uuid", "p_fragment_id" "uuid" DEFAULT NULL::"uuid") RETURNS TABLE("liked" boolean, "likes_count" bigint)
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO 'public', 'pg_catalog'
@@ -768,6 +842,17 @@ CREATE TABLE IF NOT EXISTS "public"."device_tokens" (
 ALTER TABLE "public"."device_tokens" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."email_verification_retries" (
+    "email" "text" DEFAULT ''::"text" NOT NULL,
+    "attempt_count" smallint DEFAULT '0'::smallint NOT NULL,
+    "window_started_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "last_attempt_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."email_verification_retries" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."follows" (
     "follow_id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "follower_id" "uuid" NOT NULL,
@@ -872,7 +957,8 @@ CREATE TABLE IF NOT EXISTS "public"."users" (
     "email" character varying(254) NOT NULL,
     "profile_pic" "text",
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "email_confirmed_at" timestamp with time zone
 );
 
 
@@ -916,6 +1002,11 @@ ALTER TABLE ONLY "public"."device_tokens"
 
 ALTER TABLE ONLY "public"."device_tokens"
     ADD CONSTRAINT "device_tokens_user_id_token_key" UNIQUE ("user_id", "token");
+
+
+
+ALTER TABLE ONLY "public"."email_verification_retries"
+    ADD CONSTRAINT "email_verification_retries_pkey" PRIMARY KEY ("email");
 
 
 
@@ -1265,6 +1356,9 @@ CREATE POLICY "device_tokens: read own" ON "public"."device_tokens" FOR SELECT U
 
 
 
+ALTER TABLE "public"."email_verification_retries" ENABLE ROW LEVEL SECURITY;
+
+
 ALTER TABLE "public"."follows" ENABLE ROW LEVEL SECURITY;
 
 
@@ -1597,6 +1691,12 @@ GRANT ALL ON FUNCTION "public"."check_blocks_between"("user_a" "uuid", "user_b" 
 
 
 
+GRANT ALL ON FUNCTION "public"."check_email_retry_limit"("user_email" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."check_email_retry_limit"("user_email" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."check_email_retry_limit"("user_email" "text") TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."count_friends"("target_user_id" "uuid") TO "service_role";
 
 
@@ -1683,6 +1783,12 @@ GRANT ALL ON FUNCTION "public"."set_updated_at"() TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."sync_email_confirmation_status"() TO "anon";
+GRANT ALL ON FUNCTION "public"."sync_email_confirmation_status"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."sync_email_confirmation_status"() TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."toggle_like"("p_user_id" "uuid", "p_post_id" "uuid", "p_fragment_id" "uuid") TO "service_role";
 
 
@@ -1729,6 +1835,12 @@ GRANT ALL ON TABLE "public"."comments" TO "service_role";
 GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE "public"."device_tokens" TO "anon";
 GRANT ALL ON TABLE "public"."device_tokens" TO "authenticated";
 GRANT ALL ON TABLE "public"."device_tokens" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."email_verification_retries" TO "anon";
+GRANT ALL ON TABLE "public"."email_verification_retries" TO "authenticated";
+GRANT ALL ON TABLE "public"."email_verification_retries" TO "service_role";
 
 
 
@@ -1869,6 +1981,8 @@ alter table "public"."posts" add constraint "posts_media_type_check" CHECK (((me
 
 alter table "public"."posts" validate constraint "posts_media_type_check";
 
+CREATE TRIGGER on_auth_user_confirmation_change AFTER UPDATE OF email_confirmed_at ON auth.users FOR EACH ROW EXECUTE FUNCTION public.sync_email_confirmation_status();
+
 CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 
@@ -1959,6 +2073,5 @@ using ((bucket_id = 'profile-pictures'::text));
   for insert
   to public
 with check (((bucket_id = 'profile-pictures'::text) AND ((auth.uid())::text = (storage.foldername(name))[1])));
-
 
 

@@ -6,7 +6,11 @@ import {
 import * as Notifications from 'expo-notifications';
 
 jest.mock('expo-device', () => ({ isDevice: true }));
-jest.mock('react-native', () => ({ Platform: { OS: 'ios' } }));
+jest.mock('react-native', () => {
+    const RN = jest.requireActual('react-native');
+    RN.Platform.OS = 'ios';
+    return RN;
+});
 jest.mock('@/lib/supabase/client', () => ({
     supabase: require('@/__mocks__/supabaseMock').supabase,
 }));

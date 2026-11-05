@@ -15,6 +15,9 @@ const TEST_USER = {
 
 async function createTestUser() {
     const result = await signUp(TEST_USER);
+    await supabaseAdmin.auth.admin.updateUserById(result.data!.user_id, {
+        email_confirm: true,
+    });
 
     if (result.error) {
         throw new Error(`Failed to create test user: ${result.error}`);
