@@ -4,6 +4,7 @@ import {
     View,
     Text,
     TouchableOpacity,
+    Image,
     useColorScheme,
     Modal,
     ScrollView,
