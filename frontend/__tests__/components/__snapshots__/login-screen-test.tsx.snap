@@ -88,7 +88,7 @@ exports[`<LoginScreen /> matches snapshot 1`] = `
         testID="login-button"
       >
         <Text>
-          Iniciando Sesión
+          Log In
         </Text>
       </View>
     </View>
@@ -147,8 +147,7 @@ exports[`<LoginScreen /> matches snapshot 1`] = `
     <Text
       className="dark:text-background-light mt-10"
     >
-      Don't have an account?
-       
+      Don't have an account?{' '}
       <Text
         className="font-semibold dark:text-background-light"
         onPress={[Function]}

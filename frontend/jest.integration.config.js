@@ -22,6 +22,10 @@ module.exports = {
             '<rootDir>/node_modules/@react-native-async-storage/async-storage/jest/async-storage-mock',
     },
 
+    collectCoverage: true,
+
+    coverageProvider: 'v8',
+
     collectCoverageFrom: [
         'app/**/*.{ts,tsx}',
         'services/**/*.{ts,tsx}',

@@ -8,7 +8,7 @@ export function isValidUUID(v: string): boolean {
 }
 
 export function assertUUID(v: string, label = 'ID'): void {
-    if (!isValidUUID(v)) throw new Error(`${label} inválido.`);
+    if (!isValidUUID(v)) throw new Error(`Invalid ${label}.`);
 }
 
 export async function getAuthUser(): Promise<string> {
@@ -16,6 +16,6 @@ export async function getAuthUser(): Promise<string> {
         data: { user },
         error,
     } = await supabase.auth.getUser();
-    if (error || !user) throw new Error('No hay sesión activa.');
+    if (error || !user) throw new Error('No active session.');
     return user.id;
 }

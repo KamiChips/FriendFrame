@@ -9,14 +9,14 @@ export async function updateProfilePic(
     userId: string
 ): Promise<AuthResult<string>> {
     try {
-        if (!userId) throw new Error('El ID de usuario es requerido.');
+        if (!userId) throw new Error('User ID is required.');
 
         const { status } =
             await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted')
             return {
                 data: null,
-                error: 'Se necesita permiso para acceder a la galería.',
+                error: 'Permission required to access gallery.',
             };
 
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -83,7 +83,7 @@ export async function editUsername(
             .single();
 
         if (current?.username === cleanUsername)
-            return { data: null, error: 'El username es igual al actual.' };
+            return { data: null, error: 'Username is the same as current.' };
 
         // Verificar disponibilidad
         const { data: taken } = await supabase
@@ -95,7 +95,7 @@ export async function editUsername(
         if (taken)
             return {
                 data: null,
-                error: 'Ese nombre de usuario ya está en uso.',
+                error: 'That username is already taken.',
             };
 
         const { data, error } = await supabase

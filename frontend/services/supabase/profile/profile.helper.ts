@@ -19,15 +19,18 @@ export function normalizePagination(params: PaginationParams): {
 }
 
 export function parseError(err: unknown): string {
-    if (!err) return 'Error desconocido';
+    if (!err) return 'Unknown error';
     const msg = (err as Error).message ?? String(err);
 
     const known: [string, string][] = [
-        ['PGRST116', 'Usuario no encontrado.'],
-        ['No rows found', 'Usuario no encontrado.'],
-        ['row-level security', 'No tienes permiso para realizar esta acción.'],
-        ['NetworkError', 'Error de red. Verifica tu conexión.'],
-        ['Failed to fetch', 'Error de red. Verifica tu conexión.'],
+        ['PGRST116', 'User not found.'],
+        ['No rows found', 'User not found.'],
+        [
+            'row-level security',
+            'You do not have permission to perform this action.',
+        ],
+        ['NetworkError', 'Network error. Check your connection.'],
+        ['Failed to fetch', 'Network error. Check your connection.'],
     ];
 
     for (const [key, value] of known) {
@@ -35,14 +38,14 @@ export function parseError(err: unknown): string {
     }
 
     if (
-        msg.startsWith('No hay sesión') ||
-        msg.startsWith('ID') ||
-        msg.startsWith('La búsqueda') ||
-        msg.startsWith('Usuario')
+        msg.startsWith('No active session') ||
+        msg.includes('Invalid') ||
+        msg.startsWith('The search') ||
+        msg.startsWith('User')
     )
         return msg;
 
-    return 'Ocurrió un error inesperado.';
+    return 'An unexpected error occurred.';
 }
 
 //Estadisticas de perfil

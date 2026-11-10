@@ -69,7 +69,7 @@ describe('blockUser', () => {
 
         const result = await blockUser(currentUserId);
 
-        expect(result.error).toBe('No puedes bloquearte a ti mismo.');
+        expect(result.error).toBe('You cannot block yourself.');
     });
 
     it('returns error when the insert fails', async () => {
@@ -85,7 +85,7 @@ describe('blockUser', () => {
 
         const result = await blockUser(targetUserId);
 
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
     });
 
     it('returns error with an invalid UUID', async () => {
@@ -124,7 +124,7 @@ describe('unblockUser', () => {
 
         const result = await unblockUser(targetUserId);
 
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
     });
 
     it('returns error with an invalid UUID', async () => {
@@ -242,7 +242,7 @@ describe('getBlockedUsers', () => {
 
         const result = await getBlockedUsers();
 
-        expect(result.error).toBe('Ocurrió un error inesperado.');
+        expect(result.error).toBe('An unexpected error occurred.');
         expect(result.data).toBeNull();
     });
 });

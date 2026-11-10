@@ -13,8 +13,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Importación de nuestros componentes personalizados de UI
 import FriendframeHeader from '@/components/ui/FriendframeHeader';
-import FeedCard from '@/components/ui/posts/feed-card';
-import { FeedSkeletonList } from '@/components/ui/posts/feed-card-skeleton';
+import FeedCard from '@/components/ui/FeedCard';
+import { FeedSkeletonList } from '@/components/ui/FeedCardSkeleton';
 import { useFeed } from '@/hooks/useFeed';
 import { FeedPost } from '@/services/supabase/feed/feed.types';
 
@@ -22,11 +22,11 @@ import { FeedPost } from '@/services/supabase/feed/feed.types';
 function timeAgo(isoDate: string): string {
     const diff = Date.now() - new Date(isoDate).getTime();
     const mins = Math.floor(diff / 60_000);
-    if (mins < 1) return 'ahora mismo';
-    if (mins < 60) return `hace ${mins} min`;
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins} min ago`;
     const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `hace ${hrs} h`;
-    return `hace ${Math.floor(hrs / 24)} d`;
+    if (hrs < 24) return `${hrs} h ago`;
+    return `${Math.floor(hrs / 24)} d ago`;
 }
 
 function initials(fullName: string): string {
@@ -43,17 +43,17 @@ function EmptyState({ onRefresh }: { onRefresh: () => void }) {
         <View className="flex-1 items-center justify-center px-8 py-20">
             <Ionicons name="newspaper-outline" size={56} color="#9CA3AF" />
             <Text className="mt-4 font-spartan-bold text-xl text-gray-700 dark:text-gray-300 text-center">
-                Tu feed está vacío
+                Your feed is empty
             </Text>
             <Text className="mt-2 font-spartan text-sm text-gray-500 dark:text-gray-400 text-center leading-5">
-                Sigue a personas para ver sus publicaciones y fragmentos aquí.
+                Follow people to see their posts and fragments here.
             </Text>
             <Pressable
                 onPress={onRefresh}
                 className="mt-6 rounded-full bg-cyan-500 px-6 py-3"
             >
                 <Text className="font-spartan-bold text-white text-sm">
-                    Actualizar
+                    Refresh
                 </Text>
             </Pressable>
         </View>
@@ -72,7 +72,7 @@ function ErrorState({
         <View className="flex-1 items-center justify-center px-8 py-20">
             <Ionicons name="cloud-offline-outline" size={56} color="#EF4444" />
             <Text className="mt-4 font-spartan-bold text-xl text-gray-700 dark:text-gray-300 text-center">
-                Algo salió mal
+                Something went wrong
             </Text>
             <Text className="mt-2 font-spartan text-sm text-gray-500 dark:text-gray-400 text-center leading-5">
                 {message}
@@ -82,7 +82,7 @@ function ErrorState({
                 className="mt-6 rounded-full bg-cyan-500 px-6 py-3"
             >
                 <Text className="font-spartan-bold text-white text-sm">
-                    Reintentar
+                    Retry
                 </Text>
             </Pressable>
         </View>
@@ -108,7 +108,7 @@ function ListFooter({
         return (
             <View className="items-center py-8">
                 <Text className="font-spartan text-sm text-gray-400 dark:text-gray-500">
-                    Has llegado al final 🎉
+                    {"You've reached the end"}
                 </Text>
             </View>
         );
@@ -134,7 +134,7 @@ export default function FeedScreen() {
     useFocusEffect(
         useCallback(() => {
             refresh();
-        }, [refresh])
+        }, [])
     );
 
     // Adaptador: convierte FeedPost → props de FeedCard
