@@ -13,7 +13,8 @@ const supabaseKey = isTest
 
 export const supabase = createClient(supabaseUrl, supabaseKey, {
     auth: {
-        storage: isTest ? undefined : AsyncStorage,
+        storage:
+            isTest || typeof window == 'undefined' ? undefined : AsyncStorage,
         autoRefreshToken: !isTest,
         persistSession: !isTest,
         detectSessionInUrl: false,
