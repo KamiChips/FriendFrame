@@ -1,7 +1,13 @@
 import ChatHeader from '@/components/ui/ChatHeader';
 import ChatMessage from '@/components/ui/ChatMessage';
 import ChatMessageInput from '@/components/ui/ChatMessageInput';
-import { useCallback, useEffect, useRef, useState, type ComponentRef } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+    type ComponentRef,
+} from 'react';
 import {
     View,
     useColorScheme,

@@ -85,6 +85,7 @@
     },
     "private": true,
     "allowScripts": {
-        "@parcel/watcher@2.6.0": true
+        "@parcel/watcher@2.6.0": true,
+        "@sentry/cli@3.8.2": true
     }
 }
