@@ -1,6 +1,6 @@
 import { View, TouchableOpacity, Text } from 'react-native';
-import ProfileIcon from '../icons/profile-icon';
-import GoBackButton from '../actions/go-back-button';
+import ProfileIcon from './ProfileIcon';
+import GoBackButton from './GoBackButton';
 import { router } from 'expo-router';
 
 interface ChatHeaderProps {

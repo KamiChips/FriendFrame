@@ -12,7 +12,7 @@ import { assertUUID } from '../helpers/validation';
 
 export function assertTarget(target: PublicationTarget): void {
     const id = target.postId ?? target.fragmentId;
-    if (!id) throw new Error('Se requiere postId o fragmentId.');
+    if (!id) throw new Error('postId or fragmentId is required.');
     assertUUID(id, target.postId ? 'postId' : 'fragmentId');
 }
 
@@ -25,29 +25,32 @@ export function normalizePagination(
     return { from: p * l, to: p * l + l - 1 };
 }
 
-export function validateContent(content: string, label = 'contenido'): string {
+export function validateContent(content: string, label = 'content'): string {
     const trimmed = content.trim();
-    if (!trimmed) throw new Error(`El ${label} no puede estar vacío.`);
+    if (!trimmed) throw new Error(`The ${label} cannot be empty.`);
     if (trimmed.length > MAX_COMMENT_LENGTH)
         throw new Error(
-            `El ${label} no puede superar ${MAX_COMMENT_LENGTH} caracteres.`
+            `The ${label} cannot exceed ${MAX_COMMENT_LENGTH} characters.`
         );
     return trimmed;
 }
 
 export function parseError(err: unknown): string {
-    if (!err) return 'Error desconocido';
+    if (!err) return 'Unknown error';
     const msg = (err as Error).message ?? String(err);
 
     const known: [string, string][] = [
-        ['row-level security', 'No tienes permiso para realizar esta acción.'],
+        [
+            'row-level security',
+            'You do not have permission to perform this action.',
+        ],
         [
             'duplicate key value violates unique constraint',
-            'Ya diste like a esta publicación.',
+            'You already liked this post.',
         ],
-        ['violates check constraint', 'Error de validación.'],
-        ['NetworkError', 'Error de red. Verifica tu conexión.'],
-        ['Failed to fetch', 'Error de red. Verifica tu conexión.'],
+        ['violates check constraint', 'Validation error.'],
+        ['NetworkError', 'Network error. Check your connection.'],
+        ['Failed to fetch', 'Network error. Check your connection.'],
     ];
 
     for (const [key, value] of known) {
@@ -55,18 +58,24 @@ export function parseError(err: unknown): string {
     }
 
     if (
+        msg.startsWith('No active session') ||
         msg.startsWith('No hay sesión') ||
+        msg.startsWith('The comment') ||
         msg.startsWith('El comentario') ||
-        msg.startsWith('El contenido') ||
-        msg.startsWith('Se requiere') ||
+        msg.startsWith('The content') ||
+        msg.includes('is required') ||
+        msg.includes('Invalid') ||
         msg.includes('inválido') ||
+        msg.includes('cannot') ||
         msg.includes('no puede') ||
+        msg.includes('does not exist') ||
         msg.includes('no existe') ||
+        msg.includes('does not belong') ||
         msg.includes('no pertenece')
     )
         return msg;
 
-    return 'Ocurrió un error inesperado.';
+    return 'An unexpected error occurred.';
 }
 
 export async function attachStatsToComments(

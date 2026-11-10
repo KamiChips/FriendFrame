@@ -132,7 +132,7 @@ describe('Comments Service — Unit', () => {
                 parentCommentId
             );
             expect(result.error).toBe(
-                'El comentario padre no existe o no pertenece a esta publicación.'
+                'The parent comment does not exist or does not belong to this post.'
             );
         });
 
@@ -181,9 +181,7 @@ describe('Comments Service — Unit', () => {
                 error: null,
             });
             const result = await editComment(commentId, 'Nuevo');
-            expect(result.error).toBe(
-                'Comentario no encontrado o sin permisos.'
-            );
+            expect(result.error).toBe('Comment not found or no permissions.');
         });
 
         it('va al catch block si getAuthUser lanza', async () => {

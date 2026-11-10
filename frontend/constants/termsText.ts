@@ -1,57 +1,57 @@
 export const TERMS_AND_SERVICES_TEXT = {
-    version: 'ÚLTIMA ACTUALIZACIÓN: 26 DE MAYO DE 2026',
-    title: 'Términos de Servicio y Política de Privacidad de FriendFrame',
-    intro: 'Bienvenido a FriendFrame (en adelante, la “Aplicación”). Al crear una cuenta, iniciar sesión o utilizar cualquier funcionalidad de la Aplicación, usted (en adelante, el “Usuario”) acepta de manera expresa, voluntaria y sin reservas los presentes Términos de Servicio y Política de Privacidad. Si no está de acuerdo con estos términos, deberá abstenerse de descargar, instalar o utilizar la Aplicación.',
+    version: 'LAST UPDATED: MAY 26, 2026',
+    title: 'FriendFrame Terms of Service and Privacy Policy',
+    intro: 'Welcome to FriendFrame (hereinafter, the "Application"). By creating an account, logging in, or using any feature of the Application, you (hereinafter, the "User") expressly, voluntarily, and unreservedly agree to these Terms of Service and Privacy Policy. If you do not agree with these terms, you must refrain from downloading, installing, or using the Application.',
 
     sections: [
         {
             id: '1',
-            title: '1. Naturaleza del Servicio y el “Feed Invertido”',
+            title: '1. Nature of the Service and the "Inverted Feed"',
             content:
-                'FriendFrame es una plataforma de red social cuya funcionalidad principal es un modelo de interacción asimétrica denominado “Feed Invertido”. En este ecosistema, el perfil y espacio visual de un Usuario es alimentado y modificado de forma directa por el contenido que generan y publican sus conexiones confirmadas (en adelante, “Amigos”).\n\nAl enviar o aceptar una solicitud de amistad dentro de la plataforma, el Usuario otorga su consentimiento explícito, consciente e irrevocable para que dicho tercero publique contenido directamente en su perfil, aceptando explícitamente que la gestión, edición y permanencia de dicha publicación queda bajo el control del autor de la misma.',
+                'FriendFrame is a social networking platform whose main functionality is an asymmetric interaction model called "Inverted Feed". In this ecosystem, a User\'s profile and visual space are directly fed and modified by the content generated and published by their confirmed connections (hereinafter, "Friends").nnBy sending or accepting a friend request within the platform, the User grants explicit, conscious, and irrevocable consent for that third party to publish content directly on their profile, explicitly accepting that the management, editing, and permanence of such publication remains under the control of its author.',
         },
         {
             id: '2',
-            title: '2. Exclusión Absoluta de Responsabilidad por Contenido de Terceros',
+            title: '2. Absolute Exclusion of Liability for Third-Party Content',
             content:
-                "Dada la naturaleza técnica y operativa de la Aplicación, los creadores, desarrolladores, administradores, directivos y entidades asociadas a FriendFrame NO asumen ninguna responsabilidad legal, civil, penal, administrativa o editorial por las publicaciones, imágenes, comentarios, enlaces, videos o cualquier otro tipo de Contenido Generado por el Usuario (UGC) que sus 'Amigos' realicen en su perfil.",
+                "Given the technical and operational nature of the Application, the creators, developers, administrators, directors, and associated entities of FriendFrame assume NO legal, civil, criminal, administrative, or editorial liability for the publications, images, comments, links, videos, or any other type of User-Generated Content (UGC) that their 'Friends' make on their profile.",
         },
         {
             id: '2b',
-            title: '• Responsabilidad Individual:',
+            title: '• Individual Responsibility:',
             content:
-                'El usuario que redacta, sube, comparte o transmitirá cualquier material a través de FriendFrame es el único y exclusivo responsable legal de dicho contenido y de las consecuencias que de este se deriven.',
+                'The user who writes, uploads, shares, or transmits any material through FriendFrame is the sole and exclusive legal entity responsible for such content and any consequences arising from it.',
         },
         {
             id: '2c',
-            title: '• Aceptación de Riesgo por el Usuario:',
+            title: '• Acceptance of Risk by the User:',
             content:
-                'Al utilizar la Aplicación, el Usuario comprende y acepta que no posee la facultad técnica ni el derecho de borrar, modificar o editar las publicaciones que sus “Amigos” realicen en su perfil. Por lo tanto, el Usuario asume plenamente el riesgo del contenido que sus conexiones decidan publicar en su espacio.',
+                'By using the Application, the User understands and accepts that they do not possess the technical ability or the right to delete, modify, or edit the publications that their "Friends" make on their profile. Therefore, the User fully assumes the risk of the content that their connections choose to publish in their space.',
         },
         {
             id: '2d',
-            title: '• Intermediario Tecnológico:',
+            title: '• Technological Intermediary:',
             content:
-                'FriendFrame actúa estrictamente como un proveedor de servicios tecnológicos e intermediario pasivo. La Aplicación no realiza una moderación, filtrado ni aprobación previa del contenido que los “Amigos” publican en los perfiles ajenos.',
+                'FriendFrame acts strictly as a technological service provider and passive intermediary. The Application does not moderate, filter, or pre-approve the content that "Friends" publish on other people\'s profiles.',
         },
         {
             id: '3',
-            title: '3. Herramientas de Control del Usuario y Mitigación',
+            title: '3. User Control and Mitigation Tools',
             content:
-                'Dado que el Usuario no puede eliminar publicaciones individuales de terceros, la Aplicación otorga herramientas de control a nivel de relación para salvaguardar su privacidad e integridad. Es obligación del Usuario mitigar cualquier inconveniente utilizando los mecanismos integrados:\n\n• Revocación de Acceso (Eliminar/Bloquear Amigo): El usuario puede bloquear o eliminar de su lista de “Amigos" a cualquier cuenta en cualquier momento. Esto provocará de inmediato la pérdida del derecho de ese tercero a realizar nuevas publicaciones en el perfil del Usuario.',
+                "Since the User cannot delete individual publications from third parties, the Application provides relationship-level control tools to safeguard their privacy and integrity. It is the User's obligation to mitigate any inconvenience using the built-in mechanisms:nn• Access Revocation (Delete/Block Friend): The user can block or remove any account from their \"Friends\" list at any time. This will immediately cause the loss of that third party's right to make new publications on the User's profile.",
         },
         {
             id: '4',
-            title: '4. Política de Privacidad y Tratamiento de Datos',
+            title: '4. Privacy Policy and Data Processing',
             content:
-                "• Datos Recolectados: Para la operación del 'Feed Invertido', FriendFrame almacena la información de su perfil, su lista de conexiones verificadas y el contenido multimedia o de texto que se publica en la plataforma.\n\n• Finalidad: Estos datos se procesan con el único fin de proveer el servicio técnico de la red social. FriendFrame no vende, comercializa ni transfiere sus datos personales a terceras empresas con fines publicitarios.\n\n• Revelación Legal: Nos reservamos el derecho de conservar y entregar cualquier información o contenido a las autoridades competentes si así lo requiere una orden judicial o una investigación legal en curso.",
+                "• Data Collected: For the operation of the 'Inverted Feed', FriendFrame stores your profile information, your list of verified connections, and the multimedia or text content published on the platform.nn• Purpose: This data is processed for the sole purpose of providing the technical service of the social network. FriendFrame does not sell, market, or transfer your personal data to third-party companies for advertising purposes.nn• Legal Disclosure: We reserve the right to retain and disclose any information or content to competent authorities if required by a court order or ongoing legal investigation.",
         },
         {
             id: '5',
-            title: '5. Jurisdicción y Ley Aplicable',
+            title: '5. Jurisdiction and Applicable Law',
             content:
-                'Estos términos se rigen por las leyes vigentes aplicables. Cualquier disputa relacionada con el uso de la Aplicación se someterá a la jurisdicción exclusiva de los tribunales competentes en el domicilio de los creadores de la plataforma.',
+                "These terms are governed by applicable current laws. Any dispute related to the use of the Application will be submitted to the exclusive jurisdiction of the competent courts in the domicile of the platform's creators.",
         },
     ],
-    footer: 'Nota legal de implementación: Al marcar la casilla de verificación (Checkbox) obligatoria en la pantalla de registro, el Usuario declara bajo protesta de decir verdad que comprende perfectamente la mecánica del "Feed Invertido" y libera de toda responsabilidad legal a los creadores de FriendFrame por el uso, mal uso, difamación o daño moral que sus "Amigos" pudieran ocasionar dentro de su perfil.',
+    footer: 'Legal implementation note: By checking the mandatory Checkbox on the registration screen, the User declares under penalty of perjury that they perfectly understand the mechanics of the "Inverted Feed" and releases the creators of FriendFrame from any legal liability for the use, misuse, defamation, or moral damage that their "Friends" could cause within their profile.',
 };

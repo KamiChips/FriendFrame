@@ -12,7 +12,7 @@ jest.mock('@/services/supabase/auth/auth.sign-in', () => ({
     signInWithGoogle: jest.fn(),
 }));
 
-jest.mock('@/components/ui/common/text-field', () => {
+jest.mock('@/components/ui/TextField', () => {
     const React = require('react');
     const { TextInput } = require('react-native');
 
@@ -180,7 +180,7 @@ describe('<LoginScreen />', () => {
     test('shows error when email and password are valid but not exist in database', async () => {
         (signIn as jest.Mock).mockResolvedValue({
             data: null,
-            error: 'Invalid login credentials',
+            error: 'Invalid email or password.',
         });
 
         const { getByTestId, getByText } = await render(<LoginScreen />);
@@ -195,14 +195,14 @@ describe('<LoginScreen />', () => {
         await fireEvent.press(getByTestId('login-button'));
 
         await waitFor(() => {
-            expect(getByText('Invalid login credentials')).toBeTruthy();
+            expect(getByText('Invalid email or password.')).toBeTruthy();
         });
     });
 
     test('shows error message when signIn fails', async () => {
         (signIn as jest.Mock).mockResolvedValue({
             data: null,
-            error: 'Credenciales incorrectas',
+            error: 'Invalid login credentials',
         });
 
         const { getByTestId, getByText } = await render(<LoginScreen />);
@@ -217,7 +217,7 @@ describe('<LoginScreen />', () => {
         await fireEvent.press(getByTestId('login-button'));
 
         await waitFor(() => {
-            expect(getByText('Credenciales incorrectas')).toBeTruthy();
+            expect(getByText('Invalid login credentials')).toBeTruthy();
         });
     });
 
@@ -259,16 +259,14 @@ describe('<LoginScreen />', () => {
 
     test('shows error when Google sing in fails', async () => {
         (signInWithGoogle as jest.Mock).mockResolvedValue({
-            error: 'Error al iniciar sesión con Google',
+            error: 'Google sign in failed',
         });
 
         const { getByTestId, getByText } = await render(<LoginScreen />);
         await fireEvent.press(getByTestId('google-signin-button'));
 
         await waitFor(() => {
-            expect(
-                getByText('Error al iniciar sesión con Google')
-            ).toBeTruthy();
+            expect(getByText('Google sign in failed')).toBeTruthy();
         });
     });
 

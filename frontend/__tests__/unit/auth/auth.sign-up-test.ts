@@ -61,7 +61,7 @@ describe('signUp', () => {
         mockFrom.mockReturnValue({ select });
 
         const result = await signUp(validParams);
-        expect(result.error).toBe('Ese nombre de usuario ya está en uso.');
+        expect(result.error).toBe('That username is already taken.');
         expect(mockAuth.signUp).not.toHaveBeenCalled();
     });
 
@@ -70,7 +70,7 @@ describe('signUp', () => {
             ...validParams,
             email: 'olanosoyunemail',
         });
-        expect(result.error).toBe('El email no tiene un formato válido.');
+        expect(result.error).toBe('Invalid email format.');
     });
 
     it('throws error if user is already registered', async () => {
@@ -87,7 +87,7 @@ describe('signUp', () => {
         });
 
         const result = await signUp(validParams);
-        expect(result.error).toBe('Ya existe una cuenta con ese email.');
+        expect(result.error).toBe('An account with that email already exists.');
     });
 
     it('throws error if password is too short or empty', async () => {

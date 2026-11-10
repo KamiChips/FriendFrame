@@ -9,7 +9,7 @@ export function assertNotificationType(
     type: string
 ): asserts type is NotificationType {
     if (!VALID_TYPES.has(type as NotificationType))
-        throw new Error(`Tipo de notificación inválido: ${type}`);
+        throw new Error(`Invalid notification type: ${type}`);
 }
 
 export function normalizePagination(

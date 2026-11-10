@@ -3,15 +3,15 @@ import { View, Text, Pressable, useColorScheme } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import PostOptionsModal from './post-options-modal';
-import CommentsModal from '../comments/comments-modal';
-import { CommentType } from '../comments/comment-item';
-import ProfileIcon from '../icons/profile-icon';
+import CommentsModal from './CommentsModal';
+import { CommentType } from './CommentItem';
+import ProfileIcon from './ProfileIcon';
 import {
     toggleLikePost,
     toggleLikeFragment,
 } from '@/services/supabase/interactions/likes';
 import { PublicationTarget } from '@/services/supabase/interactions/types';
-import ShareChatModal from '../actions/share-chat-modal';
+import ShareChatModal from './share-chat-modal';
 
 type FeedCardPublicationType = 'post' | 'fragment';
 
@@ -134,10 +134,11 @@ export default function FeedCard({
                             {timeAgo}
                         </Text>
                         <Text className="mt-1 font-spartan text-sm text-gray-600 dark:text-gray-300">
-                            → en el perfil de{' '}
+                            → on{' '}
                             <Text className="font-spartan-bold">
                                 {targetProfileName}
                             </Text>
+                            {"'s profile"}
                         </Text>
                     </View>
                 </View>

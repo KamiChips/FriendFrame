@@ -8,7 +8,7 @@ jest.mock('@/services/supabase/auth/auth.sign-up', () => ({
     signUp: jest.fn(),
 }));
 
-jest.mock('@/components/ui/common/text-field', () => {
+jest.mock('@/components/ui/TextField', () => {
     const React = require('react');
     const { TextInput } = require('react-native');
 
@@ -248,7 +248,7 @@ describe('<SignUpScreen />', () => {
     test('shows error when signUp fails', async () => {
         (signUp as jest.Mock).mockResolvedValue({
             data: null,
-            error: 'El email ya está en uso',
+            error: 'An account with that email already exists.',
         });
 
         const { getByText, getByTestId } = await render(<SignUpScreen />);
@@ -272,7 +272,9 @@ describe('<SignUpScreen />', () => {
         await fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByText('El email ya está en uso')).toBeTruthy();
+            expect(
+                getByText('An account with that email already exists.')
+            ).toBeTruthy();
         });
     });
 

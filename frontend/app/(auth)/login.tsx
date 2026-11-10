@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
     View,
@@ -9,8 +9,8 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import '../../global.css';
-import { TextField } from '../../components/ui/common/text-field';
-import { Button } from '../../components/ui/common/button';
+import { TextField } from '../../components/ui/TextField';
+import { Button } from '../../components/ui/Button';
 import { router, Stack } from 'expo-router';
 import {
     signIn,

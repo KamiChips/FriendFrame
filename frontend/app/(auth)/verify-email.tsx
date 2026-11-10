@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, useColorScheme } from 'react-native';
 import '../../global.css';
-import { Button } from '../../components/ui/common/button';
+import { Button } from '../../components/ui/Button';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import {
     resendVerificationEmail,

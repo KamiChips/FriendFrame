@@ -41,7 +41,7 @@ const ChatMessageInput = ({ onSend, isDark }: ChatMessageInputProps) => {
                 {/* Input */}
                 <TextInput
                     className="flex-1 py-2 text-base font-spartan bg-background-gray dark:text-background-light dark:bg-[#1f2b4a] rounded-xl"
-                    placeholder="Escribe un mensaje..."
+                    placeholder="Write a message..."
                     placeholderTextColor={`${isDark ? '#aaa' : '#182240'}`}
                     value={text}
                     onChangeText={setText}

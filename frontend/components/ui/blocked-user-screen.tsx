@@ -64,13 +64,13 @@ export default function BlockedUserScreen({
 
                 {/* Textos Informativos */}
                 <Text className="text-2xl font-spartan-bold mb-2 text-gray-900 dark:text-white">
-                    Usuario Bloqueado
+                    Blocked User
                 </Text>
                 <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 text-center mb-1">
-                    Has bloqueado a {fullName}
+                    You have blocked {fullName}
                 </Text>
                 <Text className="text-xs text-gray-400 dark:text-gray-500 text-center mb-10">
-                    No puedes ver su perfil ni interactuar con él
+                    You cannot see their profile or interact with them
                 </Text>
 
                 {/* Botones de Acción */}
@@ -84,7 +84,7 @@ export default function BlockedUserScreen({
                             <ActivityIndicator color="white" />
                         ) : (
                             <Text className="font-spartan-bold text-white text-base">
-                                Desbloquear Usuario
+                                Unblock User
                             </Text>
                         )}
                     </TouchableOpacity>
