@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Text, View } from "react-native";
 
 import { AppShell, type ShellProps } from "@/components/layout/AppShell";
+import { AddMemberDialog, type MemberCandidate, RemoveRoleDialog } from "@/components/team/TeamDialogs";
 import { TeamTable } from "@/components/team/TeamTable";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -14,13 +16,28 @@ export interface TeamScreenProps {
   shell: ShellProps;
   members: TeamMember[];
   lastUpdated: string;
-  onAddMember?: () => void;
+  // cuenta encontrada para agregar al equipo; la ruta la busca con onSearchCandidate
+  candidate?: MemberCandidate | null;
+  onSearchCandidate?: (query: string) => void;
+  onAddMember?: (userId: string, role: TeamRole) => void;
   onRemoveRole?: (memberId: string) => void;
 }
 
 const roles: TeamRole[] = ["admin", "moderator"];
 
-export function TeamScreen({ shell, members, lastUpdated, onAddMember, onRemoveRole }: TeamScreenProps) {
+export function TeamScreen({
+  shell,
+  members,
+  lastUpdated,
+  candidate,
+  onSearchCandidate,
+  onAddMember,
+  onRemoveRole,
+}: TeamScreenProps) {
+  // agregar y quitar roles piden confirmacion
+  const [isAdding, setIsAdding] = useState(false);
+  const [removing, setRemoving] = useState<TeamMember | null>(null);
+
   return (
     <AppShell
       {...shell}
@@ -28,7 +45,7 @@ export function TeamScreen({ shell, members, lastUpdated, onAddMember, onRemoveR
       breadcrumb="Moderación / Equipo"
       title="Equipo"
       headerActions={
-        <Button label="Agregar miembro" variant="primary" icon="plus" onPress={onAddMember} />
+        <Button label="Agregar miembro" variant="primary" icon="plus" onPress={() => setIsAdding(true)} />
       }
     >
       <Text className="font-spartan text-base leading-[19px] text-muted-light dark:text-muted-dark">
@@ -57,7 +74,11 @@ export function TeamScreen({ shell, members, lastUpdated, onAddMember, onRemoveR
         </Text>
       </View>
 
-      <TeamTable members={members} lastUpdated={lastUpdated} onRemoveRole={onRemoveRole} />
+      <TeamTable
+        members={members}
+        lastUpdated={lastUpdated}
+        onRemoveRole={(memberId) => setRemoving(members.find((member) => member.id === memberId) ?? null)}
+      />
 
       <View className="flex-row items-start gap-5">
         {roles.map((role) => (
@@ -74,6 +95,30 @@ export function TeamScreen({ shell, members, lastUpdated, onAddMember, onRemoveR
           </Card>
         ))}
       </View>
+
+      {isAdding && (
+        <AddMemberDialog
+          visible
+          candidate={candidate}
+          onSearch={onSearchCandidate}
+          onConfirm={(userId, role) => {
+            setIsAdding(false);
+            onAddMember?.(userId, role);
+          }}
+          onCancel={() => setIsAdding(false)}
+        />
+      )}
+      {removing && (
+        <RemoveRoleDialog
+          visible
+          member={removing}
+          onConfirm={() => {
+            setRemoving(null);
+            onRemoveRole?.(removing.id);
+          }}
+          onCancel={() => setRemoving(null)}
+        />
+      )}
     </AppShell>
   );
 }

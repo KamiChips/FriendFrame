@@ -48,11 +48,28 @@ describe("<TeamScreen />", () => {
     expect(row.getByText("Sistema")).toBeTruthy();
   });
 
-  test("avisa a que miembro se le quiere quitar el rol", () => {
+  test("confirma antes de quitar el rol a un miembro", () => {
     const onRemoveRole = jest.fn();
-    const { getByRole } = renderTeam({ onRemoveRole });
+    const { getByRole, getByText, getAllByRole } = renderTeam({ onRemoveRole });
     fireEvent.press(getByRole("button", { name: "Quitar rol a @maria.lopez" }));
+    expect(onRemoveRole).not.toHaveBeenCalled();
+    expect(
+      getByText("@maria.lopez perderá el acceso al panel. Su cuenta de FriendFrame seguirá activa."),
+    ).toBeTruthy();
+
+    // el boton de la confirmacion es el ultimo con esa etiqueta
+    const confirmButtons = getAllByRole("button", { name: "Quitar rol" });
+    fireEvent.press(confirmButtons[confirmButtons.length - 1]);
     expect(onRemoveRole).toHaveBeenCalledWith("m3");
+  });
+
+  test("cancelar la confirmacion no quita el rol", () => {
+    const onRemoveRole = jest.fn();
+    const { getByRole, queryByText } = renderTeam({ onRemoveRole });
+    fireEvent.press(getByRole("button", { name: "Quitar rol a @maria.lopez" }));
+    fireEvent.press(getByRole("button", { name: "Cancelar" }));
+    expect(onRemoveRole).not.toHaveBeenCalled();
+    expect(queryByText(/perderá el acceso al panel/)).toBeNull();
   });
 
   test("no permite que el usuario se quite su propio rol", () => {
@@ -63,11 +80,38 @@ describe("<TeamScreen />", () => {
     expect(getByText("No puedes quitarte tu propio rol")).toBeTruthy();
   });
 
-  test("permite agregar un miembro", () => {
+  test("agrega un miembro buscado con el rol elegido", () => {
     const onAddMember = jest.fn();
-    const { getByRole } = renderTeam({ onAddMember });
+    const onSearchCandidate = jest.fn();
+    const candidate = { id: "u6", handle: "@sofia.crea", initials: "SV" };
+    const { getByRole, getByLabelText, getByText, getAllByRole, rerender } = renderTeam({
+      onAddMember,
+      onSearchCandidate,
+    });
     fireEvent.press(getByRole("button", { name: "Agregar miembro" }));
-    expect(onAddMember).toHaveBeenCalledTimes(1);
+    // sin candidato no se puede agregar
+    const confirmButton = () => getByRole("button", { name: "Agregar" });
+    fireEvent.press(confirmButton());
+    expect(onAddMember).not.toHaveBeenCalled();
+
+    fireEvent.changeText(getByLabelText("Buscar por nombre o @username"), "@sofia");
+    expect(onSearchCandidate).toHaveBeenLastCalledWith("@sofia");
+
+    rerender(
+      <TeamScreen
+        shell={buildShell()}
+        members={teamMembers}
+        lastUpdated="8 nov 2026 · 11:05"
+        candidate={candidate}
+        onAddMember={onAddMember}
+        onSearchCandidate={onSearchCandidate}
+      />,
+    );
+    expect(getByText("@sofia.crea")).toBeTruthy();
+    fireEvent.press(getByRole("radio", { name: "Admin" }));
+    fireEvent.press(confirmButton());
+    expect(onAddMember).toHaveBeenCalledWith("u6", "admin");
+    expect(getAllByRole("button", { name: "Agregar miembro" })).toHaveLength(1);
   });
 
   test("muestra cuando se actualizo la lista", () => {
