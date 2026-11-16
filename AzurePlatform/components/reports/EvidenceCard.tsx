@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import { Pressable, Text, View } from "react-native";
 
 import { Avatar } from "@/components/ui/Avatar";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { Icon } from "@/components/ui/Icon";
@@ -14,6 +15,8 @@ export interface EvidenceCardProps {
   reporterHandle: string;
   statement: string;
   onReveal?: () => void;
+  // vuelve a pedir la evidencia cuando su enlace expiro
+  onReloadEvidence?: () => void;
 }
 
 const REVEAL_LABEL = "Contenido potencialmente sensible — clic para revelar";
@@ -24,7 +27,9 @@ export function EvidenceCard({
   reporterHandle,
   statement,
   onReveal,
+  onReloadEvidence,
 }: EvidenceCardProps) {
+  const evidenceStatus = content.evidenceStatus ?? "available";
   const isVeiled = content.isSensitive && !content.isRevealed;
   const details = [contentTypes[contentType].label, content.postedAt];
   // el feed invertido permite publicar en perfiles ajenos; se senala porque cambia el contexto
@@ -44,49 +49,76 @@ export function EvidenceCard({
             en el perfil de {content.profileOwnerHandle}
           </Text>
         </View>
-        {content.isVisible ? <Chip label="Visible" variant="success" /> : <Chip label="Oculto" />}
+        <Chip
+          label={
+            evidenceStatus === "deleted"
+              ? "Borrado por el autor"
+              : content.isVisible
+                ? "Visible"
+                : "Oculto"
+          }
+          variant="success"
+        />
       </View>
 
       <Text className="font-spartan text-[13px] leading-4 text-muted-light dark:text-muted-dark">
         {details.join(" · ")}
       </Text>
 
-      {/* el alto cambia con el estado, igual que en el diseno */}
-      <View
-        className="items-center justify-center overflow-hidden rounded-xl bg-soft-light dark:bg-soft-dark"
-        style={{ height: isVeiled ? 230 : 185 }}
-      >
-        {content.mediaUrl && (
-          <Image
-            testID="evidence-media"
-            source={{ uri: content.mediaUrl }}
-            style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}
-            contentFit="cover"
-            blurRadius={isVeiled ? 10 : 0}
-          />
-        )}
+      {/* sin evidencia se explica por que; con evidencia el alto cambia con el velo, igual que en el diseno */}
+      {evidenceStatus === "expired" ? (
+        <View className="h-[230px] items-center justify-center gap-4 overflow-hidden rounded-xl bg-soft-light dark:bg-soft-dark">
+          <Text className="font-spartan text-[22px] leading-[26px] text-ink-light dark:text-ink-dark">
+            El enlace de evidencia expiró
+          </Text>
+          <Button label="Recargar" variant="ghost" icon="arrow-left" onPress={onReloadEvidence} />
+        </View>
+      ) : evidenceStatus === "deleted" ? (
+        <View className="h-[230px] items-center justify-center gap-[10px]">
+          <Text className="font-spartan text-[21px] leading-[25px] text-ink-light dark:text-ink-dark">
+            El autor borró esta publicación
+          </Text>
+          <Text className="font-spartan text-[15px] leading-[18px] text-muted-light dark:text-muted-dark">
+            El reporte y su historial se conservan.
+          </Text>
+        </View>
+      ) : (
+        <View
+          className="items-center justify-center overflow-hidden rounded-xl bg-soft-light dark:bg-soft-dark"
+          style={{ height: isVeiled ? 230 : 185 }}
+        >
+          {content.mediaUrl && (
+            <Image
+              testID="evidence-media"
+              source={{ uri: content.mediaUrl }}
+              style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}
+              contentFit="cover"
+              blurRadius={isVeiled ? 10 : 0}
+            />
+          )}
 
-        {isVeiled && (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={REVEAL_LABEL}
-            onPress={onReveal}
-            className="absolute inset-0 items-center justify-center gap-[10px] bg-[rgba(24,34,64,0.5)]"
-          >
-            <Icon name="eye-off" size={28} color="#FFFFFF" />
-            <Text className="w-[450px] max-w-full text-center font-spartan text-base leading-[19px] text-white">
-              {REVEAL_LABEL}
-            </Text>
-          </Pressable>
-        )}
+          {isVeiled && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={REVEAL_LABEL}
+              onPress={onReveal}
+              className="absolute inset-0 items-center justify-center gap-[10px] bg-[rgba(24,34,64,0.5)]"
+            >
+              <Icon name="eye-off" size={28} color="#FFFFFF" />
+              <Text className="w-[450px] max-w-full text-center font-spartan text-base leading-[19px] text-white">
+                {REVEAL_LABEL}
+              </Text>
+            </Pressable>
+          )}
 
-        {content.isSensitive && content.isRevealed && (
-          <View className="absolute left-3 top-3 flex-row gap-1.5 rounded-[20px] bg-[rgba(24,34,64,0.8)] px-[10px] py-1.5">
-            <Icon name="eye" size={14} color="#FFFFFF" />
-            <Text className="font-spartan text-xs leading-[14px] text-white">Evidencia revelada</Text>
-          </View>
-        )}
-      </View>
+          {content.isSensitive && content.isRevealed && (
+            <View className="absolute left-3 top-3 flex-row gap-1.5 rounded-[20px] bg-[rgba(24,34,64,0.8)] px-[10px] py-1.5">
+              <Icon name="eye" size={14} color="#FFFFFF" />
+              <Text className="font-spartan text-xs leading-[14px] text-white">Evidencia revelada</Text>
+            </View>
+          )}
+        </View>
+      )}
 
       <View className="gap-[7px] rounded-[10px] bg-soft-light p-[14px] dark:bg-soft-dark">
         <Text className="font-spartan text-xs leading-[14px] text-muted-light dark:text-muted-dark">

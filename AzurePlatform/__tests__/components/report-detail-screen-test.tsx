@@ -155,3 +155,103 @@ describe("<ReportDetailScreen /> con un reporte en revision", () => {
     ).toBeTruthy();
   });
 });
+
+describe("<ReportDetailScreen /> con evidencia no disponible", () => {
+  test("ofrece recargar cuando el enlace de la evidencia expiro", () => {
+    const onReloadEvidence = jest.fn();
+    const report = { ...pendingReport, content: { ...pendingReport.content, evidenceStatus: "expired" as const } };
+    const { getByText, getByRole, queryByText } = renderDetail({ report, onReloadEvidence });
+    expect(getByText("El enlace de evidencia expiró")).toBeTruthy();
+    expect(queryByText(/clic para revelar/)).toBeNull();
+    fireEvent.press(getByRole("button", { name: "Recargar" }));
+    expect(onReloadEvidence).toHaveBeenCalledTimes(1);
+  });
+
+  test("explica que el autor borro la publicacion", () => {
+    const report = { ...pendingReport, content: { ...pendingReport.content, evidenceStatus: "deleted" as const } };
+    const { getByText, queryByText } = renderDetail({ report });
+    expect(getByText("Borrado por el autor")).toBeTruthy();
+    expect(getByText("El autor borró esta publicación")).toBeTruthy();
+    expect(getByText("El reporte y su historial se conservan.")).toBeTruthy();
+    expect(queryByText("Visible")).toBeNull();
+  });
+
+  test("marca el contenido que ya esta oculto", () => {
+    const report = { ...pendingReport, content: { ...pendingReport.content, isVisible: false } };
+    const { getByText } = renderDetail({ report });
+    expect(getByText("Oculto")).toBeTruthy();
+  });
+});
+
+describe("<ReportDetailScreen /> en revision por otra persona", () => {
+  const takenByOther = { ...pendingReport, status: "in_review" as const, assignee: "@moderador2" };
+
+  test("no permite resolverlo ni tomarlo", () => {
+    const { getByRole, queryByText } = renderDetail({ report: takenByOther });
+    const button = getByRole("button", { name: "En revisión por @moderador2" });
+    expect(button.props.accessibilityState.disabled).toBe(true);
+    expect(queryByText("Resolver reporte")).toBeNull();
+    expect(queryByText("Tomar caso")).toBeNull();
+  });
+
+  test("indica a quien esta asignado", () => {
+    const { getByText } = renderDetail({ report: takenByOther });
+    expect(getByText("Asignado a @moderador2")).toBeTruthy();
+  });
+});
+
+describe("<ReportDetailScreen /> confirmaciones", () => {
+  const today = new Date(2026, 10, 8);
+
+  test("pide confirmar la suspension antes de aplicarla", () => {
+    const onResolve = jest.fn();
+    const { getByRole, getByText, getAllByText } = renderDetail({
+      report: reportInReview,
+      referenceDate: today,
+      onResolve,
+    });
+    fireEvent.press(getByRole("radio", { name: "Suspender autor" }));
+    fireEvent.press(getByRole("button", { name: "7 días" }));
+    fireEvent.press(getByRole("button", { name: "Aplicar suspensión" }));
+    expect(onResolve).not.toHaveBeenCalled();
+
+    expect(getByText("Confirmar suspensión")).toBeTruthy();
+    expect(getByText("@carlos_dev no podrá acceder durante 7 días.")).toBeTruthy();
+    // la fecha aparece en el panel y en la confirmacion
+    expect(getAllByText("Suspendido hasta: 15 nov 2026")).toHaveLength(2);
+    expect(getByText("Se cerrarán también los otros 2 reportes pendientes de este contenido.")).toBeTruthy();
+
+    fireEvent.press(getByRole("button", { name: "Suspender" }));
+    expect(onResolve).toHaveBeenCalledWith({ action: "suspend", suspensionDays: 7, notes: "" });
+  });
+
+  test("cancelar la suspension no la aplica", () => {
+    const onResolve = jest.fn();
+    const { getByRole, queryByText } = renderDetail({ report: reportInReview, referenceDate: today, onResolve });
+    fireEvent.press(getByRole("radio", { name: "Suspender autor" }));
+    fireEvent.press(getByRole("button", { name: "7 días" }));
+    fireEvent.press(getByRole("button", { name: "Aplicar suspensión" }));
+    fireEvent.press(getByRole("button", { name: "Cancelar" }));
+    expect(onResolve).not.toHaveBeenCalled();
+    expect(queryByText("Confirmar suspensión")).toBeNull();
+  });
+
+  test("el baneo se confirma escribiendo el usuario", () => {
+    const onResolve = jest.fn();
+    const { getByRole, getAllByLabelText, getByLabelText } = renderDetail({ report: reportInReview, onResolve });
+    fireEvent.press(getByRole("radio", { name: "Banear autor" }));
+    fireEvent.changeText(getByLabelText("Notas internas"), "Reincidencia.");
+    fireEvent.press(getByRole("button", { name: "Continuar con el baneo" }));
+
+    const banButton = getByRole("button", { name: "Banear" });
+    fireEvent.press(banButton);
+    expect(onResolve).not.toHaveBeenCalled();
+
+    fireEvent.changeText(getByLabelText("Escribe @carlos_dev para confirmar"), "@carlos_dev");
+    // las notas del panel pasan a la confirmacion y pueden ajustarse ahi
+    const notes = getAllByLabelText("Notas internas");
+    expect(notes[notes.length - 1].props.value).toBe("Reincidencia.");
+    fireEvent.press(getByRole("button", { name: "Banear" }));
+    expect(onResolve).toHaveBeenCalledWith({ action: "ban", notes: "Reincidencia." });
+  });
+});

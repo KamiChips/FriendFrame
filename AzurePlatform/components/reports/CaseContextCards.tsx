@@ -13,15 +13,36 @@ const title = "font-spartan-bold text-lg leading-[22px] text-ink-light dark:text
 const muted = "font-spartan text-muted-light dark:text-muted-dark";
 const link = "font-spartan text-link-light dark:text-link-dark";
 
-// invitacion a tomar un caso que nadie tiene asignado
-export function AssignmentCard({ onTakeCase }: { onTakeCase?: () => void }) {
+export interface AssignmentCardProps {
+  // quien revisa el caso si ya lo tomo otra persona
+  reviewer?: string | null;
+  onTakeCase?: () => void;
+}
+
+// invitacion a tomar un caso; si ya lo tomo otra persona el boton queda bloqueado
+export function AssignmentCard({ reviewer, onTakeCase }: AssignmentCardProps) {
   return (
     <Card className="gap-3 p-5">
       <Text className={title}>Este caso está disponible</Text>
       <Text className={`${muted} text-sm leading-[17px]`}>
         Tómalo para revisarlo y aplicar una acción.
       </Text>
-      <Button label="Tomar caso" variant="primary" icon="hand" fullWidth onPress={onTakeCase} />
+      {reviewer ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`En revisión por ${reviewer}`}
+          accessibilityState={{ disabled: true }}
+          disabled
+          className="h-10 w-full flex-row items-center justify-center gap-2 rounded-full bg-soft-light px-[18px] dark:bg-soft-dark"
+        >
+          <Icon name="hand" size={17} tone="ink" />
+          <Text className="font-spartan text-[15px] leading-[18px] text-ink-light dark:text-ink-dark">
+            En revisión por {reviewer}
+          </Text>
+        </Pressable>
+      ) : (
+        <Button label="Tomar caso" variant="primary" icon="hand" fullWidth onPress={onTakeCase} />
+      )}
     </Card>
   );
 }
