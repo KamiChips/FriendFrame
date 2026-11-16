@@ -1,28 +1,32 @@
+import type { CurrentUser } from "@/components/layout/Sidebar";
 import { auditEntries, teamMembers } from "@/fixtures/audit";
 import { metrics, reasons, reviewCases, weeklyReports } from "@/fixtures/dashboard";
-import { pendingReport } from "@/fixtures/report-detail";
+import { pendingReport, unavailableEvidence } from "@/fixtures/report-detail";
 import { reports } from "@/fixtures/reports";
+import { adminUser, moderatorUser, teamEmailDomain } from "@/fixtures/session";
 import { suspendedProfile, users } from "@/fixtures/users";
-import { formatDate } from "@/lib/format";
+import { addDays, formatDate } from "@/lib/format";
 import type {
+  AccountStatus,
   AuditAction,
   AuditEntry,
   Report,
   ReportDetail,
+  Resolution,
   ResolutionAction,
+  TeamMember,
   UserAccount,
   UserProfile,
 } from "@/types/moderation";
 
-import type { ModerationService } from "./types";
+import { AuthError, type ModerationService } from "./types";
 
 // servicio en memoria con los datos del diseno; permite recorrer la app sin backend.
 // los cambios (tomar casos, restaurar cuentas...) duran hasta recargar la pagina
 
-const CURRENT_USER = { handle: "@admin", initials: "A", role: "Admin" };
-
 // la cola del diseno empieza en FF-1048 y baja de uno en uno
 const FIRST_CODE = 1048;
+const MIN_PASSWORD_LENGTH = 6;
 
 const resolutionToAudit: Record<ResolutionAction, AuditAction> = {
   dismiss: "dismissed_report",
@@ -32,13 +36,22 @@ const resolutionToAudit: Record<ResolutionAction, AuditAction> = {
   ban: "banned_account",
 };
 
+// estado en que queda la cuenta del autor tras cada accion; ausente si no cambia
+const resolutionToStatus: Partial<Record<ResolutionAction, AccountStatus>> = {
+  suspend: "suspended",
+  ban: "banned",
+};
+
 interface State {
+  currentUser: CurrentUser;
   reports: Report[];
   revealed: Set<string>;
+  // reportes fuera de la cola que se cerraron junto con otro
+  closedRelated: Set<string>;
   users: UserAccount[];
   profiles: Record<string, UserProfile>;
   audit: AuditEntry[];
-  team: typeof teamMembers;
+  team: TeamMember[];
 }
 
 // copia profunda para que los cambios no alteren los datos de las pruebas
@@ -48,8 +61,10 @@ function clone<T>(value: T): T {
 
 function initialState(): State {
   return {
+    currentUser: adminUser,
     reports: clone(reports),
     revealed: new Set(),
+    closedRelated: new Set(),
     users: clone(users),
     profiles: { [suspendedProfile.id]: clone(suspendedProfile) },
     audit: clone(auditEntries),
@@ -74,14 +89,26 @@ function knownCodes(): Record<string, string> {
   return codes;
 }
 
+// el simulado acepta cualquier contrasena de 6 o mas caracteres con un correo del equipo
+function accountFor(email: string, password: string): CurrentUser {
+  const [localPart, domain] = email.trim().toLowerCase().split("@");
+  if (!localPart || !domain || password.length < MIN_PASSWORD_LENGTH) {
+    throw new AuthError("invalid_credentials");
+  }
+  if (domain !== teamEmailDomain) throw new AuthError("not_authorized");
+  return localPart.startsWith("moderador") ? moderatorUser : adminUser;
+}
+
 export function createMockModerationService() {
   let state = initialState();
+
+  const me = () => state.currentUser.handle;
 
   const log = (action: AuditAction, target: string, report: AuditEntry["report"], notes: string) => {
     state.audit.unshift({
       id: `a${Date.now()}${state.audit.length}`,
       ...nowLabel(),
-      moderator: CURRENT_USER.handle,
+      moderator: me(),
       action,
       target,
       report,
@@ -90,9 +117,49 @@ export function createMockModerationService() {
   };
 
   const findReport = (reportId: string) => state.reports.find((report) => report.id === reportId);
+  const findUserByHandle = (handle: string) => state.users.find((user) => user.handle === handle);
   const codeOf = (reportId: string) => {
     const index = state.reports.findIndex((report) => report.id === reportId);
     return index >= 0 ? `FF-${FIRST_CODE - index}` : knownCodes()[reportId];
+  };
+
+  // otros reportes del mismo contenido que siguen pendientes
+  const pendingRelated = (reportId: string) =>
+    reportId === pendingReport.id
+      ? pendingReport.relatedReports.filter(
+          (related) => related.status === "pending" && !state.closedRelated.has(related.id),
+        )
+      : [];
+
+  // la sancion cambia el estado de la cuenta y queda en su linea de tiempo
+  const sanctionAuthor = (handle: string, reportId: string, resolution: Resolution) => {
+    const status = resolutionToStatus[resolution.action];
+    const user = findUserByHandle(handle);
+    if (!status || !user) return;
+    user.status = status;
+
+    const profile = state.profiles[user.id];
+    if (!profile) return;
+    const now = new Date();
+    const days = resolution.suspensionDays;
+    const until = status === "suspended" && days ? addDays(now, days) : null;
+    profile.status = status;
+    profile.activeSanction = {
+      until: until ? formatDate(until).split(" ").slice(0, 2).join(" ") : undefined,
+      appliedBy: me(),
+      appliedAt: formatDate(now),
+      reportId,
+      reportCode: codeOf(reportId),
+    };
+    profile.timeline.unshift({
+      id: `e${Date.now()}`,
+      kind: status === "suspended" ? "suspension" : "ban",
+      title: status === "suspended" ? `Suspensión de ${days} días` : "Cuenta baneada",
+      date: formatDate(now),
+      moderator: me(),
+      reportCode: codeOf(reportId),
+      note: resolution.notes || undefined,
+    });
   };
 
   const service: ModerationService & { reset(): void } = {
@@ -100,12 +167,12 @@ export function createMockModerationService() {
       state = initialState();
     },
 
-    async signIn() {
-      // el simulado acepta cualquier credencial
+    async signIn({ email, password }) {
+      state.currentUser = accountFor(email, password);
     },
     async signOut() {},
     async getCurrentUser() {
-      return CURRENT_USER;
+      return state.currentUser;
     },
     async getSectionCounts() {
       return { reports: state.reports.filter((report) => report.status !== "resolved").length };
@@ -128,7 +195,7 @@ export function createMockModerationService() {
           (!query.status || report.status === query.status) &&
           (!query.contentType || report.contentType === query.contentType) &&
           (!query.reason || report.reason === query.reason) &&
-          (!query.assignedToMe || report.assignee === CURRENT_USER.handle),
+          (!query.assignedToMe || report.assignee === me()),
       );
       return {
         reports: filtered,
@@ -147,6 +214,9 @@ export function createMockModerationService() {
 
       const report = findReport(reportId);
       const base: ReportDetail = { ...clone(pendingReport), id: reportId, code };
+      base.relatedReports = base.relatedReports.map((related) =>
+        state.closedRelated.has(related.id) ? { ...related, status: "resolved" } : related,
+      );
       if (!report) return base;
 
       // el detalle completo del diseno es el de @carlos_dev; los demas reutilizan su estructura
@@ -161,6 +231,7 @@ export function createMockModerationService() {
           ...base.content,
           author: report.user,
           isRevealed: state.revealed.has(reportId),
+          evidenceStatus: unavailableEvidence[reportId] ?? "available",
         },
         authorHistory: isDesignAuthor ? base.authorHistory : [],
         relatedReports: reportId === pendingReport.id ? base.relatedReports : [],
@@ -170,7 +241,7 @@ export function createMockModerationService() {
       const report = findReport(reportId);
       if (!report) return;
       report.status = "in_review";
-      report.assignee = CURRENT_USER.handle;
+      report.assignee = me();
       log("took_case", report.user.handle, { id: reportId, code: codeOf(reportId) }, "Asignación manual.");
     },
     async revealEvidence(reportId) {
@@ -179,9 +250,15 @@ export function createMockModerationService() {
     },
     async resolveReport(reportId, resolution) {
       const report = findReport(reportId);
-      if (!report) return;
+      if (!report) return { closedCount: 0 };
+
+      const related = pendingRelated(reportId);
       report.status = "resolved";
+      report.assignee = me();
+      related.forEach((item) => state.closedRelated.add(item.id));
+      sanctionAuthor(report.user.handle, reportId, resolution);
       log(resolutionToAudit[resolution.action], report.user.handle, { id: reportId, code: codeOf(reportId) }, resolution.notes);
+      return { closedCount: 1 + related.length };
     },
 
     async getUsers(query) {
@@ -209,13 +286,13 @@ export function createMockModerationService() {
           { id: "sanctions", value: 0, label: "Sanciones", caption: "Registradas en la bitácora" },
         ],
         timeline: [],
-        hiddenContentCount: 0,
+        hiddenContent: [],
       };
     },
     async findUserIdByHandle(handle) {
-      return state.users.find((user) => user.handle === handle)?.id ?? null;
+      return findUserByHandle(handle)?.id ?? null;
     },
-    async restoreAccount(userId) {
+    async restoreAccount(userId, notes) {
       const user = state.users.find((account) => account.id === userId);
       if (!user) return;
       user.status = "active";
@@ -223,8 +300,21 @@ export function createMockModerationService() {
       if (profile) {
         profile.status = "active";
         profile.activeSanction = null;
+        profile.timeline.unshift({
+          id: `e${Date.now()}`,
+          kind: "restoration",
+          title: "Cuenta restaurada",
+          date: formatDate(new Date()),
+          moderator: me(),
+          note: notes || undefined,
+        });
       }
-      log("restored_account", user.handle, null, "");
+      log("restored_account", user.handle, null, notes);
+    },
+    async restoreContent(userId, contentId) {
+      const profile = state.profiles[userId];
+      if (!profile) return;
+      profile.hiddenContent = profile.hiddenContent.filter((item) => item.id !== contentId);
     },
 
     async getAuditLog(query) {
@@ -237,12 +327,31 @@ export function createMockModerationService() {
     },
 
     async getTeam() {
-      return { members: state.team, lastUpdated: "8 nov 2026 · 11:05" };
+      // quien es "tu" lo decide la sesion, no los datos
+      return {
+        members: state.team.map((member) => ({ ...member, isCurrentUser: member.handle === me() })),
+        lastUpdated: "8 nov 2026 · 11:05",
+      };
+    },
+    async addMember(userId, role) {
+      const user = state.users.find((account) => account.id === userId);
+      if (!user || state.team.some((member) => member.handle === user.handle)) return;
+      state.team.push({
+        id: `m${Date.now()}`,
+        name: user.name,
+        handle: user.handle,
+        initials: user.initials,
+        avatarUrl: user.avatarUrl,
+        role,
+        grantedBy: me(),
+        joinedAt: formatDate(new Date()),
+      });
+      log("granted_role", user.handle, null, "");
     },
     async removeRole(memberId) {
       const member = state.team.find((candidate) => candidate.id === memberId);
       // nadie puede quitarse su propio rol
-      if (!member || member.isCurrentUser) return;
+      if (!member || member.handle === me()) return;
       state.team = state.team.filter((candidate) => candidate.id !== memberId);
       log("revoked_role", member.handle, null, "");
     },

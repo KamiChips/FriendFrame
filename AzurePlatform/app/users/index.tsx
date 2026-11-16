@@ -6,6 +6,7 @@ import { accountStatusOptions } from "@/constants/filters";
 import { useAsync } from "@/hooks/use-async";
 import { useCycle } from "@/hooks/use-cycle";
 import { useShell } from "@/hooks/use-shell";
+import { ErrorScreen } from "@/screens/ErrorScreen";
 import { UsersScreen } from "@/screens/UsersScreen";
 import { moderation } from "@/services/moderation";
 
@@ -18,7 +19,10 @@ export default function UsersRoute() {
     [query, status.option],
   );
 
-  if (!shell || !data) return <ScreenState error={error} onRetry={reload} />;
+  if (shell && error) {
+    return <ErrorScreen shell={shell} kind="unexpected" activeSection="users" onAction={reload} />;
+  }
+  if (!shell || !data) return <ScreenState />;
 
   return (
     <UsersScreen

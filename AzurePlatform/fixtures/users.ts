@@ -35,5 +35,8 @@ export const suspendedProfile: UserProfile = {
     { id: "e3", kind: "warning", title: "Advertencia por spam", date: "6 nov 2026 · 09:15", moderator: "@admin", reportCode: "FF-0910" },
     { id: "e4", kind: "suspension", title: "Suspensión de 3 días finalizada", date: "2 nov 2026 · 14:20", moderator: "@moderador2", reportCode: "FF-0862" },
   ],
-  hiddenContentCount: 2,
+  hiddenContent: [
+    { id: "h1", contentType: "post", reportId: "r1", reportCode: "FF-1048", profileOwnerHandle: "@ana.rmz", hiddenAt: "8 nov 2026", mediaUrl: null },
+    { id: "h2", contentType: "post", reportId: "r-984", reportCode: "FF-984", profileOwnerHandle: "@luis.fotos", hiddenAt: "6 nov 2026", mediaUrl: null },
+  ],
 };

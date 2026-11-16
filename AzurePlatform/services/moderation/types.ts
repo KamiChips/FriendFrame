@@ -14,6 +14,7 @@ import type {
   Resolution,
   ReviewCase,
   TeamMember,
+  TeamRole,
   UserAccount,
   UserProfile,
 } from "@/types/moderation";
@@ -21,6 +22,23 @@ import type {
 export interface Credentials {
   email: string;
   password: string;
+}
+
+// "invalid_credentials": correo o contrasena incorrectos; "not_authorized": la cuenta no es del equipo
+export type AuthErrorReason = "invalid_credentials" | "not_authorized";
+
+// error de inicio de sesion; la ruta de login lo traduce a un mensaje
+export class AuthError extends Error {
+  constructor(public readonly reason: AuthErrorReason) {
+    super(reason);
+    this.name = "AuthError";
+  }
+}
+
+// resultado de resolver un reporte
+export interface ResolutionOutcome {
+  // reportes cerrados en total, contando este y los pendientes del mismo contenido
+  closedCount: number;
 }
 
 export interface DashboardData {
@@ -93,16 +111,19 @@ export interface ModerationService {
   getReport(reportId: string): Promise<ReportDetail | null>;
   takeCase(reportId: string): Promise<void>;
   revealEvidence(reportId: string): Promise<void>;
-  resolveReport(reportId: string, resolution: Resolution): Promise<void>;
+  resolveReport(reportId: string, resolution: Resolution): Promise<ResolutionOutcome>;
 
   getUsers(query: UserQuery): Promise<UserPage>;
   // null si la cuenta no existe
   getUser(userId: string): Promise<UserProfile | null>;
   findUserIdByHandle(handle: string): Promise<string | null>;
-  restoreAccount(userId: string): Promise<void>;
+  // las notas explican al equipo por que se restauro
+  restoreAccount(userId: string, notes: string): Promise<void>;
+  restoreContent(userId: string, contentId: string): Promise<void>;
 
   getAuditLog(query: AuditQuery): Promise<AuditPage>;
 
   getTeam(): Promise<TeamData>;
+  addMember(userId: string, role: TeamRole): Promise<void>;
   removeRole(memberId: string): Promise<void>;
 }

@@ -14,11 +14,13 @@ export interface Credentials {
 }
 
 export interface LoginScreenProps {
+  // motivo por el que no se pudo entrar; reemplaza el lema
+  errorMessage?: string;
   onSubmit?: (credentials: Credentials) => void;
   onForgotPassword?: () => void;
 }
 
-export function LoginScreen({ onSubmit, onForgotPassword }: LoginScreenProps) {
+export function LoginScreen({ errorMessage, onSubmit, onForgotPassword }: LoginScreenProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -36,9 +38,18 @@ export function LoginScreen({ onSubmit, onForgotPassword }: LoginScreenProps) {
           <Text className="font-spartan-bold text-[27px] leading-8 text-ink-light dark:text-ink-dark">
             Panel de moderación
           </Text>
-          <Text className="font-spartan text-base leading-[19px] text-muted-light dark:text-muted-dark">
-            Un espacio seguro empieza contigo.
-          </Text>
+          {errorMessage ? (
+            <Text
+              accessibilityRole="alert"
+              className="font-spartan-bold text-base leading-[19px] text-onNoticeSoft-light dark:text-onNoticeSoft-dark"
+            >
+              {errorMessage}
+            </Text>
+          ) : (
+            <Text className="font-spartan text-base leading-[19px] text-muted-light dark:text-muted-dark">
+              Un espacio seguro empieza contigo.
+            </Text>
+          )}
         </View>
 
         <View className="gap-5">

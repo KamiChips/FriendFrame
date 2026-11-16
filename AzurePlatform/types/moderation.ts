@@ -77,6 +77,9 @@ export interface RelatedReport {
   status: ReportStatus;
 }
 
+// "expired": el enlace a la evidencia caduco; "deleted": el autor borro la publicacion
+export type EvidenceStatus = "available" | "expired" | "deleted";
+
 export interface ReportedContent {
   author: UserRef;
   profileOwnerHandle: string;
@@ -86,6 +89,8 @@ export interface ReportedContent {
   // el contenido sensible se muestra velado hasta que el moderador lo revela
   isSensitive: boolean;
   isRevealed: boolean;
+  // ausente equivale a "available"
+  evidenceStatus?: EvidenceStatus;
 }
 
 export interface ReportDetail {
@@ -141,15 +146,30 @@ export interface ProfileCounter {
   caption: string;
 }
 
+export type TimelineKind = SanctionKind | "restoration";
+
 // evento de moderacion en la linea de tiempo de una cuenta
 export interface TimelineEvent {
   id: string;
-  kind: SanctionKind;
+  kind: TimelineKind;
   title: string;
   date: string;
   moderator: string;
-  reportCode: string;
+  // ausente cuando el evento no salio de un reporte, como una restauracion
+  reportCode?: string;
   note?: string;
+}
+
+// contenido de la cuenta que moderacion oculto y que puede restaurarse
+export interface HiddenContent {
+  id: string;
+  contentType: ContentType;
+  reportId: string;
+  reportCode: string;
+  profileOwnerHandle: string;
+  // fecha ya formateada, como "8 nov 2026"
+  hiddenAt: string;
+  mediaUrl?: string | null;
 }
 
 export interface UserProfile extends UserRef {
@@ -160,7 +180,7 @@ export interface UserProfile extends UserRef {
   activeSanction: ActiveSanction | null;
   counters: ProfileCounter[];
   timeline: TimelineEvent[];
-  hiddenContentCount: number;
+  hiddenContent: HiddenContent[];
 }
 
 export type AuditAction =

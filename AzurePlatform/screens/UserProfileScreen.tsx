@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Text, View } from "react-native";
 
 import { AppShell, type ShellProps } from "@/components/layout/AppShell";
@@ -9,6 +10,7 @@ import {
   type ProfileTab,
   RestoreGuidanceCard,
 } from "@/components/users/ProfileCards";
+import { RestoreAccountDialog } from "@/components/users/RestoreAccountDialog";
 import type { UserProfile } from "@/types/moderation";
 
 export interface UserProfileScreenProps {
@@ -16,7 +18,9 @@ export interface UserProfileScreenProps {
   profile: UserProfile;
   activeTab?: ProfileTab;
   onChangeTab?: (tab: ProfileTab) => void;
-  onRestoreAccount?: () => void;
+  // recibe las notas con el motivo de la restauracion
+  onRestoreAccount?: (notes: string) => void;
+  onRestoreContent?: (contentId: string) => void;
   onOpenReport?: (reportId: string) => void;
   onViewReports?: () => void;
 }
@@ -27,11 +31,13 @@ export function UserProfileScreen({
   activeTab = "timeline",
   onChangeTab,
   onRestoreAccount,
+  onRestoreContent,
   onOpenReport,
   onViewReports,
 }: UserProfileScreenProps) {
   // solo las cuentas suspendidas o baneadas se pueden restaurar
   const isSanctioned = profile.status !== "active";
+  const [isRestoring, setIsRestoring] = useState(false);
 
   return (
     <AppShell
@@ -40,13 +46,15 @@ export function UserProfileScreen({
       breadcrumb={`Moderación / Usuarios / ${profile.handle}`}
       title={profile.handle}
       headerActions={
-        isSanctioned && (
+        isSanctioned ? (
           <Button
             label="Restaurar cuenta"
             variant="primary"
             icon="rotate-ccw"
-            onPress={onRestoreAccount}
+            onPress={() => setIsRestoring(true)}
           />
+        ) : (
+          <Button label="Cuenta activa" variant="primary" icon="rotate-ccw" disabled />
         )
       }
     >
@@ -66,9 +74,11 @@ export function UserProfileScreen({
         <View className="min-w-0 flex-[740]">
           <ProfileActivityCard
             activeTab={activeTab}
+            handle={profile.handle}
             events={profile.timeline}
-            hiddenContentCount={profile.hiddenContentCount}
+            hiddenContent={profile.hiddenContent}
             onChangeTab={onChangeTab}
+            onRestoreContent={onRestoreContent}
           />
         </View>
         <View className="min-w-0 flex-[368]">
@@ -77,6 +87,18 @@ export function UserProfileScreen({
           )}
         </View>
       </View>
+
+      {isRestoring && (
+        <RestoreAccountDialog
+          visible
+          handle={profile.handle}
+          onConfirm={(notes) => {
+            setIsRestoring(false);
+            onRestoreAccount?.(notes);
+          }}
+          onCancel={() => setIsRestoring(false)}
+        />
+      )}
     </AppShell>
   );
 }

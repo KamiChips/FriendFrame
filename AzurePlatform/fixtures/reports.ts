@@ -12,7 +12,7 @@ export const reports: Report[] = [
   { id: "r3", timeAgo: "Hace 12 min", contentType: "comment", reason: "Acoso", user: carlos, reportCount: 2, status: "pending", assignee: null },
   { id: "r4", timeAgo: "Hace 25 min", contentType: "chat_message", reason: "Otro", user: ana, reportCount: 1, status: "pending", assignee: null },
   { id: "r5", timeAgo: "Hace 42 min", contentType: "profile", reason: "Suplantación", user: luis, reportCount: 5, status: "pending", assignee: null },
-  { id: "r6", timeAgo: "Hace 1 h", contentType: "post", reason: "Desnudez", user: maria, reportCount: 1, status: "pending", assignee: null },
+  { id: "r6", timeAgo: "Hace 1 h", contentType: "post", reason: "Desnudez", user: maria, reportCount: 1, status: "in_review", assignee: "@moderador2" },
   { id: "r7", timeAgo: "Hace 2 h", contentType: "comment", reason: "Spam", user: luis, reportCount: 3, status: "pending", assignee: null },
   { id: "r8", timeAgo: "Hace 3 h", contentType: "fragment", reason: "Violencia", user: ana, reportCount: 1, status: "pending", assignee: null },
   { id: "r9", timeAgo: "Hace 4 h", contentType: "post", reason: "Otro", user: maria, reportCount: 2, status: "pending", assignee: null },

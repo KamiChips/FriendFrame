@@ -81,9 +81,24 @@ describe("<ResolutionPanel />", () => {
   test("entrega las demas acciones sin duracion", () => {
     const onSubmit = jest.fn();
     const { getByRole } = renderPanel({ onSubmit });
+    fireEvent.press(getByRole("radio", { name: "Advertir al autor" }));
+    fireEvent.press(getByRole("button", { name: "Enviar advertencia" }));
+    expect(onSubmit).toHaveBeenCalledWith({ action: "warn", notes: "" });
+  });
+
+  test("el baneo exige notas internas", () => {
+    const onSubmit = jest.fn();
+    const { getByRole, getByLabelText, getByText } = renderPanel({ onSubmit });
     fireEvent.press(getByRole("radio", { name: "Banear autor" }));
-    fireEvent.press(getByRole("button", { name: "Aplicar baneo" }));
-    expect(onSubmit).toHaveBeenCalledWith({ action: "ban", notes: "" });
+    expect(getByText("Notas internas · obligatorio")).toBeTruthy();
+
+    fireEvent.press(getByRole("button", { name: "Continuar con el baneo" }));
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    fireEvent.changeText(getByLabelText("Notas internas"), "Reincidencia.");
+    expect(getByText("13 / 500")).toBeTruthy();
+    fireEvent.press(getByRole("button", { name: "Continuar con el baneo" }));
+    expect(onSubmit).toHaveBeenCalledWith({ action: "ban", notes: "Reincidencia." });
   });
 
   test("avisa que se cerraran los otros reportes pendientes", () => {

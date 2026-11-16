@@ -6,6 +6,7 @@ import { useAsync } from "@/hooks/use-async";
 import { useCycle } from "@/hooks/use-cycle";
 import { useShell } from "@/hooks/use-shell";
 import { AuditLogScreen } from "@/screens/AuditLogScreen";
+import { ErrorScreen } from "@/screens/ErrorScreen";
 import { moderation } from "@/services/moderation";
 
 export default function AuditRoute() {
@@ -25,7 +26,22 @@ export default function AuditRoute() {
     [moderatorOption.value, action.option],
   );
 
-  if (!shell || !data) return <ScreenState error={error} onRetry={reload} />;
+  if (!shell) return <ScreenState />;
+  // la bitacora es solo para admins
+  if (shell.currentUser.role !== "admin") {
+    return (
+      <ErrorScreen
+        shell={shell}
+        kind="forbidden"
+        activeSection="audit"
+        onAction={() => router.replace("/dashboard")}
+      />
+    );
+  }
+  if (error) {
+    return <ErrorScreen shell={shell} kind="unexpected" activeSection="audit" onAction={reload} />;
+  }
+  if (!data) return <ScreenState />;
 
   return (
     <AuditLogScreen

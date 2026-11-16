@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useColorScheme } from "nativewind";
 import { useEffect } from "react";
+import { Appearance } from "react-native";
 
 import { palette } from "@/constants/palette";
 
@@ -26,15 +27,15 @@ export function useTheme() {
   };
 }
 
-// aplica el tema guardado al abrir la app
+// aplica el tema guardado al abrir la app; sin eleccion guardada sigue al sistema.
+// se aplica siempre de forma explicita para que la clase "dark" coincida con los colores de los iconos
 export function useRestoreTheme() {
   const { setColorScheme } = useColorScheme();
 
   useEffect(() => {
+    const system = Appearance.getColorScheme() === "dark" ? "dark" : "light";
     AsyncStorage.getItem(STORAGE_KEY)
-      .then((saved) => {
-        if (saved === "light" || saved === "dark") setColorScheme(saved);
-      })
-      .catch(() => {});
+      .then((saved) => setColorScheme(saved === "light" || saved === "dark" ? saved : system))
+      .catch(() => setColorScheme(system));
   }, [setColorScheme]);
 }

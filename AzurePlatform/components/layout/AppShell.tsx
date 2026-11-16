@@ -10,7 +10,7 @@ import { Sidebar, type SidebarProps } from "./Sidebar";
 export type ShellProps = Omit<SidebarProps, "activeSection">;
 
 export interface AppShellProps extends ShellProps {
-  activeSection: SectionKey;
+  activeSection?: SectionKey;
   breadcrumb: string;
   title: string;
   headerActions?: ReactNode;

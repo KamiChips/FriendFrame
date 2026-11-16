@@ -1,4 +1,4 @@
-import type { ReportDetail } from "@/types/moderation";
+import type { EvidenceStatus, ReportDetail } from "@/types/moderation";
 
 // datos de ejemplo tomados del diseno; los usan las pruebas y el servicio simulado
 export const pendingReport: ReportDetail = {
@@ -38,4 +38,10 @@ export const reportInReview: ReportDetail = {
   status: "in_review",
   assignee: "@admin",
   content: { ...pendingReport.content, isRevealed: true },
+};
+
+// reportes de la cola cuya evidencia ya no esta disponible, para recorrer esos estados
+export const unavailableEvidence: Record<string, EvidenceStatus> = {
+  r3: "expired",
+  r8: "deleted",
 };

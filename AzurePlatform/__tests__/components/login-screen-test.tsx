@@ -23,4 +23,13 @@ describe("<LoginScreen />", () => {
     fireEvent.press(getByRole("link", { name: "¿Olvidaste tu contraseña?" }));
     expect(onForgotPassword).toHaveBeenCalledTimes(1);
   });
+
+  test("muestra el motivo cuando no se pudo entrar", () => {
+    const { getByText, queryByText } = render(
+      <LoginScreen errorMessage="Correo o contraseña incorrectos" />,
+    );
+    expect(getByText("Correo o contraseña incorrectos")).toBeTruthy();
+    // el aviso reemplaza el lema
+    expect(queryByText("Un espacio seguro empieza contigo.")).toBeNull();
+  });
 });

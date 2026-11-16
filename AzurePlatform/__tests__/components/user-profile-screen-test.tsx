@@ -69,19 +69,41 @@ describe("<UserProfileScreen />", () => {
     expect(getByRole("tab", { name: "Línea de tiempo" }).props.accessibilityState.selected).toBe(false);
   });
 
-  test("permite restaurar una cuenta sancionada", () => {
+  test("restaura una cuenta sancionada solo con notas", () => {
     const onRestoreAccount = jest.fn();
-    const { getByRole, getByText } = renderProfile({ onRestoreAccount });
+    const { getByRole, getByText, getByLabelText } = renderProfile({ onRestoreAccount });
     expect(getByText("Antes de restaurar")).toBeTruthy();
     fireEvent.press(getByRole("button", { name: "Restaurar cuenta" }));
-    expect(onRestoreAccount).toHaveBeenCalledTimes(1);
+    expect(getByText("Restaurar a @carlos_dev")).toBeTruthy();
+
+    fireEvent.press(getByRole("button", { name: "Restaurar" }));
+    expect(onRestoreAccount).not.toHaveBeenCalled();
+
+    fireEvent.changeText(getByLabelText("Notas internas"), "Apelación revisada");
+    fireEvent.press(getByRole("button", { name: "Restaurar" }));
+    expect(onRestoreAccount).toHaveBeenCalledWith("Apelación revisada");
   });
 
-  test("no ofrece restaurar una cuenta activa", () => {
-    const { queryByRole, queryByText, getByText } = renderProfile({ profile: activeProfile });
+  test("una cuenta activa no se puede restaurar", () => {
+    const { getByRole, queryByRole, queryByText, getByText } = renderProfile({
+      profile: activeProfile,
+    });
     expect(getByText("Activa")).toBeTruthy();
     expect(queryByRole("button", { name: "Restaurar cuenta" })).toBeNull();
+    expect(getByRole("button", { name: "Cuenta activa" }).props.accessibilityState.disabled).toBe(
+      true,
+    );
     expect(queryByText("Antes de restaurar")).toBeNull();
+  });
+
+  test("lista el contenido oculto y permite restaurarlo", () => {
+    const onRestoreContent = jest.fn();
+    const { getByText, getAllByRole } = renderProfile({ activeTab: "hidden", onRestoreContent });
+    expect(getByText("Post · FF-1048")).toBeTruthy();
+    expect(getByText("En el perfil de @ana.rmz")).toBeTruthy();
+    expect(getByText("Oculto · 8 nov 2026")).toBeTruthy();
+    fireEvent.press(getAllByRole("button", { name: "Restaurar" })[0]);
+    expect(onRestoreContent).toHaveBeenCalledWith("h1");
   });
 
   test("avisa al pedir los reportes de la cuenta", () => {

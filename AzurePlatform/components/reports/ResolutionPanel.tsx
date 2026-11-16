@@ -9,6 +9,8 @@ import { useTheme } from "@/hooks/use-theme";
 import { addDays, countLabel, formatDate } from "@/lib/format";
 import type { Resolution, ResolutionAction } from "@/types/moderation";
 
+const NOTES_MAX_LENGTH = 500;
+
 export interface ResolutionPanelProps {
   authorHandle: string;
   // otros reportes pendientes del mismo contenido que se cerraran junto con este
@@ -31,8 +33,12 @@ export function ResolutionPanel({
 
   const isSuspension = action === "suspend";
   const selected = resolutionActions.find((option) => option.key === action);
-  // suspender exige duracion; las demas acciones solo exigen estar elegidas
-  const canSubmit = action !== null && (!isSuspension || suspensionDays !== null);
+  const notesRequired = selected?.requiresNotes === true;
+  // suspender exige duracion y banear exige notas; las demas acciones solo exigen estar elegidas
+  const canSubmit =
+    action !== null &&
+    (!isSuspension || suspensionDays !== null) &&
+    (!notesRequired || notes.trim().length > 0);
 
   const submit = () => {
     if (action === null) return;
@@ -55,6 +61,11 @@ export function ResolutionPanel({
       <View accessibilityRole="radiogroup" className="gap-[3px]">
         {resolutionActions.map((option) => {
           const isSelected = option.key === action;
+          // la accion destructiva elegida se marca en rojo en lugar del acento
+          const markColor = option.isDestructive ? colors.danger : colors.accent;
+          const selectedBg = option.isDestructive
+            ? "bg-dangerSoft-light dark:bg-dangerSoft-dark"
+            : "bg-accentSoft-light dark:bg-accentSoft-dark";
 
           return (
             <Pressable
@@ -63,18 +74,18 @@ export function ResolutionPanel({
               accessibilityLabel={option.label}
               accessibilityState={{ checked: isSelected }}
               onPress={() => setAction(option.key)}
-              className={`h-[35px] flex-row items-center gap-[10px] rounded-lg px-[10px] ${isSelected ? "bg-accentSoft-light dark:bg-accentSoft-dark" : ""}`}
+              className={`h-[35px] flex-row items-center gap-[10px] rounded-lg px-[10px] ${isSelected ? selectedBg : ""}`}
             >
               <View
                 className="h-[18px] w-[18px] items-center justify-center rounded-full border-2"
-                style={{ borderColor: isSelected ? colors.accent : colors.line }}
+                style={{ borderColor: isSelected ? markColor : colors.line }}
               >
                 {isSelected && (
-                  <View className="h-2 w-2 rounded-full" style={{ backgroundColor: colors.accent }} />
+                  <View className="h-2 w-2 rounded-full" style={{ backgroundColor: markColor }} />
                 )}
               </View>
               <Text
-                className={`font-spartan text-base leading-[19px] ${option.isDestructive ? "text-danger-light dark:text-danger-dark" : "text-ink-light dark:text-ink-dark"}`}
+                className={`font-spartan text-base leading-[19px] ${!option.isDestructive ? "text-ink-light dark:text-ink-dark" : isSelected ? "text-onDangerSoft-light dark:text-onDangerSoft-dark" : "text-danger-light dark:text-danger-dark"}`}
               >
                 {option.label}
               </Text>
@@ -121,16 +132,23 @@ export function ResolutionPanel({
         </>
       )}
 
-      <View className="h-[65px] gap-1.5 rounded-lg border-b-2 border-line-light bg-soft-light p-3 dark:border-line-dark dark:bg-soft-dark">
+      <View className="min-h-[65px] gap-1.5 rounded-lg border-b-2 border-line-light bg-soft-light p-3 dark:border-line-dark dark:bg-soft-dark">
         <Text className="font-spartan text-xs leading-[14px] text-muted-light dark:text-muted-dark">
-          Notas internas
+          Notas internas{notesRequired ? " · obligatorio" : ""}
         </Text>
         <TextInput
           accessibilityLabel="Notas internas"
           value={notes}
           onChangeText={setNotes}
+          maxLength={NOTES_MAX_LENGTH}
+          multiline={notesRequired}
           className="font-spartan text-sm leading-[17px] text-ink-light outline-none dark:text-ink-dark"
         />
+        {notesRequired && (
+          <Text className="font-spartan text-xs leading-[14px] text-muted-light dark:text-muted-dark">
+            {notes.length} / {NOTES_MAX_LENGTH}
+          </Text>
+        )}
       </View>
 
       {otherPendingCount > 0 && (
@@ -146,6 +164,7 @@ export function ResolutionPanel({
 
       <Button
         label={selected?.submitLabel ?? "Aplicar"}
+        variant={selected?.isDestructive ? "danger" : "secondary"}
         fullWidth
         disabled={!canSubmit}
         onPress={submit}

@@ -2,7 +2,7 @@ import { fireEvent, render } from "@testing-library/react-native";
 
 import { Sidebar } from "@/components/layout/Sidebar";
 
-const user = { handle: "@admin", initials: "A", role: "Admin" };
+const user = { handle: "@admin", initials: "A", role: "admin" as const };
 
 describe("<Sidebar />", () => {
   test("lista las secciones de la consola", () => {
@@ -38,12 +38,24 @@ describe("<Sidebar />", () => {
     const { getByText } = render(
       <Sidebar
         activeSection="dashboard"
-        currentUser={{ handle: "@sofia.mod", initials: "SM", role: "Moderador" }}
+        currentUser={{ handle: "@sofia.mod", initials: "SM", role: "moderator" }}
       />,
     );
     expect(getByText("@sofia.mod")).toBeTruthy();
     expect(getByText("SM")).toBeTruthy();
     expect(getByText("Moderador")).toBeTruthy();
+  });
+
+  test("oculta las secciones de administracion a moderadores", () => {
+    const { queryByRole, getByRole } = render(
+      <Sidebar
+        activeSection="dashboard"
+        currentUser={{ handle: "@moderador1", initials: "A", role: "moderator" }}
+      />,
+    );
+    expect(getByRole("link", { name: "Reportes" })).toBeTruthy();
+    expect(queryByRole("link", { name: "Bitácora" })).toBeNull();
+    expect(queryByRole("link", { name: "Equipo" })).toBeNull();
   });
 
   test("avisa al cerrar sesion", () => {

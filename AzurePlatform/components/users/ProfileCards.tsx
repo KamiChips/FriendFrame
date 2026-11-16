@@ -1,10 +1,13 @@
+import { Image } from "expo-image";
 import { Pressable, Text, View } from "react-native";
 
 import { Avatar } from "@/components/ui/Avatar";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
-import { sanctionKinds } from "@/constants/sanctions";
-import type { ProfileCounter, TimelineEvent, UserProfile } from "@/types/moderation";
+import { contentTypes } from "@/constants/content-types";
+import { timelineIcons } from "@/constants/sanctions";
+import type { HiddenContent, ProfileCounter, TimelineEvent, UserProfile } from "@/types/moderation";
 
 import { AccountStatusChip } from "./AccountStatusChip";
 
@@ -77,21 +80,58 @@ export type ProfileTab = "timeline" | "hidden";
 
 export interface ProfileActivityCardProps {
   activeTab: ProfileTab;
+  // handle de la cuenta, autora de todo su contenido oculto
+  handle: string;
   events: TimelineEvent[];
-  hiddenContentCount: number;
+  hiddenContent: HiddenContent[];
   onChangeTab?: (tab: ProfileTab) => void;
+  onRestoreContent?: (contentId: string) => void;
 }
 
-// pestanas del perfil; la linea de tiempo lista los eventos de moderacion
+// contenido oculto de la cuenta con su contexto y la opcion de restaurarlo
+function HiddenContentRow({
+  item,
+  handle,
+  onRestore,
+}: {
+  item: HiddenContent;
+  handle: string;
+  onRestore?: () => void;
+}) {
+  return (
+    <View className="flex-row items-center gap-4 py-3">
+      <View className="h-[78px] w-[112px] overflow-hidden rounded-xl bg-soft-light dark:bg-soft-dark">
+        {item.mediaUrl && (
+          <Image source={{ uri: item.mediaUrl }} style={{ width: 112, height: 78 }} contentFit="cover" />
+        )}
+      </View>
+      <View className="min-w-0 flex-1 gap-1.5">
+        <Text className="font-spartan-bold text-lg leading-[22px] text-ink-light dark:text-ink-dark">
+          {contentTypes[item.contentType].label} · {item.reportCode}
+        </Text>
+        <Text className="font-spartan text-[15px] leading-[18px] text-ink-light dark:text-ink-dark">
+          Publicado por {handle}
+        </Text>
+        <Text className={`${muted} text-sm leading-[17px]`}>En el perfil de {item.profileOwnerHandle}</Text>
+        <Text className={`${muted} text-[13px] leading-4`}>Oculto · {item.hiddenAt}</Text>
+      </View>
+      <Button label="Restaurar" onPress={onRestore} />
+    </View>
+  );
+}
+
+// pestanas del perfil: eventos de moderacion y contenido oculto
 export function ProfileActivityCard({
   activeTab,
+  handle,
   events,
-  hiddenContentCount,
+  hiddenContent,
   onChangeTab,
+  onRestoreContent,
 }: ProfileActivityCardProps) {
   const tabs: { key: ProfileTab; label: string }[] = [
     { key: "timeline", label: "Línea de tiempo" },
-    { key: "hidden", label: `Contenido oculto (${hiddenContentCount})` },
+    { key: "hidden", label: `Contenido oculto (${hiddenContent.length})` },
   ];
 
   return (
@@ -123,7 +163,7 @@ export function ProfileActivityCard({
         events.map((event) => (
           <View key={event.id} className="flex-row items-start gap-[14px]">
             <View className="h-8 w-8 items-center justify-center rounded-full bg-soft-light dark:bg-soft-dark">
-              <Icon name={sanctionKinds[event.kind].icon} size={17} tone="accent" />
+              <Icon name={timelineIcons[event.kind]} size={17} tone="accent" />
             </View>
             <View className="min-w-0 flex-1 gap-1">
               <View className="flex-row items-start justify-between">
@@ -137,6 +177,20 @@ export function ProfileActivityCard({
               </Text>
             </View>
           </View>
+        ))}
+
+      {activeTab === "hidden" &&
+        (hiddenContent.length > 0 ? (
+          hiddenContent.map((item) => (
+            <HiddenContentRow
+              key={item.id}
+              item={item}
+              handle={handle}
+              onRestore={() => onRestoreContent?.(item.id)}
+            />
+          ))
+        ) : (
+          <Text className={`${muted} text-sm leading-[17px]`}>La cuenta no tiene contenido oculto.</Text>
         ))}
     </Card>
   );

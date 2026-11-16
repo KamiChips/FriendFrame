@@ -5,16 +5,19 @@ import { BrandLogo } from "@/components/ui/BrandLogo";
 import { Chip } from "@/components/ui/Chip";
 import { Icon } from "@/components/ui/Icon";
 import { type SectionKey, sections } from "@/constants/navigation";
+import { teamRoles } from "@/constants/team";
+import type { TeamRole } from "@/types/moderation";
 
 export interface CurrentUser {
   handle: string;
   initials: string;
-  role: string;
+  role: TeamRole;
   avatarUrl?: string | null;
 }
 
 export interface SidebarProps {
-  activeSection: SectionKey;
+  // ausente en paginas que no pertenecen a una seccion, como un enlace roto
+  activeSection?: SectionKey;
   currentUser: CurrentUser;
   // recuentos opcionales por seccion, como los reportes abiertos
   sectionCounts?: Partial<Record<SectionKey, number>>;
@@ -39,7 +42,10 @@ export function Sidebar({
       </View>
 
       <View className="gap-2 pt-6">
-        {sections.map((section) => {
+        {/* las secciones de administracion no se ofrecen a moderadores */}
+        {sections
+          .filter((section) => !section.adminOnly || currentUser.role === "admin")
+          .map((section) => {
           const isActive = section.key === activeSection;
           const count = sectionCounts[section.key];
 
@@ -90,7 +96,7 @@ export function Sidebar({
           <Text className="font-spartan-bold text-base leading-[19px] text-ink-light dark:text-ink-dark">
             {currentUser.handle}
           </Text>
-          <Chip label={currentUser.role} variant="accent" />
+          <Chip label={teamRoles[currentUser.role].label} variant={teamRoles[currentUser.role].variant} />
         </View>
       </View>
 
