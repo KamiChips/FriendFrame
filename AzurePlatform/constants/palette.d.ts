@@ -21,6 +21,8 @@ export type Palette = {
   danger: string;
   dangerSoft: string;
   onDangerSoft: string;
+  // detalle secundario sobre fondo de peligro, como el texto de un aviso de error
+  onDangerSoftMuted: string;
   warnSoft: string;
   onWarnSoft: string;
   highlight: string;

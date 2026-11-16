@@ -8,7 +8,10 @@ const sources = {
   "arrow-left": require("@/assets/icons/arrow-left.svg"),
   "arrow-right": require("@/assets/icons/arrow-right.svg"),
   "arrow-up-right": require("@/assets/icons/arrow-up-right.svg"),
+  check: require("@/assets/icons/check.svg"),
   "chevron-down": require("@/assets/icons/chevron-down.svg"),
+  "circle-alert": require("@/assets/icons/circle-alert.svg"),
+  "circle-check": require("@/assets/icons/circle-check.svg"),
   "clock-3": require("@/assets/icons/clock-3.svg"),
   eye: require("@/assets/icons/eye.svg"),
   "eye-off": require("@/assets/icons/eye-off.svg"),
@@ -35,8 +38,11 @@ const sources = {
   "shield-check": require("@/assets/icons/shield-check.svg"),
   sun: require("@/assets/icons/sun.svg"),
   timer: require("@/assets/icons/timer.svg"),
+  "user-minus": require("@/assets/icons/user-minus.svg"),
+  "user-plus": require("@/assets/icons/user-plus.svg"),
   "user-round": require("@/assets/icons/user-round.svg"),
   users: require("@/assets/icons/users.svg"),
+  x: require("@/assets/icons/x.svg"),
 } as const;
 
 export type IconName = keyof typeof sources;

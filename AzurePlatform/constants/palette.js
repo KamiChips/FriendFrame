@@ -24,6 +24,7 @@ const palette = {
     highlight: "#F7FCFD",
     dangerSoft: "#FDE8EC",
     onDangerSoft: "#D4183D",
+    onDangerSoftMuted: "#82181A",
   },
   dark: {
     canvas: "#182240",
@@ -49,6 +50,7 @@ const palette = {
     highlight: "#1F2B4A",
     dangerSoft: "#82181A",
     onDangerSoft: "#FFFFFF",
+    onDangerSoftMuted: "#FFFFFF",
   },
 };
 
