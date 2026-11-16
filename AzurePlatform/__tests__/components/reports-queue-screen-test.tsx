@@ -62,6 +62,43 @@ describe("<ReportsQueueScreen />", () => {
     expect(onShowNewReports).toHaveBeenCalledTimes(1);
   });
 
+  test("muestra filas en carga mientras llegan los reportes", () => {
+    const { getAllByLabelText, queryByText } = renderQueue({ status: "loading", reports: [] });
+    expect(getAllByLabelText("Cargando")).toHaveLength(8);
+    expect(queryByText(/Mostrando/)).toBeNull();
+  });
+
+  test("ofrece reintentar si la cola no carga", () => {
+    const onRetry = jest.fn();
+    const { getByText, getByRole } = renderQueue({ status: "error", reports: [], onRetry });
+    expect(getByText("No pudimos cargar los reportes")).toBeTruthy();
+    fireEvent.press(getByRole("button", { name: "Reintentar" }));
+    expect(onRetry).toHaveBeenCalledTimes(1);
+  });
+
+  test("celebra cuando no quedan reportes", () => {
+    const { getByText, queryByText } = renderQueue({
+      reports: [],
+      totalReports: 0,
+      openCount: 0,
+      newReportsCount: 0,
+    });
+    expect(getByText("No hay reportes pendientes 🎉")).toBeTruthy();
+    expect(getByText("Sin pendientes")).toBeTruthy();
+    expect(queryByText(/Mostrando/)).toBeNull();
+  });
+
+  test("muestra el aviso de la ultima actualizacion de la cola", () => {
+    const onDismissNotice = jest.fn();
+    const { getByRole } = renderQueue({
+      newReportsCount: 0,
+      notice: "Cola actualizada · 3 reportes resueltos",
+      onDismissNotice,
+    });
+    fireEvent.press(getByRole("button", { name: "Cola actualizada · 3 reportes resueltos" }));
+    expect(onDismissNotice).toHaveBeenCalledTimes(1);
+  });
+
   test("no anuncia reportes nuevos cuando no hay", () => {
     const { queryByText } = renderQueue({ newReportsCount: 0 });
     expect(queryByText(/clic para ver/)).toBeNull();

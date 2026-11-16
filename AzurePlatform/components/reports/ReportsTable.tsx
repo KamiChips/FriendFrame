@@ -16,6 +16,8 @@ export interface ReportsTableProps {
   dateLabel: string;
   // a partir de cuantos reportes se resalta la cantidad
   highCountFrom?: number;
+  // filas a resaltar ademas de las nuevas
+  highlightedIds?: string[];
   onOpenReport?: (reportId: string) => void;
   onLoadMore?: () => void;
 }
@@ -28,6 +30,7 @@ export function ReportsTable({
   totalReports,
   dateLabel,
   highCountFrom = 3,
+  highlightedIds = [],
   onOpenReport,
   onLoadMore,
 }: ReportsTableProps) {
@@ -100,7 +103,7 @@ export function ReportsTable({
       columns={columns}
       rows={reports}
       keyExtractor={(report) => report.id}
-      isRowHighlighted={(report) => report.isNew === true}
+      isRowHighlighted={(report) => report.isNew === true || highlightedIds.includes(report.id)}
       rowLabel={(report) => `Abrir reporte de ${report.user.handle}, ${report.timeAgo}`}
       onRowPress={(report) => onOpenReport?.(report.id)}
       footer={
