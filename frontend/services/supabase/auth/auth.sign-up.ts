@@ -8,18 +8,28 @@ import {
     validateUsername,
     waitForProfile,
 } from './auth.helpers';
+import { signupAttempts } from '@/services/ratelimit/rateLimiter';
+
+export const SIGNUP_RATE_LIMIT_MESSAGE = 'Demasiados registros. Intenta más tarde';
 
 export async function signUp({
     email,
     password,
     full_name,
     username,
-}: SignUpParams): Promise<AuthResult<AuthUser>> {
+    ip,
+}: SignUpParams & { ip: string }): Promise<AuthResult<AuthUser>> {
     try {
         const cleanEmail = validateEmail(email);
         const cleanUsername = validateUsername(username);
         const cleanName = validateFullName(full_name);
         validatePassword(password);
+
+        // Rate limit por IP ANTES de tocar la base de datos
+        const rateLimit = await signupAttempts(ip);
+        if (!rateLimit.success) {
+            return { data: null, error: SIGNUP_RATE_LIMIT_MESSAGE };
+        }
 
         // Verificar username disponible antes de crear la cuenta
         const { data: existing, error: existingError } = await supabase
