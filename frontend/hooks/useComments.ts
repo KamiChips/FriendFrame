@@ -1,7 +1,13 @@
-import { useState, useCallback } from "react";
-import { getComments, addComment } from "@/services/supabase/interactions/comments";
-import { CommentWithReplies, PublicationTarget } from "@/services/supabase/interactions/types";
-import { getAuthUser } from "@/services/supabase/helpers/validation";
+import { useState, useCallback } from 'react';
+import {
+    getComments,
+    addComment,
+} from '@/services/supabase/interactions/comments';
+import {
+    CommentWithReplies,
+    PublicationTarget,
+} from '@/services/supabase/interactions/types';
+import { getAuthUser } from '@/services/supabase/helpers/validation';
 
 interface UseCommentsState {
     comments: CommentWithReplies[];
@@ -28,12 +34,17 @@ export function useComments(target: PublicationTarget) {
         patch({ isLoading: true, error: null });
         try {
             const currentUserId = await getAuthUser();
-            const result = await getComments(target, currentUserId, { include_replies: true });
+            const result = await getComments(target, currentUserId, {
+                include_replies: true,
+            });
             if (result.error) throw new Error(result.error);
             patch({ comments: result.data ?? [], isLoading: false });
         } catch (e) {
             patch({
-                error: e instanceof Error ? e.message : "Error al cargar comentarios.",
+                error:
+                    e instanceof Error
+                        ? e.message
+                        : 'Error al cargar comentarios.',
                 isLoading: false,
             });
         }
@@ -43,8 +54,13 @@ export function useComments(target: PublicationTarget) {
         async (content: string, parentCommentId?: string) => {
             patch({ isPosting: true, error: null });
             try {
-                const result = await addComment(target, content, parentCommentId);
-                if (result.error || !result.data) throw new Error(result.error ?? "Error.");
+                const result = await addComment(
+                    target,
+                    content,
+                    parentCommentId
+                );
+                if (result.error || !result.data)
+                    throw new Error(result.error ?? 'Error.');
 
                 // insertar al inicio si es un comentario raiz, al finla si es respuesta
                 setState((prev) => ({
@@ -58,7 +74,8 @@ export function useComments(target: PublicationTarget) {
                 return result.data;
             } catch (e) {
                 patch({
-                    error: e instanceof Error ? e.message : "Error al comentar.",
+                    error:
+                        e instanceof Error ? e.message : 'Error al comentar.',
                     isPosting: false,
                 });
                 return null;
@@ -67,5 +84,5 @@ export function useComments(target: PublicationTarget) {
         [target]
     );
 
-    return { ...state, load, post }
+    return { ...state, load, post };
 }

@@ -5,7 +5,7 @@ import HomeScreen from '@/app/home';
 const mockPush = jest.fn();
 
 // Mock de expo-router
-jest.mock("expo-router", () => ({
+jest.mock('expo-router', () => ({
     Link: ({
         href,
         children,
@@ -15,26 +15,25 @@ jest.mock("expo-router", () => ({
         children: React.ReactElement;
         asChild?: boolean;
     }) => {
-        const { TouchableOpacity } = require("react-native");
+        const { TouchableOpacity } = require('react-native');
 
         if (asChild) {
-        // Clonar el hijo e inyectarle el onPress de navegación
-        const React = require("react");
-        return React.cloneElement(children, {
-            onPress: () => mockPush(href),
-        });
+            // Clonar el hijo e inyectarle el onPress de navegación
+            const React = require('react');
+            return React.cloneElement(children, {
+                onPress: () => mockPush(href),
+            });
         }
 
         return (
-        <TouchableOpacity onPress={() => mockPush(href)}>
-            {children}
-        </TouchableOpacity>
+            <TouchableOpacity onPress={() => mockPush(href)}>
+                {children}
+            </TouchableOpacity>
         );
     },
 }));
 
 describe('<HomeScreen />', () => {
-
     // Tests de contenido
     test('Title "friendframe" renders correctly on HomeScreen', () => {
         const { getByText } = render(<HomeScreen />);
@@ -59,7 +58,9 @@ describe('<HomeScreen />', () => {
 
     test('"Have an Account?" button is pressable', () => {
         const { getByText } = render(<HomeScreen />);
-        expect(() => fireEvent.press(getByText('Have an Account?'))).not.toThrow();
+        expect(() =>
+            fireEvent.press(getByText('Have an Account?'))
+        ).not.toThrow();
     });
 
     // Tests de temas
@@ -82,8 +83,7 @@ describe('<HomeScreen />', () => {
     });
 });
 
-describe("<HomeScreen /> - Navigation", () => {
-    
+describe('<HomeScreen /> - Navigation', () => {
     beforeEach(() => {
         mockPush.mockClear();
     });

@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { signUp } from '@/services/supabase/auth/auth.sign-up';
 import { Alert } from 'react-native';
 
-jest.mock("@/services/supabase/auth/auth.sign-up", () => ({
+jest.mock('@/services/supabase/auth/auth.sign-up', () => ({
     signUp: jest.fn(),
 }));
 
@@ -18,7 +18,6 @@ jest.mock('@/components/ui/TextField', () => {
 });
 
 describe('<SignUpScreen />', () => {
-
     beforeEach(() => {
         jest.clearAllMocks();
     });
@@ -67,13 +66,13 @@ describe('<SignUpScreen />', () => {
     // Tests de Validación
     test('shows error when submitting empty fields', async () => {
         const { getByText, getByTestId } = render(<SignUpScreen />);
-        
+
         // Aceptar términos
         fireEvent.press(getByTestId('tac-button'));
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByText('Completa todos los campos.')).toBeTruthy();
+            expect(getByText('Please fill in all fields.')).toBeTruthy();
         });
     });
 
@@ -88,14 +87,20 @@ describe('<SignUpScreen />', () => {
     test('shows error when some fields are empty', async () => {
         const { getByTestId, getByText } = render(<SignUpScreen />);
 
-        fireEvent.changeText(getByTestId('fullname-textfield'), 'Rrojelyo Kamasho');
-        fireEvent.changeText(getByTestId('username-signup-textfield'), '7otinle');
+        fireEvent.changeText(
+            getByTestId('fullname-textfield'),
+            'Rrojelyo Kamasho'
+        );
+        fireEvent.changeText(
+            getByTestId('username-signup-textfield'),
+            '7otinle'
+        );
 
         fireEvent.press(getByTestId('tac-button'));
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByText('Completa todos los campos.')).toBeTruthy();
+            expect(getByText('Please fill in all fields.')).toBeTruthy();
         });
     });
 
@@ -104,15 +109,27 @@ describe('<SignUpScreen />', () => {
         const alertSpy = jest.spyOn(Alert, 'alert');
         const { getByTestId } = render(<SignUpScreen />);
 
-        fireEvent.changeText(getByTestId('fullname-textfield'), 'Rogelio Camacho');
-        fireEvent.changeText(getByTestId('username-signup-textfield'), 'elnito7');
-        fireEvent.changeText(getByTestId('email-signup-textfield'), 'nito@email.com');
-        fireEvent.changeText(getByTestId('password-signup-textfield'), 'yacomiyasoyfeliz02');
+        fireEvent.changeText(
+            getByTestId('fullname-textfield'),
+            'Rogelio Camacho'
+        );
+        fireEvent.changeText(
+            getByTestId('username-signup-textfield'),
+            'elnito7'
+        );
+        fireEvent.changeText(
+            getByTestId('email-signup-textfield'),
+            'nito@email.com'
+        );
+        fireEvent.changeText(
+            getByTestId('password-signup-textfield'),
+            'yacomiyasoyfeliz02'
+        );
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
             expect(alertSpy).toHaveBeenCalledWith(
-                'Aviso Legal',
+                'Legal Notice',
                 expect.any(String)
             );
         });
@@ -120,7 +137,7 @@ describe('<SignUpScreen />', () => {
 
     test('terms checkbox toggles when pressed', () => {
         const { getByText, getByTestId } = render(<SignUpScreen />);
-        const termsText = getByText('Términos de Servicio y Privacidad');
+        const termsText = getByText('Terms of Service and Privacy Policy');
         // Antes de presionar no hay checkmark
         expect(() => getByText('✓')).toThrow();
         // Presionar checkbox
@@ -139,27 +156,27 @@ describe('<SignUpScreen />', () => {
     });
 
     // Modal de términos
-    test('opens terms modal when pressing "Términos de Servicio y Privacidad"', () => {
+    test('opens terms modal when pressing "Terms of Service and Privacy Policy"', () => {
         const { getByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Términos de Servicio y Privacidad'));
-        expect(getByText('Aviso Legal y Privacidad')).toBeTruthy();
+        fireEvent.press(getByText('Terms of Service and Privacy Policy'));
+        expect(getByText('Terms & Privacy Policy')).toBeTruthy();
     });
 
-    test('closes terms modal when pressing "Entendido"', async () => {
+    test('closes terms modal when pressing "Got it"', async () => {
         const { getByText, queryByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Términos de Servicio y Privacidad'));
-        fireEvent.press(getByText('Entendido'));
+        fireEvent.press(getByText('Terms of Service and Privacy Policy'));
+        fireEvent.press(getByText('Got it'));
         await waitFor(() => {
-            expect(queryByText('Aviso Legal y Privacidad')).toBeNull();
+            expect(queryByText('Terms & Privacy Policy')).toBeNull();
         });
     });
 
     test('closes terms modal when pressing "✕"', async () => {
         const { getByText, queryByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Términos de Servicio y Privacidad'));
+        fireEvent.press(getByText('Terms of Service and Privacy Policy'));
         fireEvent.press(getByText('✕'));
         await waitFor(() => {
-            expect(queryByText('Aviso Legal y Privacidad')).toBeNull();
+            expect(queryByText('Terms & Privacy Policy')).toBeNull();
         });
     });
 
@@ -168,10 +185,22 @@ describe('<SignUpScreen />', () => {
         (signUp as jest.Mock).mockResolvedValue({ data: {}, error: null });
 
         const { getByTestId } = render(<SignUpScreen />);
-        fireEvent.changeText(getByTestId('fullname-textfield'), 'Rogelio Camacho');
-        fireEvent.changeText(getByTestId('username-signup-textfield'), 'elnito7');
-        fireEvent.changeText(getByTestId('email-signup-textfield'), 'nito@email.com');
-        fireEvent.changeText(getByTestId('password-signup-textfield'), 'tengosueño123');
+        fireEvent.changeText(
+            getByTestId('fullname-textfield'),
+            'Rogelio Camacho'
+        );
+        fireEvent.changeText(
+            getByTestId('username-signup-textfield'),
+            'elnito7'
+        );
+        fireEvent.changeText(
+            getByTestId('email-signup-textfield'),
+            'nito@email.com'
+        );
+        fireEvent.changeText(
+            getByTestId('password-signup-textfield'),
+            'tengosueño123'
+        );
         fireEvent.press(getByTestId('tac-button'));
         fireEvent.press(getByTestId('signup-button'));
 
@@ -186,37 +215,66 @@ describe('<SignUpScreen />', () => {
     });
 
     test('shows success screen after successful registration', async () => {
-        (signUp as jest.Mock).mockResolvedValue({ data: { user: {} }, error: null });
+        (signUp as jest.Mock).mockResolvedValue({
+            data: { user: {} },
+            error: null,
+        });
 
         const { getByText, getByTestId } = render(<SignUpScreen />);
-        fireEvent.changeText(getByTestId('fullname-textfield'), 'Rogelio Camacho');
-        fireEvent.changeText(getByTestId('username-signup-textfield'), 'elnito7');
-        fireEvent.changeText(getByTestId('email-signup-textfield'), 'nito@email.com');
-        fireEvent.changeText(getByTestId('password-signup-textfield'), 'tengosueño123');
+        fireEvent.changeText(
+            getByTestId('fullname-textfield'),
+            'Rogelio Camacho'
+        );
+        fireEvent.changeText(
+            getByTestId('username-signup-textfield'),
+            'elnito7'
+        );
+        fireEvent.changeText(
+            getByTestId('email-signup-textfield'),
+            'nito@email.com'
+        );
+        fireEvent.changeText(
+            getByTestId('password-signup-textfield'),
+            'tengosueño123'
+        );
         fireEvent.press(getByTestId('tac-button'));
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByText('¡Cuenta creada!')).toBeTruthy();
+            expect(getByText('Account created!')).toBeTruthy();
         });
     });
 
     test('shows error when signUp fails', async () => {
-        (signUp as jest.Mock).mockResolvedValue({ 
-            data: null, 
-            error: 'El email ya está en uso' 
+        (signUp as jest.Mock).mockResolvedValue({
+            data: null,
+            error: 'An account with that email already exists.',
         });
 
         const { getByText, getByTestId } = render(<SignUpScreen />);
-        fireEvent.changeText(getByTestId('fullname-textfield'), 'Rogelio Camacho');
-        fireEvent.changeText(getByTestId('username-signup-textfield'), 'elnito7');
-        fireEvent.changeText(getByTestId('email-signup-textfield'), 'nito@email.com');
-        fireEvent.changeText(getByTestId('password-signup-textfield'), 'tengosueño123');
+        fireEvent.changeText(
+            getByTestId('fullname-textfield'),
+            'Rogelio Camacho'
+        );
+        fireEvent.changeText(
+            getByTestId('username-signup-textfield'),
+            'elnito7'
+        );
+        fireEvent.changeText(
+            getByTestId('email-signup-textfield'),
+            'nito@email.com'
+        );
+        fireEvent.changeText(
+            getByTestId('password-signup-textfield'),
+            'tengosueño123'
+        );
         fireEvent.press(getByTestId('tac-button'));
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByText('El email ya está en uso')).toBeTruthy();
+            expect(
+                getByText('An account with that email already exists.')
+            ).toBeTruthy();
         });
     });
 
@@ -224,16 +282,30 @@ describe('<SignUpScreen />', () => {
         (signUp as jest.Mock).mockImplementation(() => new Promise(() => {}));
 
         const { getByTestId } = render(<SignUpScreen />);
-        fireEvent.changeText(getByTestId('fullname-textfield'), 'Rogelio Camacho');
-        fireEvent.changeText(getByTestId('username-signup-textfield'), 'elnito7');
-        fireEvent.changeText(getByTestId('email-signup-textfield'), 'nito@email.com');
-        fireEvent.changeText(getByTestId('password-signup-textfield'), 'tengosueño123');
+        fireEvent.changeText(
+            getByTestId('fullname-textfield'),
+            'Rogelio Camacho'
+        );
+        fireEvent.changeText(
+            getByTestId('username-signup-textfield'),
+            'elnito7'
+        );
+        fireEvent.changeText(
+            getByTestId('email-signup-textfield'),
+            'nito@email.com'
+        );
+        fireEvent.changeText(
+            getByTestId('password-signup-textfield'),
+            'tengosueño123'
+        );
         fireEvent.press(getByTestId('tac-button'));
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByTestId('signup-button').props.accessibilityState?.disabled).toBe(true);
-        })
+            expect(
+                getByTestId('signup-button').props.accessibilityState?.disabled
+            ).toBe(true);
+        });
     });
 
     // Tests de signUpWithGoogle - no hay signUpWithGoogle??? si lo agregan luego los pongo

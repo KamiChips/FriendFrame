@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { createFragment } from "@/services/supabase/posts/fragment";
-import { Fragment } from "@/services/supabase/posts/types";
+import { createFragment } from '@/services/supabase/posts/fragment';
+import { Fragment } from '@/services/supabase/posts/types';
 
 interface UseCreateFragmentReturn {
     createFragment: (profileOwnerId: string, content: string) => Promise<void>;
@@ -18,11 +18,14 @@ export const useCreateFragment = (): UseCreateFragmentReturn => {
     const [data, setData] = useState<Fragment | null>(null);
 
     // Función para crear un Fragment
-    const handleCreateFragment = async (profileOwnerId: string, content: string) => {
+    const handleCreateFragment = async (
+        profileOwnerId: string,
+        content: string
+    ) => {
         setIsLoading(true);
         setError(null);
         setIsSuccess(false);
-        
+
         // Llamada a la función de servicio para crear el Fragment
         const result = await createFragment(profileOwnerId, content);
 
@@ -52,6 +55,6 @@ export const useCreateFragment = (): UseCreateFragmentReturn => {
         error,
         isSuccess,
         data,
-        reset
+        reset,
     };
-}
+};

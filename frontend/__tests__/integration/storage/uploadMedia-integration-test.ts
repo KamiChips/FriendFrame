@@ -1,46 +1,56 @@
-import { uploadPostImage, uploadMultiple, uploadProfilePic, getPublicUrl } from "@/services/supabase/storage/uploadMedia";
-import { supabaseAdmin } from "../helpers/supabase-test-client";
-import { createBuckets, cleanBucket, cleanBucketRoot } from "../helpers/storage-setup";
-import * as ImagePicker from "expo-image-picker";
-import * as StorageHelpers from "@/services/supabase/storage/storage.helpers";
-import * as FileSystem from "expo-file-system/legacy";
+import {
+    uploadPostImage,
+    uploadMultiple,
+    uploadProfilePic,
+    getPublicUrl,
+} from '@/services/supabase/storage/uploadMedia';
+import { supabaseAdmin } from '../helpers/supabase-test-client';
+import {
+    createBuckets,
+    cleanBucket,
+    cleanBucketRoot,
+} from '../helpers/storage-setup';
+import * as ImagePicker from 'expo-image-picker';
+import * as StorageHelpers from '@/services/supabase/storage/storage.helpers';
+import * as FileSystem from 'expo-file-system/legacy';
 
-jest.mock("@/lib/supabase/client", () => ({
-    supabase: require("../helpers/supabase-test-client").supabaseAdmin,
+jest.mock('@/lib/supabase/client', () => ({
+    supabase: require('../helpers/supabase-test-client').supabaseAdmin,
 }));
 
-jest.mock("expo-image-picker", () => ({
+jest.mock('expo-image-picker', () => ({
     requestMediaLibraryPermissionsAsync: jest.fn(),
     launchImageLibraryAsync: jest.fn(),
 }));
 
-jest.mock("expo-file-system/legacy", () => ({
+jest.mock('expo-file-system/legacy', () => ({
     getInfoAsync: jest.fn(),
 }));
 
-jest.mock("expo-image-manipulator", () => ({
+jest.mock('expo-image-manipulator', () => ({
     manipulateAsync: jest.fn(),
-    SaveFormat: { JPEG: "jpeg" },
+    SaveFormat: { JPEG: 'jpeg' },
 }));
 
-import { manipulateAsync } from "expo-image-manipulator";
+import { manipulateAsync } from 'expo-image-manipulator';
 
-const mockRequestPermissions = ImagePicker.requestMediaLibraryPermissionsAsync as jest.Mock;
+const mockRequestPermissions =
+    ImagePicker.requestMediaLibraryPermissionsAsync as jest.Mock;
 const mockLaunchLibrary = ImagePicker.launchImageLibraryAsync as jest.Mock;
 const mockGetInfoAsync = FileSystem.getInfoAsync as jest.Mock;
 const mockManipulateAsync = manipulateAsync as jest.Mock;
 
-const testUserId = "550e8400-e29b-41d4-a716-446655440099";
-const testEmail = "integration-storage@test.com";
+const testUserId = '550e8400-e29b-41d4-a716-446655440099';
+const testEmail = 'integration-storage@test.com';
 
 const TINY_JPEG_BUFFER = Buffer.from(
-    "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8U" +
-    "HRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgN" +
-    "DRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIy" +
-    "MjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAA" +
-    "AAAAAAAAAAAAAP/EABQBAQAAAAAAAAAAAAAAAAAAAAD/xAAUEQEAAAAAAAAAAAAAAAAAAAAA" +
-    "/9oADAMBAAIRAxEAPwCwABmX/9k=",
-    "base64"
+    '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8U' +
+        'HRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgN' +
+        'DRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIy' +
+        'MjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAA' +
+        'AAAAAAAAAAAAAP/EABQBAQAAAAAAAAAAAAAAAAAAAAD/xAAUEQEAAAAAAAAAAAAAAAAAAAAA' +
+        '/9oADAMBAAIRAxEAPwCwABmX/9k=',
+    'base64'
 );
 
 const cleanArrayBuffer = TINY_JPEG_BUFFER.buffer.slice(
@@ -49,32 +59,36 @@ const cleanArrayBuffer = TINY_JPEG_BUFFER.buffer.slice(
 );
 
 const mockAsset: ImagePicker.ImagePickerAsset = {
-    uri: "file://test-photo.jpg",
-    width: 1, height: 1,
-    type: "image",
-    fileName: "test-photo.jpg",
+    uri: 'file://test-photo.jpg',
+    width: 1,
+    height: 1,
+    type: 'image',
+    fileName: 'test-photo.jpg',
     fileSize: TINY_JPEG_BUFFER.length,
-    assetId: null, base64: null, duration: null, exif: null,
-    mimeType: "image/jpeg",
+    assetId: null,
+    base64: null,
+    duration: null,
+    exif: null,
+    mimeType: 'image/jpeg',
     pairedVideoAsset: null,
 };
 
 const videoAsset: ImagePicker.ImagePickerAsset = {
     ...mockAsset,
-    uri: "file://test-video.mp4",
-    type: "video",
-    fileName: "test-video.mp4",
-    mimeType: "video/mp4",
+    uri: 'file://test-video.mp4',
+    type: 'video',
+    fileName: 'test-video.mp4',
+    mimeType: 'video/mp4',
 };
 
 const realFetch = global.fetch;
 
 beforeAll(async () => {
     await createBuckets();
-    await supabaseAdmin.from("users").upsert({
+    await supabaseAdmin.from('users').upsert({
         user_id: testUserId,
-        full_name: "Integration Test",
-        username: "integration_storage_test",
+        full_name: 'Integration Test',
+        username: 'integration_storage_test',
         email: testEmail,
         profile_pic: null,
     });
@@ -82,164 +96,195 @@ beforeAll(async () => {
 
 afterAll(async () => {
     global.fetch = realFetch;
-    await cleanBucketRoot("profile-pictures", `${testUserId}.jpg`);
-    await cleanBucket("post-images", testUserId);
-    await supabaseAdmin.from("users").delete().eq("user_id", testUserId);
+    await cleanBucketRoot('profile-pictures', `${testUserId}.jpg`);
+    await cleanBucket('post-images', testUserId);
+    await supabaseAdmin.from('users').delete().eq('user_id', testUserId);
 });
 
 beforeEach(() => {
     jest.clearAllMocks();
 
-    mockGetInfoAsync.mockResolvedValue({ exists: true, size: TINY_JPEG_BUFFER.length });
-    mockManipulateAsync.mockResolvedValue({ uri: "file://test-photo.jpg" });
-
-    global.fetch = jest.fn().mockImplementation((url: string, ...args: any[]) => {
-        if (typeof url === "string" && (url.startsWith("file://") || url.startsWith("blob:"))) {
-            return Promise.resolve({
-                ok: true,
-                arrayBuffer: jest.fn().mockResolvedValue(cleanArrayBuffer),
-            });
-        }
-        return realFetch(url, ...args);
+    mockGetInfoAsync.mockResolvedValue({
+        exists: true,
+        size: TINY_JPEG_BUFFER.length,
     });
+    mockManipulateAsync.mockResolvedValue({ uri: 'file://test-photo.jpg' });
+
+    global.fetch = jest
+        .fn()
+        .mockImplementation((url: string, ...args: any[]) => {
+            if (
+                typeof url === 'string' &&
+                (url.startsWith('file://') || url.startsWith('blob:'))
+            ) {
+                return Promise.resolve({
+                    ok: true,
+                    arrayBuffer: jest.fn().mockResolvedValue(cleanArrayBuffer),
+                });
+            }
+            return realFetch(url, ...args);
+        });
 });
 
-describe("uploadProfilePic (integration)", () => {
-    it("returns error if userId is invalid", async () => {
-        const result = await uploadProfilePic("no-es-uuid");
-        expect(result.error).toContain("ID de usuario");
+describe('uploadProfilePic (integration)', () => {
+    it('returns error if userId is invalid', async () => {
+        const result = await uploadProfilePic('no-es-uuid');
+        expect(result.error).toContain('ID de usuario');
     });
 
-    it("returns error if gallery permission denied", async () => {
-        mockRequestPermissions.mockResolvedValue({ status: "denied" });
+    it('returns error if gallery permission denied', async () => {
+        mockRequestPermissions.mockResolvedValue({ status: 'denied' });
         const result = await uploadProfilePic(testUserId);
-        expect(result.error).toBe("Se necesita permiso para acceder a la galería.");
+        expect(result.error).toBe(
+            'Se necesita permiso para acceder a la galería.'
+        );
     });
 
-    it("returns null if user cancels", async () => {
-        mockRequestPermissions.mockResolvedValue({ status: "granted" });
+    it('returns null if user cancels', async () => {
+        mockRequestPermissions.mockResolvedValue({ status: 'granted' });
         mockLaunchLibrary.mockResolvedValue({ canceled: true, assets: [] });
         const result = await uploadProfilePic(testUserId);
         expect(result).toEqual({ data: null, error: null });
     });
 
-    it("returns error if no assets selected", async () => {
-        mockRequestPermissions.mockResolvedValue({ status: "granted" });
+    it('returns error if no assets selected', async () => {
+        mockRequestPermissions.mockResolvedValue({ status: 'granted' });
         mockLaunchLibrary.mockResolvedValue({ canceled: false, assets: [] });
         const result = await uploadProfilePic(testUserId);
-        expect(result.error).toBe("No se seleccióno ningún archivo");
+        expect(result.error).toBe('No se seleccióno ningún archivo');
     });
 
-    it("returns error if file is too large", async () => {
-        mockRequestPermissions.mockResolvedValue({ status: "granted" });
-        mockLaunchLibrary.mockResolvedValue({ canceled: false, assets: [mockAsset] });
-        mockGetInfoAsync.mockResolvedValue({ exists: true, size: 999 * 1024 * 1024 });
+    it('returns error if file is too large', async () => {
+        mockRequestPermissions.mockResolvedValue({ status: 'granted' });
+        mockLaunchLibrary.mockResolvedValue({
+            canceled: false,
+            assets: [mockAsset],
+        });
+        mockGetInfoAsync.mockResolvedValue({
+            exists: true,
+            size: 999 * 1024 * 1024,
+        });
         const result = await uploadProfilePic(testUserId);
-        expect(result.error).toContain("demasiado grande");
+        expect(result.error).toContain('demasiado grande');
     });
 
-    it("uploads profile pic to supabase and updates db", async () => {
-        mockRequestPermissions.mockResolvedValue({ status: "granted" });
-        mockLaunchLibrary.mockResolvedValue({ canceled: false, assets: [mockAsset] });
+    it('uploads profile pic to supabase and updates db', async () => {
+        mockRequestPermissions.mockResolvedValue({ status: 'granted' });
+        mockLaunchLibrary.mockResolvedValue({
+            canceled: false,
+            assets: [mockAsset],
+        });
 
         const result = await uploadProfilePic(testUserId);
 
         expect(result.error).toBeNull();
-        expect(result.data?.mediaType).toBe("image");
+        expect(result.data?.mediaType).toBe('image');
         expect(result.data?.filePath).toBe(`${testUserId}.jpg`);
-        expect(result.data?.publicUrl).toContain("profile-pictures");
+        expect(result.data?.publicUrl).toContain('profile-pictures');
 
         const { data: user } = await supabaseAdmin
-            .from("users")
-            .select("profile_pic")
-            .eq("user_id", testUserId)
+            .from('users')
+            .select('profile_pic')
+            .eq('user_id', testUserId)
             .single();
 
-        expect(user?.profile_pic).toContain("profile-pictures");
+        expect(user?.profile_pic).toContain('profile-pictures');
     });
 });
 
-describe("uploadPostImage (integration)", () => {
-    it("returns error if authorId is invalid", async () => {
-        const result = await uploadPostImage("no-es-uuid", mockAsset);
-        expect(result.error).toContain("ID de autor");
+describe('uploadPostImage (integration)', () => {
+    it('returns error if authorId is invalid', async () => {
+        const result = await uploadPostImage('no-es-uuid', mockAsset);
+        expect(result.error).toContain('ID de autor');
     });
 
-    it("uploads image to supabase successfully", async () => {
+    it('uploads image to supabase successfully', async () => {
         const result = await uploadPostImage(testUserId, mockAsset);
 
         expect(result.error).toBeNull();
-        expect(result.data?.mediaType).toBe("image");
-        expect(result.data?.publicUrl).toContain("post-images");
+        expect(result.data?.mediaType).toBe('image');
+        expect(result.data?.publicUrl).toContain('post-images');
         expect(result.data?.filePath).toContain(testUserId);
 
-        const fileName = result.data!.filePath.split("/")[1];
-        const { data: files } = await supabaseAdmin
-            .storage.from("post-images")
+        const fileName = result.data!.filePath.split('/')[1];
+        const { data: files } = await supabaseAdmin.storage
+            .from('post-images')
             .list(testUserId);
 
-        expect(files?.some(f => f.name === fileName)).toBe(true);
+        expect(files?.some((f) => f.name === fileName)).toBe(true);
     });
 
-    it("returns error if image is too large", async () => {
-        mockGetInfoAsync.mockResolvedValue({ exists: true, size: 999 * 1024 * 1024 });
+    it('returns error if image is too large', async () => {
+        mockGetInfoAsync.mockResolvedValue({
+            exists: true,
+            size: 999 * 1024 * 1024,
+        });
         const result = await uploadPostImage(testUserId, mockAsset);
-        expect(result.error).toContain("demasiado grande");
+        expect(result.error).toContain('demasiado grande');
     });
 
-    it("returns error if resized image is too large", async () => {
+    it('returns error if resized image is too large', async () => {
         mockGetInfoAsync
             .mockResolvedValueOnce({ exists: true, size: 100 })
             .mockResolvedValueOnce({ exists: true, size: 999 * 1024 * 1024 });
         const result = await uploadPostImage(testUserId, mockAsset);
-        expect(result.error).toBe("La imagen procesada es demasiado grande.");
+        expect(result.error).toBe('La imagen procesada es demasiado grande.');
     });
 
-    it("uploads video successfully", async () => {
+    it('uploads video successfully', async () => {
         const result = await uploadPostImage(testUserId, videoAsset);
         expect(result.error).toBeNull();
-        expect(result.data?.mediaType).toBe("video");
-        expect(result.data?.publicUrl).toContain("post-images");
+        expect(result.data?.mediaType).toBe('video');
+        expect(result.data?.publicUrl).toContain('post-images');
     });
 
-    it("returns error if video is too large", async () => {
-        mockGetInfoAsync.mockResolvedValue({ exists: true, size: 999 * 1024 * 1024 });
+    it('returns error if video is too large', async () => {
+        mockGetInfoAsync.mockResolvedValue({
+            exists: true,
+            size: 999 * 1024 * 1024,
+        });
         const result = await uploadPostImage(testUserId, videoAsset);
-        expect(result.error).toContain("demasiado grande");
+        expect(result.error).toContain('demasiado grande');
     });
 
-    it("returns error for invalid mime type", async () => {
-        jest.spyOn(StorageHelpers, "getMimeType").mockImplementationOnce(() => {
-            throw new Error("Tipo de imagen no permitido.");
+    it('returns error for invalid mime type', async () => {
+        jest.spyOn(StorageHelpers, 'getMimeType').mockImplementationOnce(() => {
+            throw new Error('Tipo de imagen no permitido.');
         });
         const result = await uploadPostImage(testUserId, mockAsset);
-        expect(result.error).toBe("Tipo de imagen no permitido.");
+        expect(result.error).toBe('Tipo de imagen no permitido.');
     });
 });
 
-describe("uploadMultiple (integration)", () => {
-    it("returns error if authorId is invalid", async () => {
-        const result = await uploadMultiple("no-es-uuid", [mockAsset]);
-        expect(result.error).toContain("ID de autor");
+describe('uploadMultiple (integration)', () => {
+    it('returns error if authorId is invalid', async () => {
+        const result = await uploadMultiple('no-es-uuid', [mockAsset]);
+        expect(result.error).toContain('ID de autor');
     });
 
-    it("returns empty for empty assets array", async () => {
+    it('returns empty for empty assets array', async () => {
         const result = await uploadMultiple(testUserId, []);
-        expect(result).toEqual({ data: { successful: [], failed: [] }, error: null });
+        expect(result).toEqual({
+            data: { successful: [], failed: [] },
+            error: null,
+        });
     });
 
-    it("returns error if assets exceed max batch", async () => {
-        const result = await uploadMultiple(testUserId, Array(11).fill(mockAsset));
-        expect(result.error).toContain("Máximo");
+    it('returns error if assets exceed max batch', async () => {
+        const result = await uploadMultiple(
+            testUserId,
+            Array(11).fill(mockAsset)
+        );
+        expect(result.error).toContain('Máximo');
     });
 
-    it("uploads multiple assets successfully", async () => {
+    it('uploads multiple assets successfully', async () => {
         const result = await uploadMultiple(testUserId, [mockAsset, mockAsset]);
         expect(result.error).toBeNull();
         expect(result.data?.successful.length).toBeGreaterThanOrEqual(1);
     });
 
-    it("tracks partial failures correctly", async () => {
+    it('tracks partial failures correctly', async () => {
         mockGetInfoAsync
             .mockResolvedValueOnce({ exists: true, size: 100 })
             .mockResolvedValueOnce({ exists: true, size: 999 * 1024 * 1024 });
@@ -248,26 +293,29 @@ describe("uploadMultiple (integration)", () => {
 
         expect(result.data?.successful).toHaveLength(1);
         expect(result.data?.failed).toHaveLength(1);
-        expect(result.data?.failed[0]).toContain("Archivo 2");
+        expect(result.data?.failed[0]).toContain('Archivo 2');
     });
 
-    it("tracks uploads that return error without rejecting", async () => {
+    it('tracks uploads that return error without rejecting', async () => {
         // ambos assets fallan por tamaño — fulfilled pero con error en value
-        mockGetInfoAsync.mockResolvedValue({ exists: true, size: 999 * 1024 * 1024 });
+        mockGetInfoAsync.mockResolvedValue({
+            exists: true,
+            size: 999 * 1024 * 1024,
+        });
 
         const result = await uploadMultiple(testUserId, [mockAsset, mockAsset]);
 
         expect(result.data?.successful).toHaveLength(0);
         expect(result.data?.failed).toHaveLength(2);
-        expect(result.data?.failed[0]).toContain("Archivo 1");
-        expect(result.data?.failed[1]).toContain("Archivo 2");
+        expect(result.data?.failed[0]).toContain('Archivo 1');
+        expect(result.data?.failed[1]).toContain('Archivo 2');
     });
 });
 
-describe("getPublicUrl (integration)", () => {
-    it("returns a valid public url for existing path", () => {
-        const url = getPublicUrl("post-images", `${testUserId}/test.jpg`);
-        expect(url).toContain("post-images");
+describe('getPublicUrl (integration)', () => {
+    it('returns a valid public url for existing path', () => {
+        const url = getPublicUrl('post-images', `${testUserId}/test.jpg`);
+        expect(url).toContain('post-images');
         expect(url).toContain(testUserId);
     });
 });

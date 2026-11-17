@@ -1,6 +1,6 @@
-import { useState, useCallback, useRef } from "react";
-import { getFeed } from "@/services/supabase/feed/feed.queries";
-import { FeedPost } from "@/services/supabase/feed/feed.types";
+import { useState, useCallback, useRef } from 'react';
+import { getFeed } from '@/services/supabase/feed/feed.queries';
+import { FeedPost } from '@/services/supabase/feed/feed.types';
 
 interface UseFeedState {
     items: FeedPost[];
@@ -16,7 +16,7 @@ interface UseFeedReturn extends UseFeedState {
 }
 
 export function useFeed(): UseFeedReturn {
-    const [state, setState] = useState<UseFeedState> ({
+    const [state, setState] = useState<UseFeedState>({
         items: [],
         isLoading: true,
         isFetchingMore: false,
@@ -31,7 +31,7 @@ export function useFeed(): UseFeedReturn {
     const loadPage = useCallback(async (page: number, isRefresh: boolean) => {
         if (isFetchingRef.current) return;
         isFetchingRef.current = true;
-        
+
         setState((prev) => ({
             ...prev,
             isLoading: isRefresh,
@@ -48,13 +48,13 @@ export function useFeed(): UseFeedReturn {
             setState((prev) => ({
                 ...prev,
                 isLoading: false,
-                isFetchingMore: false, 
-                error: result.error
+                isFetchingMore: false,
+                error: result.error,
             }));
             return;
         }
 
-        setState ((prev) => ({
+        setState((prev) => ({
             items: isRefresh ? result.data : [...prev.items, ...result.data],
             isLoading: false,
             isFetchingMore: false,

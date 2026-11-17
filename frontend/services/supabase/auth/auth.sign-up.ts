@@ -1,68 +1,87 @@
-import { supabase } from "@/lib/supabase/client";
-import { SignUpParams, AuthResult, AuthUser } from "./auth.types";
-import { parseAuthError } from "./auth.errors";
+import { supabase } from '@/lib/supabase/client';
+import { SignUpParams, AuthResult, AuthUser } from './auth.types';
+import { parseAuthError } from './auth.errors';
 import {
-  validateEmail,
-  validateFullName,
-  validatePassword,
-  validateUsername,
-  waitForProfile,
-} from "./auth.helpers";
+    validateEmail,
+    validateFullName,
+    validatePassword,
+    validateUsername,
+    waitForProfile,
+    resendVerificationEmail,
+    savePendingVerificationEmail,
+} from './auth.helpers';
+import safeLogger from '@/lib/logger/safeLogger';
 
 export async function signUp({
-  email,
-  password,
-  full_name,
-  username,
+    email,
+    password,
+    full_name,
+    username,
 }: SignUpParams): Promise<AuthResult<AuthUser>> {
-  try {
-    // console.log("[SIGNUP] Iniciando");
-    const cleanEmail = validateEmail(email);
-    const cleanUsername = validateUsername(username);
-    const cleanName = validateFullName(full_name);
-    validatePassword(password);
+    try {
+        safeLogger.debug('[SIGNUP] Iniciando');
+        const cleanEmail = validateEmail(email);
+        const cleanUsername = validateUsername(username);
+        const cleanName = validateFullName(full_name);
+        validatePassword(password);
 
-    // console.log("[SIGNUP] Validaciones OK");
+        // Verificar username disponible antes de crear la cuenta
+        safeLogger.debug('[SIGNUP] Validaciones OK');
+        const { data: existing, error: existingError } = await supabase
+            .from('users')
+            .select('user_id')
+            .eq('username', cleanUsername)
+            .maybeSingle();
 
-    // Verificar username disponible antes de crear la cuenta
-    const { data: existing, error: existingError } = await supabase
-      .from("users")
-      .select("user_id")
-      .eq("username", cleanUsername)
-      .maybeSingle();
+        safeLogger.debug('[SIGNUP] Resultado búsqueda username:', {
+            existing,
+            existingError,
+        });
 
-    // console.log("[SIGNUP] Resultado búsqueda username:", {
-    //   existing,
-    //   existingError,
-    // });
+        if (existing)
+            return {
+                data: null,
+                error: 'That username is already taken.',
+            };
 
-    if (existing)
-      return { data: null, error: "Ese nombre de usuario ya está en uso." };
+        safeLogger.debug('[SIGNUP] Llamando supabase.auth.signUp');
+        const { data: authData, error: authError } = await supabase.auth.signUp(
+            {
+                email: cleanEmail,
+                password,
+                options: {
+                    data: {
+                        full_name: cleanName,
+                        username: cleanUsername,
+                    },
+                },
+            }
+        );
 
-    // console.log("[SIGNUP] Llamando supabase.auth.signUp");
+        safeLogger.debug('[SIGNUP] Respuesta auth:', {
+            authData,
+            authError,
+        });
 
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: cleanEmail,
-      password,
-      options: {
-        data: {
-          full_name: cleanName,
-          username: cleanUsername,
-        },
-      },
-    });
+        if (authError) throw authError;
+        if (!authData.user) throw new Error('Could not create user.');
 
-    // console.log("[SIGNUP] Respuesta auth:", {
-    //   authData,
-    //   authError,
-    // });
+        const profile = await waitForProfile(authData.user.id);
 
-    if (authError) throw authError;
-    if (!authData.user) throw new Error("No se pudo crear el usuario.");
+        if (!authData.user.confirmation_sent_at) {
+            try {
+                await resendVerificationEmail(authData.user.email);
+            } catch (resendError) {
+                console.error(
+                    'Failed to resend verification email after signup',
+                    resendError
+                );
+            }
+        }
+        await savePendingVerificationEmail(cleanEmail);
 
-    const profile = await waitForProfile(authData.user.id);
-    return { data: profile, error: null };
-  } catch (err) {
-    return { data: null, error: parseAuthError(err) };
-  }
+        return { data: profile, error: null };
+    } catch (err) {
+        return { data: null, error: parseAuthError(err) };
+    }
 }

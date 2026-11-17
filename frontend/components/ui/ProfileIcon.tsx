@@ -1,5 +1,5 @@
-import { LinearGradient } from "expo-linear-gradient";
-import { Image, Text, View } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
+import { Image, Text, View } from 'react-native';
 
 interface ProfileIconProps {
     initials: string;
@@ -8,7 +8,12 @@ interface ProfileIconProps {
     isDark: boolean;
 }
 
-const ProfileIcon = ({ initials, profilePic, isDark, size = 48 }: ProfileIconProps) => {
+const ProfileIcon = ({
+    initials,
+    profilePic,
+    isDark,
+    size = 48,
+}: ProfileIconProps) => {
     if (profilePic) {
         return (
             <View
@@ -16,7 +21,7 @@ const ProfileIcon = ({ initials, profilePic, isDark, size = 48 }: ProfileIconPro
                     width: size,
                     height: size,
                     borderRadius: size / 2,
-                    overflow: "hidden",
+                    overflow: 'hidden',
                 }}
             >
                 <Image
@@ -32,14 +37,14 @@ const ProfileIcon = ({ initials, profilePic, isDark, size = 48 }: ProfileIconPro
         <LinearGradient
             colors={
                 isDark
-                    ? ["#182240", "#AA3E14", "#115A67"]
-                    : ["#FAFAFA", "#30C2D9", "#FF9B42"]
+                    ? ['#182240', '#AA3E14', '#115A67']
+                    : ['#FAFAFA', '#30C2D9', '#FF9B42']
             }
             style={{
                 width: size,
                 height: size,
-                alignItems: "center",
-                justifyContent: "center",
+                alignItems: 'center',
+                justifyContent: 'center',
                 borderRadius: size / 2,
             }}
             start={{ x: 0, y: 0 }}

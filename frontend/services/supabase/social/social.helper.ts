@@ -1,53 +1,56 @@
-import { PaginationParams } from "./social.types";
+import { PaginationParams } from './social.types';
 
 const MAX_PAGE_LIMIT = 50;
 const DEFAULT_LIMIT = 30;
 
 export function normalizePagination(params: PaginationParams): {
-  from: number;
-  to: number;
+    from: number;
+    to: number;
 } {
-  const page = Math.max(0, Math.floor(params.page ?? 0));
-  const limit = Math.min(
-    MAX_PAGE_LIMIT,
-    Math.max(1, Math.floor(params.limit ?? DEFAULT_LIMIT)),
-  );
+    const page = Math.max(0, Math.floor(params.page ?? 0));
+    const limit = Math.min(
+        MAX_PAGE_LIMIT,
+        Math.max(1, Math.floor(params.limit ?? DEFAULT_LIMIT))
+    );
 
-  return { from: page * limit, to: page * limit + limit - 1 };
+    return { from: page * limit, to: page * limit + limit - 1 };
 }
 
 export function parseError(err: unknown): string {
-  if (!err) return "Error desconocido";
-  const msg = (err as Error).message ?? String(err);
+    if (!err) return 'Unknown error';
+    const msg = (err as Error).message ?? String(err);
 
-  const map: [string, string][] = [
-    [
-      'duplicate key value violates unique constraint "follows',
-      "Ya sigues a este usuario.",
-    ],
-    [
-      'duplicate key value violates unique constraint "blocks',
-      "Ya has bloqueado a este usuario.",
-    ],
-    [
-      "violates check constraint",
-      "No puedes realizar esta acción contigo mismo.",
-    ],
-    ["row-level security", "No tienes permiso para realizar esta acción."],
-    ["NetworkError", "Error de red. Verifica tu conexión."],
-    ["Failed to fetch", "Error de red. Verifica tu conexión."],
-    ["No hay sesión", msg],
-    ["No puedes", msg],
-    ["Ya sigues", msg],
-    ["Ya has bloqueado", msg],
-    ["Has bloqueado", msg],
-    ["Solo puedes", msg],
-    ["ID", msg],
-  ];
+    const map: [string, string][] = [
+        [
+            'duplicate key value violates unique constraint "follows',
+            'You are already following this user.',
+        ],
+        [
+            'duplicate key value violates unique constraint "blocks',
+            'You have already blocked this user.',
+        ],
+        [
+            'violates check constraint',
+            'You cannot perform this action on yourself.',
+        ],
+        [
+            'row-level security',
+            'You do not have permission to perform this action.',
+        ],
+        ['NetworkError', 'Network error. Check your connection.'],
+        ['Failed to fetch', 'Network error. Check your connection.'],
+        ['No active session', msg],
+        ['You cannot', msg],
+        ['You are already following', msg],
+        ['You have already blocked', msg],
+        ['You have blocked', msg],
+        ['You can only', msg],
+        ['Invalid', msg],
+    ];
 
-  for (const [key, value] of map) {
-    if (msg.includes(key)) return value;
-  }
+    for (const [key, value] of map) {
+        if (msg.includes(key)) return value;
+    }
 
-  return "Ocurrió un error inesperado.";
+    return 'An unexpected error occurred.';
 }

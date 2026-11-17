@@ -1,29 +1,31 @@
-import { signIn, signOut, getCurrentUser, } from "@/services/supabase/auth/auth.sign-in";
-import { signUp } from "@/services/supabase/auth/auth.sign-up";
-import { supabaseAdmin } from "../helpers/supabase-test-client";
+import {
+    signIn,
+    signOut,
+    getCurrentUser,
+} from '@/services/supabase/auth/auth.sign-in';
+import { signUp } from '@/services/supabase/auth/auth.sign-up';
+import { supabaseAdmin } from '../helpers/supabase-test-client';
 
 const TEST_USER = {
     email: process.env.TEST_USER_EMAIL!,
     password: process.env.TEST_USER_PASSWORD!,
-    full_name: "Integration Testing",
-    username: "integration_test_signin_2",
+    full_name: 'Integration Testing',
+    username: 'integration_test_signin_2',
 };
 
 async function createTestUser() {
     const result = await signUp(TEST_USER);
+    await supabaseAdmin.auth.admin.updateUserById(result.data!.user_id, {
+        email_confirm: true,
+    });
 
     if (result.error) {
-        throw new Error(
-            `Failed to create test user: ${result.error}`
-        );
+        throw new Error(`Failed to create test user: ${result.error}`);
     }
 }
 
 async function deleteTestUser() {
-    await supabaseAdmin
-        .from("users")
-        .delete()
-        .eq("email", TEST_USER.email);
+    await supabaseAdmin.from('users').delete().eq('email', TEST_USER.email);
 
     const { data } = await supabaseAdmin.auth.admin.listUsers();
 
@@ -37,7 +39,7 @@ async function deleteTestUser() {
 }
 
 beforeEach(async () => {
-    await signOut(); 
+    await signOut();
     await deleteTestUser();
     await createTestUser();
 });
@@ -50,8 +52,8 @@ afterAll(async () => {
     await deleteTestUser();
 });
 
-describe("signIn — integration", () => {
-    it("logs in with correct credentials", async () => {
+describe('signIn — integration', () => {
+    it('logs in with correct credentials', async () => {
         const result = await signIn({
             email: TEST_USER.email,
             password: TEST_USER.password,
@@ -63,30 +65,25 @@ describe("signIn — integration", () => {
         );
     });
 
-    it("throws error when password is invalid", async () => {
+    it('throws error when password is invalid', async () => {
         const result = await signIn({
             email: TEST_USER.email,
-            password: "estanoes",
+            password: 'estanoes',
         });
 
-        expect(result.error).toBe(
-            "Email o contraseña incorrectos."
-        );
+        expect(result.error).toBe('Email o contraseña incorrectos.');
     });
 
-    it("throws error when email does not exist", async () => {
+    it('throws error when email does not exist', async () => {
         const result = await signIn({
-            email: "tengohambre@gmail.com",
-            password:
-                "yadijequetengohambreperoesqueTengohambreaiuda_1",
+            email: 'tengohambre@gmail.com',
+            password: 'yadijequetengohambreperoesqueTengohambreaiuda_1',
         });
 
-        expect(result.error).toBe(
-            "Email o contraseña incorrectos."
-        );
+        expect(result.error).toBe('Email o contraseña incorrectos.');
     });
 
-    it("returned profile contains all expected fields", async () => {
+    it('returned profile contains all expected fields', async () => {
         const result = await signIn({
             email: TEST_USER.email,
             password: TEST_USER.password,
@@ -103,10 +100,10 @@ describe("signIn — integration", () => {
             updated_at: expect.any(String),
         });
 
-        expect(result.data).toHaveProperty("profile_pic");
+        expect(result.data).toHaveProperty('profile_pic');
     });
 
-    it("does not allow login after user is deleted", async () => {
+    it('does not allow login after user is deleted', async () => {
         await deleteTestUser();
 
         const result = await signIn({
@@ -114,14 +111,12 @@ describe("signIn — integration", () => {
             password: TEST_USER.password,
         });
 
-        expect(result.error).toBe(
-            "Email o contraseña incorrectos."
-        );
+        expect(result.error).toBe('Email o contraseña incorrectos.');
     });
 });
 
-describe("signOut — integration", () => {
-    it("signs out successfully", async () => {
+describe('signOut — integration', () => {
+    it('signs out successfully', async () => {
         await signIn({
             email: TEST_USER.email,
             password: TEST_USER.password,
@@ -132,7 +127,7 @@ describe("signOut — integration", () => {
         expect(result.error).toBeNull();
     });
 
-    it("getCurrentUser returns null after signOut", async () => {
+    it('getCurrentUser returns null after signOut', async () => {
         await signIn({
             email: TEST_USER.email,
             password: TEST_USER.password,
@@ -148,15 +143,15 @@ describe("signOut — integration", () => {
         });
     });
 
-    it("calling signOut without active session does not throw", async () => {
+    it('calling signOut without active session does not throw', async () => {
         const result = await signOut();
 
         expect(result.error).toBeNull();
     });
 });
 
-describe("getCurrentUser — integration", () => {
-    it("returns null if there is no active session", async () => {
+describe('getCurrentUser — integration', () => {
+    it('returns null if there is no active session', async () => {
         await signOut();
 
         const result = await getCurrentUser();
@@ -167,7 +162,7 @@ describe("getCurrentUser — integration", () => {
         });
     });
 
-    it("returns the user if there is an active session", async () => {
+    it('returns the user if there is an active session', async () => {
         await signIn({
             email: TEST_USER.email,
             password: TEST_USER.password,
@@ -181,7 +176,7 @@ describe("getCurrentUser — integration", () => {
         );
     });
 
-    it("profile data matches what is in the BD", async () => {
+    it('profile data matches what is in the BD', async () => {
         await signIn({
             email: TEST_USER.email,
             password: TEST_USER.password,
@@ -190,9 +185,9 @@ describe("getCurrentUser — integration", () => {
         const result = await getCurrentUser();
 
         const { data: profile } = await supabaseAdmin
-            .from("users")
-            .select("*")
-            .eq("email", TEST_USER.email)
+            .from('users')
+            .select('*')
+            .eq('email', TEST_USER.email)
             .single();
 
         expect(profile).not.toBeNull();
