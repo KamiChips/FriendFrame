@@ -1,11 +1,11 @@
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
-$Team = @{
+$Team = @(
     "kamila.santos@cetysuniversidad.edu.mx"
     "camacho.angel@cetysuniversidad.edu.mx"
     "christopher.sandez@cetysuniversidad.edu.mx"
     "mayrin.peredia@cetysuniversidad.edu.mx"
-}
+)
 
 az group create --name "rg-friendframe-tfstate" --location "centralus"
 az group create --name "rg-friendframe-dev" --location "centralus"
