@@ -1,13 +1,13 @@
 export function parseError(err: unknown): string {
-    if (!err) return 'Unknown error';
+    if (!err) return 'Error desconocido';
     const msg = (err as Error).message ?? String(err);
     if (msg.includes('No rows found') || msg.includes('PGRST116'))
-        return 'User not found.';
+        return 'Usuario no encontrado.';
     if (msg.includes('row-level security'))
-        return 'You do not have permission to perform this action.';
+        return 'No tienes permiso para realizar esta acción.';
     if (msg.includes('duplicate key') && msg.includes('likes'))
-        return 'You already liked this publication.';
+        return 'Ya diste like a esta publicación.';
     if (msg.includes('violates check constraint'))
-        return 'Database validation error.';
+        return 'Error de validación en la base de datos.';
     return msg;
 }

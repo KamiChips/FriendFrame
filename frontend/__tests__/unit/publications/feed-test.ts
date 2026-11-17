@@ -111,13 +111,13 @@ describe('getProfileFeed', () => {
     it('returns error if profileOwnerId is invalid', async () => {
         const result = await getProfileFeed('no-es-uuid', currentUserId);
         expect(result.data).toBeNull();
-        expect(result.error).toContain('profile ID');
+        expect(result.error).toContain('ID de perfil');
     });
 
     it('returns error if currentUserId is invalid', async () => {
         const result = await getProfileFeed(profileOwnerId, 'no-es-uuid');
         expect(result.data).toBeNull();
-        expect(result.error).toContain('user ID');
+        expect(result.error).toContain('ID de usuario');
     });
 
     it('returns error if posts query fails', async () => {

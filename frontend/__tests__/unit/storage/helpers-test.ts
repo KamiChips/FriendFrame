@@ -55,66 +55,70 @@ describe('clampSize', () => {
 // parseError
 describe('parseError', () => {
     it('returns unknown error for null', () =>
-        expect(parseError(null)).toBe('Unknown error'));
+        expect(parseError(null)).toBe('Error desconocido'));
     it('maps Payload too large', () =>
         expect(parseError(new Error('Payload too large'))).toBe(
-            'The file is too large.'
+            'El archivo es demasiado grande.'
         ));
     it('maps 413', () =>
-        expect(parseError(new Error('413'))).toBe('The file is too large.'));
+        expect(parseError(new Error('413'))).toBe(
+            'El archivo es demasiado grande.'
+        ));
     it('maps Invalid mime type', () =>
         expect(parseError(new Error('Invalid mime type'))).toBe(
-            'File type not allowed.'
+            'Tipo de archivo no permitido.'
         ));
     it('maps mime', () =>
         expect(parseError(new Error('bad mime here'))).toBe(
-            'File type not allowed.'
+            'Tipo de archivo no permitido.'
         ));
     it('maps row-level security', () =>
         expect(parseError(new Error('row-level security'))).toBe(
-            'You do not have permission to upload files.'
+            'No tienes permiso para subir archivos.'
         ));
     it('maps 403', () =>
         expect(parseError(new Error('403'))).toBe(
-            'You do not have permission to upload files.'
+            'No tienes permiso para subir archivos.'
         ));
     it('maps Bucket not found', () =>
         expect(parseError(new Error('Bucket not found'))).toBe(
-            'Storage bucket is not configured.'
+            'El bucket de almacenamiento no está configurado.'
         ));
     it('maps NetworkError', () =>
         expect(parseError(new Error('NetworkError'))).toBe(
-            'Network error. Check your connection.'
+            'Error de red. Verifica tu conexión.'
         ));
     it('maps network', () =>
         expect(parseError(new Error('network issue'))).toBe(
-            'Network error. Check your connection.'
+            'Error de red. Verifica tu conexión.'
         ));
     it('maps Failed to fetch', () =>
         expect(parseError(new Error('Failed to fetch'))).toBe(
-            'Network error. Check your connection.'
+            'Error de red. Verifica tu conexión.'
         ));
-    it('maps The file does not exist', () =>
-        expect(parseError(new Error('The file does not exist'))).toBe(
-            'The file does not exist.'
+    it('maps El archivo no existe', () =>
+        expect(parseError(new Error('El archivo no existe'))).toBe(
+            'El archivo no existe.'
         ));
-    it('passes through too large', () =>
-        expect(parseError(new Error('too large'))).toBe('too large'));
-    it('passes through not allowed', () =>
-        expect(parseError(new Error('not allowed'))).toBe('not allowed'));
-    it('passes through does not exist', () =>
-        expect(parseError(new Error('does not exist'))).toBe('does not exist'));
-    it('passes through Invalid', () =>
-        expect(parseError(new Error('Invalid'))).toBe('Invalid'));
-    it('passes through Permission required', () =>
-        expect(parseError(new Error('Permission required'))).toBe(
-            'Permission required'
+    it('passes through demasiado grande', () =>
+        expect(parseError(new Error('demasiado grande'))).toBe(
+            'demasiado grande'
         ));
-    it('passes through Could not', () =>
-        expect(parseError(new Error('Could not'))).toBe('Could not'));
+    it('passes through no permitido', () =>
+        expect(parseError(new Error('no permitido'))).toBe('no permitido'));
+    it('passes through no existe', () =>
+        expect(parseError(new Error('no existe'))).toBe('no existe'));
+    it('passes through inválido', () =>
+        expect(parseError(new Error('inválido'))).toBe('inválido'));
+    it('passes through Se necesita permiso', () =>
+        expect(parseError(new Error('Se necesita permiso'))).toBe(
+            'Se necesita permiso'
+        ));
+    it('passes through No se pudo', () =>
+        expect(parseError(new Error('No se pudo'))).toBe('No se pudo'));
     it('returns generic for unknown', () =>
         expect(parseError(new Error('algo raro'))).toBe(
-            'An unexpected error occurred while processing the file.'
+            'Ocurrió un error inesperado al procesar el archivo.'
         ));
 });
 
@@ -134,7 +138,7 @@ describe('uriToArrayBuffer', () => {
     it('throws if response is not ok', async () => {
         global.fetch = jest.fn().mockResolvedValue({ ok: false });
         await expect(uriToArrayBuffer('file://photo.jpg')).rejects.toThrow(
-            'Could not read file.'
+            'No se pudo leer el archivo.'
         );
     });
 });
@@ -156,7 +160,7 @@ describe('getFileSize', () => {
     it('throws if file does not exist', async () => {
         mockGetInfoAsync.mockResolvedValue({ exists: false });
         await expect(getFileSize('file://photo.jpg')).rejects.toThrow(
-            'The file does not exist.'
+            'El archivo no existe.'
         );
     });
 });

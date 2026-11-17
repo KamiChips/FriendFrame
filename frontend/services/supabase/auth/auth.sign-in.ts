@@ -7,9 +7,7 @@ import {
 import { parseAuthError } from './auth.errors';
 import { _removeCurrentDeviceToken } from './auth.notifications';
 import {
-    clearPendingVerificationEmail,
     fetchProfile,
-    savePendingVerificationEmail,
     validateEmail,
     validateRedirectUrl,
 } from './auth.helpers';
@@ -20,7 +18,7 @@ export async function signIn({
 }: SignInParams): Promise<AuthResult<AuthUser>> {
     try {
         const cleanEmail = validateEmail(email);
-        if (!password) throw new Error('Password is required.');
+        if (!password) throw new Error('La contraseña es requerida.');
 
         const { data: authData, error: authError } =
             await supabase.auth.signInWithPassword({
@@ -28,20 +26,12 @@ export async function signIn({
                 password,
             });
 
-        if (authError) {
-            if (authError.message.includes('Email not confirmed')) {
-                await savePendingVerificationEmail(cleanEmail);
-                throw new EmailNotConfirmedError(cleanEmail);
-            }
-            throw authError;
-        }
+        if (authError) throw authError;
         if (!authData.user) throw new Error('No se pudo iniciar sesión.');
 
         const profile = await fetchProfile(authData.user.id);
-        await clearPendingVerificationEmail();
         return { data: profile, error: null };
     } catch (err) {
-        if (err instanceof EmailNotConfirmedError) throw err;
         return { data: null, error: parseAuthError(err) };
     }
 }
@@ -110,12 +100,5 @@ export async function getCurrentUser(): Promise<AuthResult<AuthUser>> {
         return { data: profile, error: null };
     } catch (err) {
         return { data: null, error: parseAuthError(err) };
-    }
-}
-
-export class EmailNotConfirmedError extends Error {
-    constructor(public email: string) {
-        super('Confirm your email before logging in');
-        this.name = 'EmailNotConfirmedError';
     }
 }

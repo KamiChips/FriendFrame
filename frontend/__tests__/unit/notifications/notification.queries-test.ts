@@ -88,19 +88,19 @@ describe('getNotificationText', () => {
 
     it('devuelve texto correcto para new_follow', () => {
         const result = getNotificationText({ ...base, type: 'new_follow' });
-        expect(result.title).toBe('New follower');
+        expect(result.title).toBe('Nuevo seguidor');
         expect(result.body).toContain('May');
     });
 
     it('devuelve texto correcto para new_post', () => {
         const result = getNotificationText({ ...base, type: 'new_post' });
-        expect(result.title).toBe('New post on your profile');
+        expect(result.title).toBe('Nueva publicación en tu perfil');
         expect(result.body).toContain('May');
     });
 
     it('devuelve texto correcto para new_fragment', () => {
         const result = getNotificationText({ ...base, type: 'new_fragment' });
-        expect(result.title).toBe('New fragment on your profile');
+        expect(result.title).toBe('Nuevo fragment en tu perfil');
     });
 
     it('devuelve texto correcto para new_message con contenido', () => {
@@ -114,7 +114,7 @@ describe('getNotificationText', () => {
             },
         };
         const result = getNotificationText(notification);
-        expect(result.title).toBe('New message');
+        expect(result.title).toBe('Nuevo mensaje');
         expect(result.body).toContain('Hola!');
     });
 
@@ -155,12 +155,12 @@ describe('getNotificationText', () => {
             actor: null as any,
         };
         const result = getNotificationText(notification);
-        expect(result.body).toContain('Someone');
+        expect(result.body).toContain('Alguien');
     });
 
     it('devuelve título genérico para tipo desconocido', () => {
         const result = getNotificationText({ ...base, type: 'unknown' as any });
-        expect(result.title).toBe('Notification');
+        expect(result.title).toBe('Notificación');
         expect(result.body).toBe('');
     });
 });
@@ -292,7 +292,7 @@ describe('markAsRead', () => {
         expect(result.error).toBeNull();
         expect(assertUUID).toHaveBeenCalledWith(
             NOTIFICATION_ID,
-            'notification ID'
+            'ID de notificación'
         );
     });
 
@@ -325,7 +325,7 @@ describe('markMultipleAsRead', () => {
     it('devuelve error si supera el máximo de IDs', async () => {
         const manyIds = Array(101).fill(NOTIFICATION_ID);
         const result = await markMultipleAsRead(manyIds);
-        expect(result.error).toMatch(/máximo|maximum/i);
+        expect(result.error).toMatch(/máximo/i);
     });
 
     it('marca múltiples notificaciones correctamente', async () => {
@@ -412,13 +412,13 @@ describe('markTypeAsRead', () => {
 
     it('devuelve error si el tipo es inválido', async () => {
         (assertNotificationType as jest.Mock).mockImplementationOnce(() => {
-            throw new Error('Invalid notification type: bad_type');
+            throw new Error('Tipo de notificación inválido: bad_type');
         });
 
         const result = await markTypeAsRead('bad_type' as any);
 
         expect(result.data).toBeNull();
-        expect(result.error).toMatch(/inválido|invalid/i);
+        expect(result.error).toMatch(/inválido/i);
     });
 
     it('devuelve error si Supabase falla', async () => {
@@ -449,7 +449,7 @@ describe('deleteNotification', () => {
         expect(result.error).toBeNull();
         expect(assertUUID).toHaveBeenCalledWith(
             NOTIFICATION_ID,
-            'notification ID'
+            'ID de notificación'
         );
     });
 

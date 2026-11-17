@@ -14,7 +14,7 @@ export async function getRelationshipStatus(
     targetUserId: string
 ): Promise<SocialResult<RelationshipStatus>> {
     try {
-        assertUUID(targetUserId, 'user ID');
+        assertUUID(targetUserId, 'ID de usuario');
         const currentUserId = await getAuthUser();
         const status = await fetchRelationshipStatus(
             currentUserId,

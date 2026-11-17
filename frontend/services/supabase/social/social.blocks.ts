@@ -13,10 +13,10 @@ export async function blockUser(
     targetUserId: string
 ): Promise<SocialResult<Block>> {
     try {
-        assertUUID(targetUserId, 'user ID');
+        assertUUID(targetUserId, 'ID de usuario');
         const currentUserId = await getAuthUser();
         if (currentUserId === targetUserId)
-            throw new Error('You cannot block yourself.');
+            throw new Error('No puedes bloquearte a ti mismo.');
 
         const { data, error } = await supabase
             .from('blocks')

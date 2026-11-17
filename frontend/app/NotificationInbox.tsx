@@ -9,10 +9,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import '../global.css';
-import GoBackButton from '../components/ui/GoBackButton';
+import GoBackButton from '../components/ui/actions/go-back-button';
 import NotificationCard, {
     NotificationType,
-} from '../components/ui/NotificationCard';
+} from '../components/ui/notifications/notification-card';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -42,11 +42,11 @@ function mapNotificationType(type: AppNotification['type']): NotificationType {
 function formatTime(isoDate: string): string {
     const diff = Date.now() - new Date(isoDate).getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return `${mins} min ago`;
+    if (mins < 1) return 'Ahora mismo';
+    if (mins < 60) return `Hace ${mins} min`;
     const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs} h ago`;
-    return `${Math.floor(hrs / 24)} d ago`;
+    if (hrs < 24) return `Hace ${hrs} h`;
+    return `Hace ${Math.floor(hrs / 24)} d`;
 }
 
 const NotificationInbox = () => {
@@ -161,7 +161,7 @@ const NotificationInbox = () => {
                         onPress={() => router.back()}
                     />
                     <Text className="font-spartan-bold dark:text-background-light text-3xl self-center">
-                        Notifications
+                        Notificaciones
                     </Text>
                 </View>
 
@@ -176,7 +176,7 @@ const NotificationInbox = () => {
                             <ActivityIndicator size="small" color="#30C2D9" />
                         ) : (
                             <Text className="text-xs font-spartan text-[#30C2D9]">
-                                Mark all as read
+                                Marcar todo
                             </Text>
                         )}
                     </TouchableOpacity>
@@ -189,7 +189,7 @@ const NotificationInbox = () => {
                 ) : notifications.length === 0 ? (
                     <View className="flex-1 items-center justify-center px-8">
                         <Text className="text-gray-400 dark:text-gray-500 text-center font-spartan">
-                            {"You don't have any notifications yet"}
+                            No tienes notificaciones todavía
                         </Text>
                     </View>
                 ) : (

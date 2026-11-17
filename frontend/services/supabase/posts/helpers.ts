@@ -25,23 +25,20 @@ export function sanitizeDescription(
     if (!trimmed) return null;
     if (trimmed.length > MAX_DESCRIPTION_LENGTH)
         throw new Error(
-            `The description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters.`
+            `La descripción no puede superar ${MAX_DESCRIPTION_LENGTH} caracteres.`
         );
     return trimmed;
 }
 
 export function parseError(err: unknown): string {
-    if (!err) return 'Unknown error';
+    if (!err) return 'Error desconocido';
     const msg = (err as Error).message ?? String(err);
 
     const known: [string, string][] = [
-        [
-            'row-level security',
-            'You do not have permission to perform this action.',
-        ],
-        ['violates foreign key', 'The user or profile does not exist.'],
-        ['NetworkError', 'Network error. Check your connection.'],
-        ['Failed to fetch', 'Network error. Check your connection.'],
+        ['row-level security', 'No tienes permiso para realizar esta acción.'],
+        ['violates foreign key', 'El usuario o perfil no existe.'],
+        ['NetworkError', 'Error de red. Verifica tu conexión.'],
+        ['Failed to fetch', 'Error de red. Verifica tu conexión.'],
     ];
 
     for (const [key, value] of known) {
@@ -50,26 +47,18 @@ export function parseError(err: unknown): string {
 
     if (
         msg.startsWith('No hay sesión') ||
-        msg.startsWith('No active session') ||
-        msg.startsWith('Invalid') ||
         msg.startsWith('ID') ||
         msg.startsWith('La descripción') ||
-        msg.startsWith('The description') ||
         msg.startsWith('El fragment') ||
-        msg.startsWith('The fragment') ||
         msg.startsWith('No puedes') ||
-        msg.startsWith('You cannot') ||
         msg.startsWith('Solo puedes') ||
-        msg.startsWith('You can only') ||
         msg.startsWith('Post no') ||
-        msg.startsWith('Post not') ||
         msg.startsWith('Fragment no') ||
-        msg.startsWith('Fragment not') ||
         msg.startsWith('Se necesita')
     )
         return msg;
 
-    return 'An unexpected error occurred.';
+    return 'Ocurrió un error inesperado.';
 }
 
 //verifica la amistad
@@ -78,7 +67,7 @@ export async function assertFriendship(
     profileOwnerId: string
 ): Promise<void> {
     if (authorId === profileOwnerId)
-        throw new Error("You can't post on your own profile.");
+        throw new Error('No puedes publicar en tu propio perfil.');
 
     const { data, error } = (await supabase.rpc('assert_friendship', {
         author_id: authorId,
@@ -86,7 +75,8 @@ export async function assertFriendship(
     })) as { data: boolean | null; error: any };
 
     if (error) throw error;
-    if (!data) throw new Error("You can only post on friends' profiles.");
+    if (!data)
+        throw new Error('Solo puedes publicar en el perfil de tus amigos.');
 }
 
 //conteos de posts y fragments

@@ -57,7 +57,7 @@ describe('assertNotificationType', () => {
 
     it('lanza error con string vacío', () => {
         expect(() => assertNotificationType('')).toThrow(
-            /Invalid notification type/i
+            /tipo de notificación inválido/i
         );
     });
 });

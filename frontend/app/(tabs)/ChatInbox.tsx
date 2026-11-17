@@ -8,7 +8,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import '../../global.css';
-import ChatCard from '@/components/ui/ChatCard';
+import ChatCard from '@/components/ui/chat/chat-card';
 import FriendframeHeader from '@/components/ui/FriendframeHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -47,6 +47,7 @@ const ChatInboxScreen = () => {
     }, []);
 
     useEffect(() => {
+        loadChats();
         const unsub = subscribeToChatList(loadChats);
         return unsub;
     }, [loadChats]);
@@ -55,7 +56,7 @@ const ChatInboxScreen = () => {
         useCallback(() => {
             loadChats();
             refreshBadge();
-        }, [loadChats])
+        }, [loadChats, refreshBadge])
     );
 
     useEffect(() => {
@@ -101,8 +102,8 @@ const ChatInboxScreen = () => {
         const diff = now.getTime() - date.getTime();
         const mins = Math.floor(diff / 60000);
 
-        if (mins < 1) return 'Now';
-        if (mins < 60) return `${mins} min ago`;
+        if (mins < 1) return 'Ahora';
+        if (mins < 60) return `hace ${mins} min`;
         if (mins < 1440)
             return date.toLocaleTimeString('es-MX', {
                 hour: '2-digit',
@@ -131,7 +132,7 @@ const ChatInboxScreen = () => {
                 {/* --- HEADER DE MENSAJES CON BOTÓN DE CREAR GRUPO --- */}
                 <View className="flex-row justify-between items-center px-4 pt-5 pb-3">
                     <Text className="font-spartan-bold text-2xl text-[#1a1a1a] dark:text-background-light">
-                        Messages
+                        Mensajes
                     </Text>
 
                     {/* Link para abrir el modal transparente */}
@@ -151,8 +152,8 @@ const ChatInboxScreen = () => {
                 ) : chats.length === 0 ? (
                     <View className="flex-1 items-center justify-center px-8">
                         <Text className="text-gray-400 dark:text-gray-500 text-center font-spartan">
-                            You have no conversations yet.{'\n'}
-                            Follow someone and start chatting.
+                            No tienes conversaciones todavía.{'\n'}
+                            Sigue a alguien y empieza a chatear.
                         </Text>
                     </View>
                 ) : (
@@ -171,7 +172,7 @@ const ChatInboxScreen = () => {
                             );
 
                             const chatName = chat.is_group
-                                ? (chat.group_name ?? 'Group')
+                                ? (chat.group_name ?? 'Grupo')
                                 : (otherMember?.full_name ?? 'Chat');
                             const initials = chatName
                                 .split(' ')
@@ -195,7 +196,7 @@ const ChatInboxScreen = () => {
                                     profilePic={profilePic}
                                     message={
                                         chat.last_message?.content ??
-                                        'No messages'
+                                        'Sin mensajes'
                                     }
                                     time={
                                         chat.last_message?.created_at

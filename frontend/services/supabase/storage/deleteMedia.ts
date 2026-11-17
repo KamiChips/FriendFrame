@@ -32,7 +32,7 @@ export async function deletePostImage(
 
 export async function deleteProfilePic(userId: string): Promise<StorageResul> {
     try {
-        assertUUID(userId, 'user ID');
+        assertUUID(userId, 'ID de usuario');
 
         const filePath = `${userId}.jpg`;
 

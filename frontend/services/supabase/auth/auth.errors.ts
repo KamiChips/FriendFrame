@@ -1,33 +1,30 @@
 import { MIN_PASSWORD_LEN } from './auth.types';
 
 export function parseAuthError(error: unknown): string {
-    if (!error) return 'Unknown error';
+    if (!error) return 'Error desconocido';
     const msg = (error as Error).message ?? String(error);
 
     const known: [string, string][] = [
-        [
-            'User already registered',
-            'An account with that email already exists.',
-        ],
-        ['Invalid login credentials', 'Invalid email or password.'],
-        ['Email not confirmed', 'Please confirm your email before logging in.'],
+        ['User already registered', 'Ya existe una cuenta con ese email.'],
+        ['Invalid login credentials', 'Email o contraseña incorrectos.'],
+        ['Email not confirmed', 'Confirma tu email antes de iniciar sesión.'],
         [
             'Password should be at least',
-            `Password must be at least ${MIN_PASSWORD_LEN} characters.`,
+            `La contraseña debe tener al menos ${MIN_PASSWORD_LEN} caracteres.`,
         ],
-        ['Unable to validate email address', 'Invalid email format.'],
-        ['duplicate key.*username', 'That username is already taken.'],
-        ['Auth session missing', 'No active session.'],
-        ['NetworkError', 'Network error. Check your connection.'],
-        ['Failed to fetch', 'Network error. Check your connection.'],
+        [
+            'Unable to validate email address',
+            'El email no tiene un formato válido.',
+        ],
+        ['duplicate key.*username', 'Ese nombre de usuario ya está en uso.'],
+        ['Auth session missing', 'No hay sesión activa.'],
+        ['NetworkError', 'Error de red. Verifica tu conexión.'],
+        ['Failed to fetch', 'Error de red. Verifica tu conexión.'],
         [
             'over_email_send_rate_limit',
-            'Too many attempts. Please wait a few minutes.',
+            'Demasiados intentos. Espera unos minutos.',
         ],
-        [
-            'Token has expired',
-            'The link has expired. Please request a new one.',
-        ],
+        ['Token has expired', 'El enlace ha expirado. Solicita uno nuevo.'],
     ];
 
     for (const [pattern, message] of known) {
@@ -41,14 +38,9 @@ export function parseAuthError(error: unknown): string {
         msg.startsWith('El username') ||
         msg.startsWith('La URL') ||
         msg.startsWith('No hay sesión') ||
-        msg.startsWith('El ID') ||
-        msg.startsWith('Email') ||
-        msg.startsWith('Password') ||
-        msg.startsWith('Username') ||
-        msg.startsWith('Full name') ||
-        msg.startsWith('Invalid')
+        msg.startsWith('El ID')
     )
         return msg;
 
-    return 'An unexpected error occurred.';
+    return 'Ocurrió un error inesperado.';
 }

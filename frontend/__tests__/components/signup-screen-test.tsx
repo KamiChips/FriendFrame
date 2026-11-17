@@ -8,7 +8,7 @@ jest.mock('@/services/supabase/auth/auth.sign-up', () => ({
     signUp: jest.fn(),
 }));
 
-jest.mock('@/components/ui/TextField', () => {
+jest.mock('@/components/ui/common/text-field', () => {
     const React = require('react');
     const { TextInput } = require('react-native');
 
@@ -72,7 +72,7 @@ describe('<SignUpScreen />', () => {
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByText('Please fill in all fields.')).toBeTruthy();
+            expect(getByText('Completa todos los campos.')).toBeTruthy();
         });
     });
 
@@ -100,7 +100,7 @@ describe('<SignUpScreen />', () => {
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByText('Please fill in all fields.')).toBeTruthy();
+            expect(getByText('Completa todos los campos.')).toBeTruthy();
         });
     });
 
@@ -129,7 +129,7 @@ describe('<SignUpScreen />', () => {
 
         await waitFor(() => {
             expect(alertSpy).toHaveBeenCalledWith(
-                'Legal Notice',
+                'Aviso Legal',
                 expect.any(String)
             );
         });
@@ -137,7 +137,7 @@ describe('<SignUpScreen />', () => {
 
     test('terms checkbox toggles when pressed', () => {
         const { getByText, getByTestId } = render(<SignUpScreen />);
-        const termsText = getByText('Terms of Service and Privacy Policy');
+        const termsText = getByText('Términos de Servicio y Privacidad');
         // Antes de presionar no hay checkmark
         expect(() => getByText('✓')).toThrow();
         // Presionar checkbox
@@ -156,27 +156,27 @@ describe('<SignUpScreen />', () => {
     });
 
     // Modal de términos
-    test('opens terms modal when pressing "Terms of Service and Privacy Policy"', () => {
+    test('opens terms modal when pressing "Términos de Servicio y Privacidad"', () => {
         const { getByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Terms of Service and Privacy Policy'));
-        expect(getByText('Terms & Privacy Policy')).toBeTruthy();
+        fireEvent.press(getByText('Términos de Servicio y Privacidad'));
+        expect(getByText('Aviso Legal y Privacidad')).toBeTruthy();
     });
 
-    test('closes terms modal when pressing "Got it"', async () => {
+    test('closes terms modal when pressing "Entendido"', async () => {
         const { getByText, queryByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Terms of Service and Privacy Policy'));
-        fireEvent.press(getByText('Got it'));
+        fireEvent.press(getByText('Términos de Servicio y Privacidad'));
+        fireEvent.press(getByText('Entendido'));
         await waitFor(() => {
-            expect(queryByText('Terms & Privacy Policy')).toBeNull();
+            expect(queryByText('Aviso Legal y Privacidad')).toBeNull();
         });
     });
 
     test('closes terms modal when pressing "✕"', async () => {
         const { getByText, queryByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Terms of Service and Privacy Policy'));
+        fireEvent.press(getByText('Términos de Servicio y Privacidad'));
         fireEvent.press(getByText('✕'));
         await waitFor(() => {
-            expect(queryByText('Terms & Privacy Policy')).toBeNull();
+            expect(queryByText('Aviso Legal y Privacidad')).toBeNull();
         });
     });
 
@@ -241,14 +241,14 @@ describe('<SignUpScreen />', () => {
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(getByText('Account created!')).toBeTruthy();
+            expect(getByText('¡Cuenta creada!')).toBeTruthy();
         });
     });
 
     test('shows error when signUp fails', async () => {
         (signUp as jest.Mock).mockResolvedValue({
             data: null,
-            error: 'An account with that email already exists.',
+            error: 'El email ya está en uso',
         });
 
         const { getByText, getByTestId } = render(<SignUpScreen />);
@@ -272,9 +272,7 @@ describe('<SignUpScreen />', () => {
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
-            expect(
-                getByText('An account with that email already exists.')
-            ).toBeTruthy();
+            expect(getByText('El email ya está en uso')).toBeTruthy();
         });
     });
 

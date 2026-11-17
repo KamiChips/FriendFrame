@@ -87,13 +87,13 @@ exports[`<SignUpScreen /> matches snapshot 1`] = `
       <Text
         className="text-background-dark dark:text-background-light text-sm flex-row items-center"
       >
-        I accept the
+        Acepto los
          
         <Text
           className="font-bold underline text-background-dark dark:text-background-light"
           onPress={[Function]}
         >
-          Terms of Service and Privacy Policy
+          Términos de Servicio y Privacidad
         </Text>
       </Text>
     </View>
@@ -136,7 +136,7 @@ exports[`<SignUpScreen /> matches snapshot 1`] = `
         testID="signup-button"
       >
         <Text>
-          Create Account
+          Crear cuenta
         </Text>
       </View>
     </View>

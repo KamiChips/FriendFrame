@@ -14,13 +14,13 @@ export async function createFragment(
     content: string
 ): Promise<PostResult<Fragment>> {
     try {
-        assertUUID(profileOwnerId, 'profile ID');
+        assertUUID(profileOwnerId, 'ID de perfil');
 
         const trimmed = content.trim();
-        if (!trimmed) throw new Error('The fragment cannot be empty.');
+        if (!trimmed) throw new Error('El fragment no puede estar vacío.');
         if (trimmed.length > MAX_DESCRIPTION_LENGTH)
             throw new Error(
-                `The fragment cannot exceed ${MAX_DESCRIPTION_LENGTH} characters.`
+                `El fragment no puede superar ${MAX_DESCRIPTION_LENGTH} caracteres.`
             );
 
         const currentUserId = await getAuthUser();
@@ -67,10 +67,10 @@ export async function editFragment(
         assertUUID(fragmentId, 'fragmentId');
 
         const trimmed = newContent.trim();
-        if (!trimmed) throw new Error('The fragment cannot be empty.');
+        if (!trimmed) throw new Error('El fragment no puede estar vacío.');
         if (trimmed.length > MAX_DESCRIPTION_LENGTH)
             throw new Error(
-                `The fragment cannot exceed ${MAX_DESCRIPTION_LENGTH} characters.`
+                `El fragment no puede superar ${MAX_DESCRIPTION_LENGTH} caracteres.`
             );
 
         const currentUserId = await getAuthUser();
@@ -92,11 +92,11 @@ export async function editFragment(
 
         if (error) {
             if (error.code === 'PGRST116') {
-                throw new Error('Fragment not found or no permissions.');
+                throw new Error('Fragment no encontrado o sin permisos.');
             }
             throw error;
         }
-        if (!data) throw new Error('Fragment not found or no permissions.');
+        if (!data) throw new Error('Fragment no encontrado o sin permisos.');
 
         return { data: data as Fragment, error: null };
     } catch (err) {
@@ -128,7 +128,7 @@ export async function getFragmentWithCounts(
 ): Promise<PostResult<FragmentWithCounts>> {
     try {
         assertUUID(fragmentId, 'fragmentId');
-        assertUUID(currentUserId, 'user ID');
+        assertUUID(currentUserId, 'ID de usuario');
 
         const { data, error } = await supabase
             .from('fragments')

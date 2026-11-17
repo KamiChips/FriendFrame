@@ -9,7 +9,9 @@ import {
     sanitizeDescription,
 } from './helpers';
 import { Post, PostResult, PostWithCounts } from './types';
-import safeLogger from '@/lib/logger/safeLogger';
+import { postCreation } from '@/services/ratelimit/rateLimiter';
+
+export const POST_RATE_LIMIT_MESSAGE = 'Límite diario alcanzado (50 posts/día)';
 
 export async function createPost(
     profileOwnerId: string,
@@ -18,11 +20,17 @@ export async function createPost(
     description?: string
 ): Promise<PostResult<Post>> {
     try {
-        assertUUID(profileOwnerId, 'profile ID');
+        assertUUID(profileOwnerId, 'ID de perfil');
         const sanitized = sanitizeDescription(description);
         const currentUserId = await getAuthUser();
 
         await assertFriendship(currentUserId, profileOwnerId);
+
+        // Rate limit por usuario (50 posts/día) ANTES de insertar
+        const rateLimit = await postCreation(currentUserId);
+        if (!rateLimit.success) {
+            return { data: null, error: POST_RATE_LIMIT_MESSAGE };
+        }
 
         const { data, error } = await supabase
             .from('posts')
@@ -54,7 +62,6 @@ export async function createPost(
 
         return { data: data as Post, error: null };
     } catch (err) {
-        safeLogger.debug('ERROR REAL DE SUPABASE EN CREATE POST:', err);
         return { data: null, error: parseError(err) };
     }
 }
@@ -85,11 +92,11 @@ export async function editPost(
 
         if (error) {
             if (error.code === 'PGRST116') {
-                throw new Error('Post not found or no permissions.');
+                throw new Error('Post no encontrado o sin permisos.');
             }
             throw error;
         }
-        if (!data) throw new Error('Post not found or no permissions.');
+        if (!data) throw new Error('Post no encontrado o sin permisos.');
 
         return { data: data as Post, error: null };
     } catch (err) {
@@ -110,7 +117,9 @@ export async function deletePost(postId: string): Promise<PostResult> {
             .single();
 
         if (fetchError || !existing)
-            throw new Error('Post not found or no permissions to delete.');
+            throw new Error(
+                'Post no encontrado o sin permisos para eliminarlo.'
+            );
 
         const { error } = await supabase
             .from('posts')
@@ -134,7 +143,7 @@ export async function getPostWithCounts(
 ): Promise<PostResult<PostWithCounts>> {
     try {
         assertUUID(postId, 'postId');
-        assertUUID(currentUserId, 'user ID');
+        assertUUID(currentUserId, 'ID de usuario');
 
         const { data, error } = await supabase
             .from('posts')

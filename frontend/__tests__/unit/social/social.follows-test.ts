@@ -126,7 +126,7 @@ describe('followUser', () => {
 
         const result = await followUser(currentUserId);
 
-        expect(result.error).toBe('You cannot follow yourself.');
+        expect(result.error).toBe('No puedes seguirte a ti mismo.');
     });
 
     it('returns error when the current user has blocked the target', async () => {
@@ -138,7 +138,7 @@ describe('followUser', () => {
 
         const result = await followUser(targetUserId);
 
-        expect(result.error).toBe('You have blocked this user.');
+        expect(result.error).toBe('Has bloqueado a este usuario.');
     });
 
     it('returns error when the target has blocked the current user', async () => {
@@ -150,7 +150,7 @@ describe('followUser', () => {
 
         const result = await followUser(targetUserId);
 
-        expect(result.error).toBe('You cannot follow this user.');
+        expect(result.error).toBe('No puedes seguir a este usuario.');
     });
 
     it('returns error when the insert fails', async () => {
@@ -170,7 +170,7 @@ describe('followUser', () => {
 
         const result = await followUser(targetUserId);
 
-        expect(result.error).toBe('An unexpected error occurred.');
+        expect(result.error).toBe('Ocurrió un error inesperado.');
     });
 
     it('returns error with an invalid UUID', async () => {
@@ -209,7 +209,7 @@ describe('unfollowUser', () => {
 
         const result = await unfollowUser(targetUserId);
 
-        expect(result.error).toBe('An unexpected error occurred.');
+        expect(result.error).toBe('Ocurrió un error inesperado.');
     });
 
     it('returns error with an invalid UUID', async () => {
@@ -281,7 +281,7 @@ describe('toggleFollow', () => {
 
         const result = await toggleFollow(targetUserId);
 
-        expect(result.error).toBe('You cannot follow this user.');
+        expect(result.error).toBe('No puedes seguir a este usuario.');
     });
 
     it('returns error when the current user has blocked the target', async () => {
@@ -296,7 +296,7 @@ describe('toggleFollow', () => {
 
         const result = await toggleFollow(targetUserId);
 
-        expect(result.error).toBe('You have blocked this user.');
+        expect(result.error).toBe('Has bloqueado a este usuario.');
     });
 
     it('returns error when the unfollow delete fails', async () => {
@@ -319,7 +319,7 @@ describe('toggleFollow', () => {
 
         const result = await toggleFollow(targetUserId);
 
-        expect(result.error).toBe('An unexpected error occurred.');
+        expect(result.error).toBe('Ocurrió un error inesperado.');
     });
 
     it('returns error when the follow insert fails', async () => {
@@ -339,7 +339,7 @@ describe('toggleFollow', () => {
 
         const result = await toggleFollow(targetUserId);
 
-        expect(result.error).toBe('An unexpected error occurred.');
+        expect(result.error).toBe('Ocurrió un error inesperado.');
     });
 
     it('returns error with an invalid UUID', async () => {
@@ -441,7 +441,7 @@ describe('getFollowing', () => {
 
         const result = await getFollowing(currentUserId, currentUserId);
 
-        expect(result.error).toBe('An unexpected error occurred.');
+        expect(result.error).toBe('Ocurrió un error inesperado.');
         expect(result.data).toBeNull();
     });
 
@@ -503,7 +503,7 @@ describe('getFollowers', () => {
 
         const result = await getFollowers(currentUserId, currentUserId);
 
-        expect(result.error).toBe('An unexpected error occurred.');
+        expect(result.error).toBe('Ocurrió un error inesperado.');
         expect(result.data).toBeNull();
     });
 

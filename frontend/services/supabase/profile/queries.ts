@@ -109,7 +109,7 @@ export async function searchUsers(
     limit: number = 20
 ): Promise<ProfileResult<SearchResult[]>> {
     try {
-        assertUUID(currentUserId, 'user ID');
+        assertUUID(currentUserId, 'ID de usuario');
 
         const q = query.trim();
 
