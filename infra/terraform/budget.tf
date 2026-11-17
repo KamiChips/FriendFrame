@@ -10,7 +10,7 @@ resource "azurerm_consumption_budget_resource_group" "main" {
 
   notification {
     enabled        = true
-    threshold      = 50
+    threshold      = 80
     operator       = "GreaterThan"
     threshold_type = "Actual"
     contact_emails = values(var.contact_emails)
