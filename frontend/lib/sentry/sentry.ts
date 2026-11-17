@@ -68,9 +68,9 @@ function attachGlobalErrorHandler() {
     const globalAny = global as any;
 
     if (globalAny.ErrorUtils) {
-        const originalHandler = globalAny.ErrorUtils.globalHandler();
+        const originalHandler = globalAny.ErrorUtils.getGlobalHandler?.();
 
-        globalAny.ErrorUtils.setGlobalHandledr(
+        globalAny.ErrorUtils.setGlobalHandler(
             (error: Error, isFatal?: boolean) => {
                 Sentry.captureException(error, {
                     tags: {
@@ -78,7 +78,7 @@ function attachGlobalErrorHandler() {
                         fatal: String(!!isFatal),
                     },
                 });
-                originalHandler(error, isFatal);
+                originalHandler?.(error, isFatal);
             }
         );
     }
