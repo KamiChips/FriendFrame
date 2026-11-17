@@ -15,6 +15,9 @@ resource "random_password" "db_app" {
 }
 
 resource "azurerm_postgresql_flexible_server" "main" {
+  # Interruptor: solo existe si enable_compute = true (ver variables.tf)
+  count = var.enable_compute ? 1 : 0
+
   name                   = "psql-${local.name}-${random_string.suffix.result}"
   resource_group_name    = data.azurerm_resource_group.main.name
   location               = data.azurerm_resource_group.main.location
@@ -45,7 +48,10 @@ resource "azurerm_postgresql_flexible_server" "main" {
 }
 
 resource "azurerm_postgresql_flexible_server_database" "friendframe" {
-  server_id = azurerm_postgresql_flexible_server.main.id
+  # Interruptor: solo existe si enable_compute = true (ver variables.tf)
+  count = var.enable_compute ? 1 : 0
+
+  server_id = azurerm_postgresql_flexible_server.main[0].id
   name      = "friendframe"
   charset   = "UTF8"
   collation = "en_US.utf8"
@@ -55,29 +61,37 @@ resource "azurerm_postgresql_flexible_server_database" "friendframe" {
 }
 
 resource "azurerm_postgresql_flexible_server_configuration" "extensions" {
-  server_id = azurerm_postgresql_flexible_server.main.id
+  # Interruptor: solo existe si enable_compute = true (ver variables.tf)
+  count = var.enable_compute ? 1 : 0
+
+  server_id = azurerm_postgresql_flexible_server.main[0].id
   name      = "azure.extensions"
   value     = "PG_STAT_STATEMENTS,PGCRYPTO,UUID-OSSP"
 }
 
 resource "azurerm_postgresql_flexible_server_configuration" "require_ssl" {
-  server_id = azurerm_postgresql_flexible_server.main.id
+  # Interruptor: solo existe si enable_compute = true (ver variables.tf)
+  count = var.enable_compute ? 1 : 0
+
+  server_id = azurerm_postgresql_flexible_server.main[0].id
   name      = "require_secure_transport"
   value     = "ON"
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "devs" {
-  for_each         = var.allowed_ips
+  # Interruptor con for_each: mapa vacío = 0 reglas
+  for_each         = var.enable_compute ? var.allowed_ips : {}
   name             = "dev-${each.key}"
-  server_id        = azurerm_postgresql_flexible_server.main.id
+  server_id        = azurerm_postgresql_flexible_server.main[0].id
   start_ip_address = each.value
   end_ip_address   = each.value
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "api" {
-  for_each         = toset(azurerm_linux_web_app.main.possible_outbound_ip_address_list)
+  # Interruptor con for_each: set vacío = 0 reglas
+  for_each         = var.enable_compute ? toset(azurerm_linux_web_app.main[0].possible_outbound_ip_address_list) : toset([])
   name             = "api-${replace(each.value, ".", "-")}"
-  server_id        = azurerm_postgresql_flexible_server.main.id
+  server_id        = azurerm_postgresql_flexible_server.main[0].id
   start_ip_address = each.value
   end_ip_address   = each.value
 }
