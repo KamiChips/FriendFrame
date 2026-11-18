@@ -14,10 +14,12 @@ const envSchema = z.object({
 const result = envSchema.safeParse(process.env);
 
 if (!result.success) {
+    // eslint-disable-next-line no-console
     console.error('Invalid Configuration. Check your .env');
 
     for (const issue of result.error.issues) {
-        console.error(`Problema ${issue.path.join('.')}:${issue.message}`);
+        // eslint-disable-next-line no-console
+        console.error(`Problem ${issue.path.join('.')} : ${issue.message}`);
     }
 
     process.exit(1);
