@@ -43,3 +43,6 @@ foreach ($user in $Team) {
 }
 az role assignment create --assignee-object-id $principalId --assignee-principal-type ServicePrincipal --role "Key Vault Secrets Officer" --scope $kvId
 
+az identity create --name "id-friendframe-api" --resource-group "rg-friendframe-dev"
+$apiPrincipalId = az identity show --name "id-friendframe-api" --resource-group "rg-friendframe-dev" --query "principalId" -o tsv
+az role assignment create --assignee-object-id $apiPrincipalId --assignee-principal-type ServicePrincipal --role "Key Vault Secrets User" --scope $kvId
