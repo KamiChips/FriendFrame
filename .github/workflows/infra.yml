@@ -3,7 +3,6 @@ name: Infra
 on:
   pull_request:
     branches: [main]
-    paths: ["infra/**", ".github/workflows/infra.yml"]
   push:
     branches: [main]
     paths: ["infra/**", ".github/workflows/infra.yml"]
