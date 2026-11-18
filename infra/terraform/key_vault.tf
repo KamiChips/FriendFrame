@@ -11,3 +11,28 @@ resource "azurerm_key_vault" "main" {
   purge_protection_enabled   = false
   sku_name                   = "standard"
 }
+
+resource "azurerm_key_vault_secret" "jwt_secret" {
+  name         = "jwt-secret"
+  value        = random_password.jwt.result
+  key_vault_id = azurerm_key_vault.main.id
+}
+
+resource "azurerm_key_vault_secret" "db_admin_password" {
+  name         = "db-admin-password"
+  value        = random_password.db_admin.result
+  key_vault_id = azurerm_key_vault.main.id
+}
+
+resource "azurerm_key_vault_secret" "blob_connection_string" {
+  name         = "blob-connection-string"
+  value        = azurerm_storage_account.main.primary_blob_connection_string
+  key_vault_id = azurerm_key_vault.main.id
+}
+
+resource "azurerm_key_vault_secret" "database_url" {
+  name         = "database-url"
+  count        = var.enable_compute ? 1 : 0
+  value        = "postgresql://app_user:${random_password.db_app.result}@${azurerm_postgresql_flexible_server.main[0].fqdn}:5432/${azurerm_postgresql_flexible_server_database.friendframe[0].name}?sslmode=require"
+  key_vault_id = azurerm_key_vault.main.id
+}

@@ -32,3 +32,14 @@ Write-Host "AZURE_CLIENT_ID       = $clientId"
 Write-Host "AZURE_TENANT_ID       = $tenantId"
 Write-Host "AZURE_SUBSCRIPTION_ID = $subscriptionId"
 
+$kvId = az keyvault list --resource-group "rg-friendframe-dev" --query "[0].id" -o tsv
+if (-not $kvId) { 
+    throw "No existe el Key Vault en rg-friendframe-dev. Hagan merge del PR que lo crea y vuelvan a correr el script." 
+    }
+
+# Secrets Officer = leer y escribir secretos (data plane), solo sobre esta boveda
+foreach ($user in $Team) {
+    az role assignment create --assignee $user --role "Key Vault Secrets Officer" --scope $kvId
+}
+az role assignment create --assignee-object-id $principalId --assignee-principal-type ServicePrincipal --role "Key Vault Secrets Officer" --scope $kvId
+
