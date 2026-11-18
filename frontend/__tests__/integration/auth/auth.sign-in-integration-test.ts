@@ -71,7 +71,7 @@ describe('signIn — integration', () => {
             password: 'estanoes',
         });
 
-        expect(result.error).toBe('Email o contraseña incorrectos.');
+        expect(result.error).toBe('Invalid email or password.');
     });
 
     it('throws error when email does not exist', async () => {
@@ -80,7 +80,7 @@ describe('signIn — integration', () => {
             password: 'yadijequetengohambreperoesqueTengohambreaiuda_1',
         });
 
-        expect(result.error).toBe('Email o contraseña incorrectos.');
+        expect(result.error).toBe('Invalid email or password.');
     });
 
     it('returned profile contains all expected fields', async () => {
@@ -111,7 +111,7 @@ describe('signIn — integration', () => {
             password: TEST_USER.password,
         });
 
-        expect(result.error).toBe('Email o contraseña incorrectos.');
+        expect(result.error).toBe('Invalid email or password.');
     });
 });
 

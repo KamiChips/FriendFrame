@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase/client';
 import { assertUUID, getAuthUser } from '../helpers/validation';
 import { assertFriendship, assertMembership, parseError } from './chat.helpers';
 import { ChatResult } from './chat.types';
+import { validateGroupOwnership } from '../helpers/authorization';
 
 //Aniadir a un amigo a un grupo que ya existe
 export async function addMemberToGroup(
@@ -12,6 +13,7 @@ export async function addMemberToGroup(
         assertUUID(chatId, 'chatId');
         assertUUID(newUserId, 'ID de usuario');
         const currentUserId = await getAuthUser();
+        await validateGroupOwnership(chatId, currentUserId);
 
         const { data: chat } = await supabase
             .from('chat')
