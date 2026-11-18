@@ -31,3 +31,4 @@ $subscriptionId = az account show --query "id" -o tsv
 Write-Host "AZURE_CLIENT_ID       = $clientId"
 Write-Host "AZURE_TENANT_ID       = $tenantId"
 Write-Host "AZURE_SUBSCRIPTION_ID = $subscriptionId"
+
