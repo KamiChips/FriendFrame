@@ -8,7 +8,15 @@ const envSchema = z.object({
     DATABASE_URL: z.url(),
     BLOB_CONNECTION_STRING: z.string().min(1),
     JWT_SECRET: z.string().min(32),
-    CORS_ORIGINS: z.string().min(1),
+    CORS_ORIGINS: z
+        .string()
+        .min(1)
+        .transform((value) =>
+            value
+                .split(',')
+                .map((origin) => origin.trim().replace(/\/+$/, ''))
+                .filter(Boolean)
+        ),
 });
 
 const result = envSchema.safeParse(process.env);
