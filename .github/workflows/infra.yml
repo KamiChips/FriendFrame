@@ -6,6 +6,9 @@ on:
   push:
     branches: [main]
     paths: ["infra/**", ".github/workflows/infra.yml"]
+  # Boton "Run workflow" en GitHub para lanzarlo a mano eligiendo la rama.
+  # Solo corre el plan; sirve para la prueba negativa de OIDC desde otra rama.
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -28,7 +31,7 @@ defaults:
 
 jobs:
   plan:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
