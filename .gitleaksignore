@@ -1,0 +1,4 @@
+#Se ocupa que se ignoren porque es una contraseña de prueba para un correo inexistente
+2d2592e49276dfbd36dcaf162df98a55f0fe28fc:frontend/__tests__/integration/auth/auth.sign-in-integration-test.ts:generic-api-key:77
+844271113f9a23da83901ce8848de66d79d8af5c:frontend/__tests__/integration/auth/auth.sign-in-integration-test.ts:generic-api-key:77
+7fb05da42f3a265ba0559c1c18292a4655d29f8a:frontend/__tests__/integration/auth.sign-in-integration-test.ts:generic-api-key:68
