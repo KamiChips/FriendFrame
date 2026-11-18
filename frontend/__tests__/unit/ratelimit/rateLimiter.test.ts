@@ -1,4 +1,4 @@
-import { Ratelimit } from "@upstash/ratelimit";
+import { Ratelimit } from '@upstash/ratelimit';
 import {
     LIMITS,
     loginAttempts,
@@ -9,13 +9,13 @@ import {
     retryAfterSeconds,
     rateLimitMessage,
     rateLimitHeaders,
-} from "@/services/ratelimit/rateLimiter";
+} from '@/services/ratelimit/rateLimiter';
 
-jest.mock("@upstash/redis", () => ({
-    Redis: { fromEnv: jest.fn(() => ({}) ) },
+jest.mock('@upstash/redis', () => ({
+    Redis: { fromEnv: jest.fn(() => ({})) },
 }));
 
-jest.mock("@upstash/ratelimit", () => {
+jest.mock('@upstash/ratelimit', () => {
     const UNIT_MS: Record<string, number> = {
         s: 1_000,
         m: 60_000,
@@ -23,7 +23,7 @@ jest.mock("@upstash/ratelimit", () => {
         d: 86_400_000,
     };
     const toMs = (w: string) => {
-        const [n, unit] = w.split(" ");
+        const [n, unit] = w.split(' ');
         return Number(n) * UNIT_MS[unit];
     };
 
@@ -42,11 +42,13 @@ jest.mock("@upstash/ratelimit", () => {
         }
 
         async limit(id: string) {
-            if (Ratelimit.mockShoouldFail) throw new Error("Redis down"); 
+            if (Ratelimit.mockShoouldFail) throw new Error('Redis down');
 
             const now = Date.now();
             const { tokens, windowMs } = this.cfg;
-            const recent = (this.hits.get(id) ?? []).filter((t) => t > now - windowMs);
+            const recent = (this.hits.get(id) ?? []).filter(
+                (t) => t > now - windowMs
+            );
 
             const success = recent.length < tokens;
             if (success) recent.push(now);
@@ -73,7 +75,8 @@ let counter = 0;
 const uid = (prefix: string) => `${prefix}-${counter++}`;
 
 const setRadisFailing = (fail: boolean) => {
-    (Ratelimit as unknown as { mockShoouldFail: boolean }).mockShoouldFail = fail;
+    (Ratelimit as unknown as { mockShoouldFail: boolean }).mockShoouldFail =
+        fail;
 };
 
 beforeEach(() => {
@@ -144,7 +147,7 @@ describe('bloqueo despues de N intentos', () => {
         ['messageCreation', messageCreation, 10_000],
     ])(
         '$s: permite exactamente el maximo diario y luego bloquea',
-        async(__name, fn, max) => {
+        async (__name, fn, max) => {
             const userId = uid('user');
 
             let lastAllowed;
@@ -230,7 +233,7 @@ describe('reset despues de la ventana de tiempo', () => {
     });
 });
 
-describe('informacion de reset',  () => {
+describe('informacion de reset', () => {
     it('retorna { success, remaining, resetAt } con los tipos correctos', async () => {
         const res = await loginAttempts(`${uid('shape')}@test.com`);
 
@@ -256,7 +259,9 @@ describe('informacion de reset',  () => {
 
         expect(blocked.success).toBe(false);
         expect(blocked.resetAt.getTime()).toBeGreaterThan(Date.now());
-        expect(blocked.resetAt.getTime()).toBeLessThanOrEqual(Date.now() + HOUR);
+        expect(blocked.resetAt.getTime()).toBeLessThanOrEqual(
+            Date.now() + HOUR
+        );
     });
 
     it('retryAfterSeconds devuelve segundos positivos hasta el reset', async () => {
@@ -288,7 +293,9 @@ describe('informacion de reset',  () => {
 
         for (let i = 0; i < LIMITS.login.max; i++) await loginAttempts(email);
         const blocked = await loginAttempts(email);
-        expect(rateLimitMessage('login', blocked)).toMatch(/Inténtalo de nuevo/);
+        expect(rateLimitMessage('login', blocked)).toMatch(
+            /Inténtalo de nuevo/
+        );
     });
 
     it('rateLimitHeaders: incluye Retry-After solo cuando está bloqueado', async () => {

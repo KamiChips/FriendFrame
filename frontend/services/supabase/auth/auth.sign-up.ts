@@ -13,7 +13,8 @@ import {
 import safeLogger from '@/lib/logger/safeLogger';
 import { signupAttempts } from '@/services/ratelimit/rateLimiter';
 
-export const SIGNUP_RATE_LIMIT_MESSAGE = 'Demasiados registros. Intenta más tarde';
+export const SIGNUP_RATE_LIMIT_MESSAGE =
+    'Demasiados registros. Intenta más tarde';
 
 export async function signUp({
     email,
