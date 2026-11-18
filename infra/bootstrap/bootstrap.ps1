@@ -18,3 +18,16 @@ foreach ($user in $Team) {
     az role assignment create --assignee $user --role "Contributor" --scope $appRg
 }
 az storage container create --name "tfstate" --account-name "stfriendframetf" --public-access off --auth-mode login
+
+az identity create --name "id-friendframe-github" --resource-group "rg-friendframe-tfstate" --location "centralus"
+$principalId = az identity show --name "id-friendframe-github" --resource-group "rg-friendframe-tfstate" --query "principalId" -o tsv
+$clientId = az identity show --name "id-friendframe-github" --resource-group "rg-friendframe-tfstate" --query "clientId" -o tsv
+az role assignment create --assignee-object-id $principalId --assignee-principal-type ServicePrincipal --role "Storage Blob Data Contributor" --scope $stateAccount
+az role assignment create --assignee-object-id $principalId --assignee-principal-type ServicePrincipal --role "Contributor" --scope $appRg
+az identity federated-credential create --name "github-pull-request" --identity-name "id-friendframe-github" --resource-group "rg-friendframe-tfstate" --issuer "https://token.actions.githubusercontent.com" --subject "repo:KamiChips/FriendFrame:pull_request" --audiences "api://AzureADTokenExchange"
+az identity federated-credential create --name "github-merge-main" --identity-name "id-friendframe-github" --resource-group "rg-friendframe-tfstate" --issuer "https://token.actions.githubusercontent.com" --subject "repo:KamiChips/FriendFrame:ref:refs/heads/main" --audiences "api://AzureADTokenExchange"
+$tenantId       = az account show --query "tenantId" -o tsv
+$subscriptionId = az account show --query "id" -o tsv
+Write-Host "AZURE_CLIENT_ID       = $clientId"
+Write-Host "AZURE_TENANT_ID       = $tenantId"
+Write-Host "AZURE_SUBSCRIPTION_ID = $subscriptionId"
