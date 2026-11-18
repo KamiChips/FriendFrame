@@ -8,7 +8,7 @@ jest.mock('@/services/supabase/auth/auth.sign-up', () => ({
     signUp: jest.fn(),
 }));
 
-jest.mock('@/components/ui/TextField', () => {
+jest.mock('@/components/ui/common/text-field', () => {
     const React = require('react');
     const { TextInput } = require('react-native');
 
