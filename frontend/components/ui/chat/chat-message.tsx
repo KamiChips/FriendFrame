@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import '../../global.css';
+import '../../../global.css';
 import ProfileIcon from '../icons/profile-icon';
 
 interface ChatMessageProps {
