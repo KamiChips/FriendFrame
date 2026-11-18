@@ -23,53 +23,53 @@ describe('<SignUpScreen />', () => {
     });
 
     // Tests de Contenido
-    test('renders "Get Started!" title', () => {
-        const { getByText } = render(<SignUpScreen />);
+    test('renders "Get Started!" title', async () => {
+        const { getByText } = await render(<SignUpScreen />);
         expect(getByText('Get Started!')).toBeTruthy();
     });
 
-    test('renders Full Name field', () => {
-        const { getByTestId } = render(<SignUpScreen />);
+    test('renders Full Name field', async () => {
+        const { getByTestId } = await render(<SignUpScreen />);
         expect(getByTestId('fullname-textfield')).toBeTruthy();
     });
 
-    test('renders Username field', () => {
-        const { getByTestId } = render(<SignUpScreen />);
+    test('renders Username field', async () => {
+        const { getByTestId } = await render(<SignUpScreen />);
         expect(getByTestId('username-signup-textfield')).toBeTruthy();
     });
 
-    test('renders Email field', () => {
-        const { getByTestId } = render(<SignUpScreen />);
+    test('renders Email field', async () => {
+        const { getByTestId } = await render(<SignUpScreen />);
         expect(getByTestId('email-signup-textfield')).toBeTruthy();
     });
 
-    test('renders Password field', () => {
-        const { getByTestId } = render(<SignUpScreen />);
+    test('renders Password field', async () => {
+        const { getByTestId } = await render(<SignUpScreen />);
         expect(getByTestId('password-signup-textfield')).toBeTruthy();
     });
 
-    test('renders "Crear cuenta" button', () => {
-        const { getByTestId } = render(<SignUpScreen />);
+    test('renders "Crear cuenta" button', async () => {
+        const { getByTestId } = await render(<SignUpScreen />);
         expect(getByTestId('signup-button')).toBeTruthy();
     });
 
-    test('renders Terms and Conditions checkbox', () => {
-        const { getByTestId } = render(<SignUpScreen />);
+    test('renders Terms and Conditions checkbox', async () => {
+        const { getByTestId } = await render(<SignUpScreen />);
         expect(getByTestId('tac-button')).toBeTruthy();
     });
 
-    test('renders "Log In" link', () => {
-        const { getByText } = render(<SignUpScreen />);
+    test('renders "Log In" link', async () => {
+        const { getByText } = await render(<SignUpScreen />);
         expect(getByText('Log In')).toBeTruthy();
     });
 
     // Tests de Validación
     test('shows error when submitting empty fields', async () => {
-        const { getByText, getByTestId } = render(<SignUpScreen />);
+        const { getByText, getByTestId } = await render(<SignUpScreen />);
 
         // Aceptar términos
-        fireEvent.press(getByTestId('tac-button'));
-        fireEvent.press(getByTestId('signup-button'));
+        await fireEvent.press(getByTestId('tac-button'));
+        await fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
             expect(getByText('Please fill in all fields.')).toBeTruthy();
@@ -77,27 +77,27 @@ describe('<SignUpScreen />', () => {
     });
 
     test('does not call signUp when fields are empty', async () => {
-        const { getByTestId } = render(<SignUpScreen />);
-        fireEvent.press(getByTestId('signup-button'));
+        const { getByTestId } = await render(<SignUpScreen />);
+        await fireEvent.press(getByTestId('signup-button'));
         await waitFor(() => {
             expect(signUp).not.toHaveBeenCalled();
         });
     });
 
     test('shows error when some fields are empty', async () => {
-        const { getByTestId, getByText } = render(<SignUpScreen />);
+        const { getByTestId, getByText } = await render(<SignUpScreen />);
 
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('fullname-textfield'),
             'Rrojelyo Kamasho'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('username-signup-textfield'),
             '7otinle'
         );
 
-        fireEvent.press(getByTestId('tac-button'));
-        fireEvent.press(getByTestId('signup-button'));
+        await fireEvent.press(getByTestId('tac-button'));
+        await fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
             expect(getByText('Please fill in all fields.')).toBeTruthy();
@@ -107,25 +107,25 @@ describe('<SignUpScreen />', () => {
     // Términos y condiciones
     test('shows alert when submitting without accepting terms', async () => {
         const alertSpy = jest.spyOn(Alert, 'alert');
-        const { getByTestId } = render(<SignUpScreen />);
+        const { getByTestId } = await render(<SignUpScreen />);
 
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('fullname-textfield'),
             'Rogelio Camacho'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('username-signup-textfield'),
             'elnito7'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('email-signup-textfield'),
             'nito@email.com'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('password-signup-textfield'),
             'yacomiyasoyfeliz02'
         );
-        fireEvent.press(getByTestId('signup-button'));
+        await fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
             expect(alertSpy).toHaveBeenCalledWith(
@@ -135,46 +135,46 @@ describe('<SignUpScreen />', () => {
         });
     });
 
-    test('terms checkbox toggles when pressed', () => {
-        const { getByText, getByTestId } = render(<SignUpScreen />);
+    test('terms checkbox toggles when pressed', async () => {
+        const { getByText, getByTestId } = await render(<SignUpScreen />);
         const termsText = getByText('Terms of Service and Privacy Policy');
         // Antes de presionar no hay checkmark
         expect(() => getByText('✓')).toThrow();
         // Presionar checkbox
-        fireEvent.press(getByTestId('tac-button'));
+        await fireEvent.press(getByTestId('tac-button'));
         expect(getByText('✓')).toBeTruthy();
     });
 
-    test('terms chackbox can be unselected after being selected', () => {
-        const { getByTestId, getByText } = render(<SignUpScreen />);
+    test('terms chackbox can be unselected after being selected', async () => {
+        const { getByTestId, getByText } = await render(<SignUpScreen />);
 
-        fireEvent.press(getByTestId('tac-button'));
+        await fireEvent.press(getByTestId('tac-button'));
         expect(getByText('✓')).toBeTruthy();
 
-        fireEvent.press(getByTestId('tac-button'));
+        await fireEvent.press(getByTestId('tac-button'));
         expect(() => getByText('✓')).toThrow();
     });
 
     // Modal de términos
-    test('opens terms modal when pressing "Terms of Service and Privacy Policy"', () => {
-        const { getByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Terms of Service and Privacy Policy'));
+    test('opens terms modal when pressing "Terms of Service and Privacy Policy"', async () => {
+        const { getByText } = await render(<SignUpScreen />);
+        await fireEvent.press(getByText('Terms of Service and Privacy Policy'));
         expect(getByText('Terms & Privacy Policy')).toBeTruthy();
     });
 
     test('closes terms modal when pressing "Got it"', async () => {
-        const { getByText, queryByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Terms of Service and Privacy Policy'));
-        fireEvent.press(getByText('Got it'));
+        const { getByText, queryByText } = await render(<SignUpScreen />);
+        await fireEvent.press(getByText('Terms of Service and Privacy Policy'));
+        await fireEvent.press(getByText('Got it'));
         await waitFor(() => {
             expect(queryByText('Terms & Privacy Policy')).toBeNull();
         });
     });
 
     test('closes terms modal when pressing "✕"', async () => {
-        const { getByText, queryByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Terms of Service and Privacy Policy'));
-        fireEvent.press(getByText('✕'));
+        const { getByText, queryByText } = await render(<SignUpScreen />);
+        await fireEvent.press(getByText('Terms of Service and Privacy Policy'));
+        await fireEvent.press(getByText('✕'));
         await waitFor(() => {
             expect(queryByText('Terms & Privacy Policy')).toBeNull();
         });
@@ -184,25 +184,25 @@ describe('<SignUpScreen />', () => {
     test('calls signUp with correct data', async () => {
         (signUp as jest.Mock).mockResolvedValue({ data: {}, error: null });
 
-        const { getByTestId } = render(<SignUpScreen />);
-        fireEvent.changeText(
+        const { getByTestId } = await render(<SignUpScreen />);
+        await fireEvent.changeText(
             getByTestId('fullname-textfield'),
             'Rogelio Camacho'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('username-signup-textfield'),
             'elnito7'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('email-signup-textfield'),
             'nito@email.com'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('password-signup-textfield'),
             'tengosueño123'
         );
-        fireEvent.press(getByTestId('tac-button'));
-        fireEvent.press(getByTestId('signup-button'));
+        await fireEvent.press(getByTestId('tac-button'));
+        await fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
             expect(signUp).toHaveBeenCalledWith({
@@ -220,25 +220,25 @@ describe('<SignUpScreen />', () => {
             error: null,
         });
 
-        const { getByText, getByTestId } = render(<SignUpScreen />);
-        fireEvent.changeText(
+        const { getByText, getByTestId } = await render(<SignUpScreen />);
+        await fireEvent.changeText(
             getByTestId('fullname-textfield'),
             'Rogelio Camacho'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('username-signup-textfield'),
             'elnito7'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('email-signup-textfield'),
             'nito@email.com'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('password-signup-textfield'),
             'tengosueño123'
         );
-        fireEvent.press(getByTestId('tac-button'));
-        fireEvent.press(getByTestId('signup-button'));
+        await fireEvent.press(getByTestId('tac-button'));
+        await fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
             expect(getByText('Account created!')).toBeTruthy();
@@ -251,25 +251,25 @@ describe('<SignUpScreen />', () => {
             error: 'An account with that email already exists.',
         });
 
-        const { getByText, getByTestId } = render(<SignUpScreen />);
-        fireEvent.changeText(
+        const { getByText, getByTestId } = await render(<SignUpScreen />);
+        await fireEvent.changeText(
             getByTestId('fullname-textfield'),
             'Rogelio Camacho'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('username-signup-textfield'),
             'elnito7'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('email-signup-textfield'),
             'nito@email.com'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('password-signup-textfield'),
             'tengosueño123'
         );
-        fireEvent.press(getByTestId('tac-button'));
-        fireEvent.press(getByTestId('signup-button'));
+        await fireEvent.press(getByTestId('tac-button'));
+        await fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
             expect(
@@ -281,24 +281,24 @@ describe('<SignUpScreen />', () => {
     test('Sign up button is diabled while loading', async () => {
         (signUp as jest.Mock).mockImplementation(() => new Promise(() => {}));
 
-        const { getByTestId } = render(<SignUpScreen />);
-        fireEvent.changeText(
+        const { getByTestId } = await render(<SignUpScreen />);
+        await fireEvent.changeText(
             getByTestId('fullname-textfield'),
             'Rogelio Camacho'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('username-signup-textfield'),
             'elnito7'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('email-signup-textfield'),
             'nito@email.com'
         );
-        fireEvent.changeText(
+        await fireEvent.changeText(
             getByTestId('password-signup-textfield'),
             'tengosueño123'
         );
-        fireEvent.press(getByTestId('tac-button'));
+        await fireEvent.press(getByTestId('tac-button'));
         fireEvent.press(getByTestId('signup-button'));
 
         await waitFor(() => {
@@ -311,15 +311,15 @@ describe('<SignUpScreen />', () => {
     // Tests de signUpWithGoogle - no hay signUpWithGoogle??? si lo agregan luego los pongo
 
     // Tests de Navegación ---
-    test('"Log In" navigates to /(auth)/login', () => {
-        const { getByText } = render(<SignUpScreen />);
-        fireEvent.press(getByText('Log In'));
+    test('"Log In" navigates to /(auth)/login', async () => {
+        const { getByText } = await render(<SignUpScreen />);
+        await fireEvent.press(getByText('Log In'));
         expect(router.push).toHaveBeenCalledWith('/(auth)/login');
     });
 
     // Snapshot
-    test('matches snapshot', () => {
-        const { toJSON } = render(<SignUpScreen />);
+    test('matches snapshot', async () => {
+        const { toJSON } = await render(<SignUpScreen />);
         expect(toJSON()).toMatchSnapshot();
     });
 });

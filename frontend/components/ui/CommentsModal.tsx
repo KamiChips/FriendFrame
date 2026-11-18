@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ComponentRef } from 'react';
 import {
     View,
     Text,
@@ -51,7 +51,7 @@ export default function CommentsModal({
     // ESTADOS Y REFERENCIAS
     const [newComment, setNewComment] = useState(''); // Almacena el texto que el usuario está escribiendo
     const insets = useSafeAreaInsets(); // Obtenemos los márgenes seguros nativos del dispositivo
-    const inputRef = useRef<TextInput>(null); // Referencia directa a la caja de texto (para forzar el teclado)
+    const inputRef = useRef<ComponentRef<typeof TextInput>>(null); // Referencia directa a la caja de texto (para forzar el teclado)
     const { comments, load, post } = useComments(target);
     const [replyingTo, setReplyingTo] = useState<{
         commentId: string;

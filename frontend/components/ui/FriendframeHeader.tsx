@@ -2,7 +2,7 @@ import { View, Text } from 'react-native';
 import '../../global.css';
 import NotificationButton from './NotificationButton';
 import { LinearGradient } from 'expo-linear-gradient';
-import MaskedView from '@react-native-masked-view/masked-view';
+import MaskedView from '@/components/ui/masked-view';
 
 const FriendframeHeader = ({ isDark }: { isDark: boolean }) => {
     return (

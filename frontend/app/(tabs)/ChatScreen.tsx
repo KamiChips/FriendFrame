@@ -1,7 +1,13 @@
 import ChatHeader from '@/components/ui/ChatHeader';
 import ChatMessage from '@/components/ui/ChatMessage';
 import ChatMessageInput from '@/components/ui/ChatMessageInput';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+    type ComponentRef,
+} from 'react';
 import {
     View,
     useColorScheme,
@@ -23,7 +29,7 @@ import { markMessagesAsRead } from '@/services/supabase/chat/chat.helpers';
 
 const ChatScreen = () => {
     const isDark = useColorScheme() === 'dark';
-    const scrollRef = useRef<ScrollView>(null);
+    const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
     const { user } = useAuth();
 
     const {
@@ -148,10 +154,7 @@ const ChatScreen = () => {
     };
     return (
         <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
-            <StatusBar
-                barStyle={isDark ? 'light-content' : 'dark-content'}
-                backgroundColor={isDark ? '#1a1a1a' : '#ffffff'}
-            />
+            <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
             <ChatHeader
                 isDark={isDark}
                 username={chatName ?? 'Chat'}
