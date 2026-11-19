@@ -44,3 +44,9 @@ variable "contact_emails" {
   default     = {}
   description = "Contact email for azure budget notification"
 }
+
+variable "enable_compute" {
+  type        = bool
+  default     = false
+  description = "Crea (true) o destruye (false) App Service y Postgres, los recursos que cobran por hora. Mantener en false hasta que el backend tenga codigo que desplegar"
+}

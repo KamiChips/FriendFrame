@@ -1,0 +1,55 @@
+name: Infra
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths: ["infra/**", ".github/workflows/infra.yml"]
+  # Boton "Run workflow" en GitHub para lanzarlo a mano eligiendo la rama.
+  # Solo corre el plan; sirve para la prueba negativa de OIDC desde otra rama.
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ARM_USE_OIDC: "true"
+  ARM_CLIENT_ID: ${{vars.AZURE_CLIENT_ID}}
+  ARM_TENANT_ID: ${{vars.AZURE_TENANT_ID}}
+  ARM_SUBSCRIPTION_ID: ${{vars.AZURE_SUBSCRIPTION_ID}}
+  TF_VAR_contact_emails: ${{vars.CONTACT_EMAILS}}
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: infra/terraform
+
+jobs:
+  plan:
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.6"
+
+      - run: terraform init -input=false
+      - run: terraform fmt -check
+      - run: terraform validate
+      - run: terraform plan -input=false
+  apply:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.6"
+      - run: terraform init -input=false
+      - run: terraform apply -input=false -auto-approve
