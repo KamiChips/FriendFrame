@@ -10,7 +10,7 @@
         "web": "expo start --web",
         "lint": "expo lint",
         "test": "jest",
-        "test:unit": "jest --testPathPattern=__tests__/unit",
+        "test:unit": "jest --testPathPatterns=__tests__/unit",
         "test:unit:auth": "jest --testPathPattern=__tests__/unit/auth",
         "test:unit:publications": "jest --testPathPattern=__tests__/unit/publications",
         "test:unit:storage": "jest --testPathPattern=__tests__/unit/storage",
