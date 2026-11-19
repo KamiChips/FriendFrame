@@ -9,24 +9,13 @@ output "resource_group_id" {
 }
 
 output "db_host" {
-  value       = azurerm_postgresql_flexible_server.main.fqdn
+  # Interruptor en un output: null = el output no aparece
+  value       = var.enable_compute ? azurerm_postgresql_flexible_server.main[0].fqdn : null
   description = "The servers fqdn"
 }
 
-output "db_admin_password" {
-  value       = random_password.db_admin.result
-  description = "Administrator database pw"
-  sensitive   = true
-}
-
-output "db_app_password" {
-  value       = random_password.db_app.result
-  description = "App user database pw"
-  sensitive   = true
-}
-
 output "api_url" {
-  value       = "https://${azurerm_linux_web_app.main.default_hostname}"
+  value       = var.enable_compute ? "https://${azurerm_linux_web_app.main[0].default_hostname}" : null
   description = "API URL"
 }
 

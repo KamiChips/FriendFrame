@@ -9,10 +9,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import '../global.css';
-import GoBackButton from '../components/ui/GoBackButton';
+import GoBackButton from '../components/ui/actions/go-back-button';
 import NotificationCard, {
     NotificationType,
-} from '../components/ui/NotificationCard';
+} from '../components/ui/notifications/notification-card';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -148,10 +148,7 @@ const NotificationInbox = () => {
         <SafeAreaView
             className={`flex-1 bg-background-light ${isDark ? 'dark' : ''} dark:bg-background-dark `}
         >
-            <StatusBar
-                barStyle={isDark ? 'light-content' : 'dark-content'}
-                backgroundColor={isDark ? '#1a1a1a' : '#ffffff'}
-            />
+            <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
             {/* Header */}
             <View className="flex-row items-center justify-between pl-1 pr-4 pb-1 dark:bg-background-dark border-b border-[#e6e6e6] dark:border-[#404b65]">

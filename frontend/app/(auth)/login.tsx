@@ -9,8 +9,8 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import '../../global.css';
-import { TextField } from '../../components/ui/TextField';
-import { Button } from '../../components/ui/Button';
+import { TextField } from '../../components/ui/common/text-field';
+import { Button } from '../../components/ui/common/button';
 import { router, Stack } from 'expo-router';
 import {
     signIn,
@@ -116,7 +116,7 @@ export default function LoginScreen() {
                         <View className="flex-row justify-between mb-12">
                             <Text className="dark:text-background-light">
                                 [] Remember me
-                            </Text>{' '}
+                            </Text>
                             {/* Hay que cambiar esto por un checkbox :P */}
                             <Text className="font-semibold dark:text-background-light">
                                 Forgot Password?
@@ -163,7 +163,7 @@ export default function LoginScreen() {
                             />
                         </TouchableOpacity>
                         <Text className="dark:text-background-light mt-10">
-                            {"Don't have an account?{' '}"}
+                            {'Don&apos;t have an account?'}
                             <Text
                                 className="font-semibold dark:text-background-light"
                                 onPress={() => router.push('/(auth)/signup')}

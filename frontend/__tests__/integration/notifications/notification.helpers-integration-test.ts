@@ -60,7 +60,7 @@ describe('assertNotificationType', () => {
         });
 
         it('lanza un Error (no una string ni otro tipo)', () => {
-            expect(() => assertNotificationType('bad')).toThrowError(Error);
+            expect(() => assertNotificationType('bad')).toThrow(Error);
         });
     });
 });

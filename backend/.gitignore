@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Variables de entorno: NUNCA se suben. Solo .env.example
+.env
+.env.*
+!.env.example
