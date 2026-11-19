@@ -1,6 +1,6 @@
-import ChatHeader from '@/components/ui/ChatHeader';
-import ChatMessage from '@/components/ui/ChatMessage';
-import ChatMessageInput from '@/components/ui/ChatMessageInput';
+import ChatHeader from '@/components/ui/chat/chat-header';
+import ChatMessage from '@/components/ui/chat/chat-message';
+import ChatMessageInput from '@/components/ui/chat/ChatMessageInput';
 import {
     useCallback,
     useEffect,

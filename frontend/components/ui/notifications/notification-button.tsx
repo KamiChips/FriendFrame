@@ -1,6 +1,6 @@
 import { TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import '../../global.css';
+import '../../../global.css';
 import { router } from 'expo-router';
 import { useNotificationsBadge } from '@/context/NotificationContext';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, useColorScheme } from 'react-native';
-import ProfileIcon from './ProfileIcon';
+import ProfileIcon from '../icons/profile-icon';
 
 interface UserSearchRowProps {
     name: string;
