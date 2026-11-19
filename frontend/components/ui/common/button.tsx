@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import '../../global.css';
+import '../../../global.css';
 import { Text, TouchableOpacity } from 'react-native';
 
 type Props = {

@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient'; // Para los degradados del diseño
-import '../../global.css';
+import '../../../global.css';
 import { useAuth } from '@/context/AuthContext';
 import {
     editFullName,

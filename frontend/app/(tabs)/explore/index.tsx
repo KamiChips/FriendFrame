@@ -7,8 +7,8 @@ import {
     useColorScheme,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import SearchBar from '@/components/ui/SearchBar';
-import UserSearchRow from '@/components/ui/user-search-row';
+import SearchBar from '@/components/ui/users/search-bar';
+import UserSearchRow from '@/components/ui/users/user-search-row';
 import FriendFrameHeader from '@/components/ui/FriendframeHeader';
 import '../../../global.css';
 import { supabase } from '@/lib/supabase/client';
