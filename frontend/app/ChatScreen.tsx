@@ -16,7 +16,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import '../../global.css';
+import '../global.css';
 import { useAuth } from '@/context/AuthContext';
 import { useLocalSearchParams } from 'expo-router';
 import { Message } from '@/services/supabase/chat/chat.types';
