@@ -3,15 +3,15 @@ import { View, Text, Pressable, useColorScheme } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import PostOptionsModal from './post-options-modal';
-import CommentsModal from './CommentsModal';
-import { CommentType } from './CommentItem';
-import ProfileIcon from './ProfileIcon';
+import CommentsModal from '../comments/comments-modal';
+import { CommentType } from '../comments/comment-item';
+import ProfileIcon from '../icons/profile-icon';
 import {
     toggleLikePost,
     toggleLikeFragment,
 } from '@/services/supabase/interactions/likes';
 import { PublicationTarget } from '@/services/supabase/interactions/types';
-import ShareChatModal from './share-chat-modal';
+import ShareChatModal from '../actions/share-chat-modal';
 
 type FeedCardPublicationType = 'post' | 'fragment';
 

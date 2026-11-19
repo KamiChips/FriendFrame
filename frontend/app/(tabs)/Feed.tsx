@@ -13,8 +13,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Importación de nuestros componentes personalizados de UI
 import FriendframeHeader from '@/components/ui/FriendframeHeader';
-import FeedCard from '@/components/ui/FeedCard';
-import { FeedSkeletonList } from '@/components/ui/FeedCardSkeleton';
+import FeedCard from '@/components/ui/posts/feed-card';
+import { FeedSkeletonList } from '@/components/ui/posts/feed-card-skeleton';
 import { useFeed } from '@/hooks/useFeed';
 import { FeedPost } from '@/services/supabase/feed/feed.types';
 
