@@ -10,6 +10,9 @@ import {
 } from './helpers';
 import { Post, PostResult, PostWithCounts } from './types';
 import safeLogger from '@/lib/logger/safeLogger';
+import { postCreation } from '@/services/ratelimit/rateLimiter';
+
+export const POST_RATE_LIMIT_MESSAGE = 'Límite diario alcanzado (50 posts/día)';
 
 export async function createPost(
     profileOwnerId: string,
@@ -23,6 +26,12 @@ export async function createPost(
         const currentUserId = await getAuthUser();
 
         await assertFriendship(currentUserId, profileOwnerId);
+
+        // Rate limit por usuario (50 posts/día) ANTES de insertar
+        const rateLimit = await postCreation(currentUserId);
+        if (!rateLimit.success) {
+            return { data: null, error: POST_RATE_LIMIT_MESSAGE };
+        }
 
         const { data, error } = await supabase
             .from('posts')
