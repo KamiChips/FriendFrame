@@ -75,7 +75,7 @@ export default function CreateGroupScreen() {
 
         if (data) {
             router.replace({
-                pathname: '/(tabs)/ChatScreen',
+                pathname: '/ChatScreen',
                 params: {
                     chatId: data.chat_id,
                     chatName: data.group_name ?? groupName,
