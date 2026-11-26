@@ -19,8 +19,15 @@ test("un admin resuelve un reporte de punta a punta", async ({ page }) => {
   await page.getByRole("combobox", { name: "Type" }).click();
   await page.getByRole("option", { name: "Post" }).click();
   await expect(page).toHaveURL(/type=post/);
+  // la tabla conserva los resultados anteriores mientras llega la nueva consulta:
+  // se espera al pie del filtro aplicado antes de elegir una fila
+  await expect(page.getByText(/^Showing 2 of 2 reports/)).toBeVisible();
 
-  await page.getByRole("link", { name: /Open report from @carlos_dev/ }).click();
+  await page
+    .getByTestId("row-r1")
+    .getByRole("link", { name: /Open report from @carlos_dev/ })
+    .click();
+  await expect(page).toHaveURL(/\/reports\/r1$/);
   await page.getByRole("button", { name: "Take case" }).click();
   await page.getByRole("radio", { name: "Warn author" }).click();
   await page.getByRole("button", { name: "Send warning" }).click();
