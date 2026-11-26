@@ -6,16 +6,33 @@ import { Icon } from "@/components/common/Icon";
 import { Card } from "@/components/ui/card";
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { highlightFor, trendFor } from "@/lib/summaries";
+import { cn } from "@/lib/utils";
 import type { ChartBar, Metric, ReasonShare, ReviewCase } from "@/types/moderation";
 
 const cardTitle = "text-xl leading-6 font-bold";
 
+// color del icono de cada metrica segun lo que representa; las demas usan el acento.
+// el cuadro de fondo toma el mismo color con transparencia (bg-current/15)
+const metricTones: Record<string, string> = {
+  suspended: "text-amber-500 dark:text-amber-400",
+  banned: "text-danger dark:text-red-400",
+  resolution: "text-emerald-600 dark:text-emerald-400",
+};
+
 export function MetricCard({ metric }: { metric: Metric }) {
   return (
     <Card className="min-w-0 flex-1 gap-3 p-5">
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-2">
         <p className="text-[15px] leading-[18px] text-muted-foreground">{metric.label}</p>
-        <Icon name={metric.icon} size={21} className="text-brand" />
+        <span
+          data-testid={`metric-icon-${metric.id}`}
+          className={cn(
+            "flex size-9 shrink-0 items-center justify-center rounded-lg bg-current/15",
+            metricTones[metric.id] ?? "text-brand",
+          )}
+        >
+          <Icon name={metric.icon} size={20} className="text-current" />
+        </span>
       </div>
       <p className="text-4xl leading-[43px] font-bold">{metric.value}</p>
       <p className="text-[13px] leading-4 text-muted-foreground">{metric.caption}</p>
