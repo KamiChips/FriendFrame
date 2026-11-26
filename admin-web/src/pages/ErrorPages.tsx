@@ -21,7 +21,9 @@ export function ErrorPage({ kind }: { kind: ErrorKind }) {
       breadcrumb={section ? `Moderación / ${section.label}` : "Moderación"}
       title={page.title}
       actions={
-        counts?.reports !== undefined && <Chip label={`${counts.reports} abiertos`} variant="accent" />
+        counts?.reports !== undefined && (
+          <Chip label={`${counts.reports} abiertos`} variant="accent" size="header" />
+        )
       }
     >
       <ErrorMessage

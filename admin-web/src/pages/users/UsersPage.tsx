@@ -37,7 +37,9 @@ export default function UsersPage() {
     <Page
       breadcrumb="Moderación / Usuarios"
       title="Usuarios"
-      actions={users.data && <Chip label={`${formatCount(users.data.totalAccounts)} cuentas`} />}
+      actions={
+        users.data && <Chip label={`${formatCount(users.data.totalAccounts)} cuentas`} size="header" />
+      }
       intro="Encuentra una cuenta y revisa su contexto antes de actuar."
     >
       <Card className="gap-3 p-[22px]">

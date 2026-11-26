@@ -89,7 +89,7 @@ function AuditLog() {
     <Page
       breadcrumb="Moderación / Bitácora"
       title="Bitácora"
-      actions={<Chip label="Solo Admin" variant="accent" />}
+      actions={<Chip label="Solo Admin" variant="accent" size="header" />}
       intro="Cada decisión deja contexto. Registro de acciones del equipo de moderación."
     >
       <div className="flex flex-wrap items-center gap-3">

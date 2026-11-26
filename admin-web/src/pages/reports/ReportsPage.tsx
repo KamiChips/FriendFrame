@@ -62,7 +62,13 @@ export default function ReportsPage() {
     <Page
       breadcrumb="Moderación / Reportes"
       title="Reportes"
-      actions={<Chip label={openCount > 0 ? `${openCount} abiertos` : "Sin pendientes"} variant="accent" />}
+      actions={
+        <Chip
+          label={openCount > 0 ? `${openCount} abiertos` : "Sin pendientes"}
+          variant="accent"
+          size="header"
+        />
+      }
       intro="Revisa, prioriza y asigna los reportes de la comunidad."
     >
       <div className="flex flex-wrap items-center gap-3">
