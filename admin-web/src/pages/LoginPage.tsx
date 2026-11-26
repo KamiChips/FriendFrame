@@ -75,7 +75,13 @@ export default function LoginPage() {
           />
           {/* todavia no hay flujo de recuperacion definido */}
           <span className="self-start text-sm text-link">¿Olvidaste tu contraseña?</span>
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            variant="default"
+            // al pasar el cursor se eleva con sombra; sin movimiento si el sistema pide reducir animaciones
+            className="w-full duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:ring-0 hover:shadow-action/35 active:translate-y-0 active:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Entrando…" : "Iniciar sesión"}
           </Button>
         </form>
