@@ -42,6 +42,10 @@ export const auditSearchSchema = z.object({
 });
 export type AuditSearch = z.infer<typeof auditSearchSchema>;
 
+export const teamSearchSchema = z.object({
+  role: optional(z.enum(["admin", "moderator"])),
+});
+
 export const profileSearchSchema = z.object({
   tab: optional(z.enum(["timeline", "hidden"])),
 });

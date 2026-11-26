@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
+import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 
 import { useAddMember, useRemoveRole } from "@/api/mutations";
@@ -23,6 +24,7 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { countLabel } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { type AddMemberValues, addMemberSchema } from "@/schemas/forms";
+import { parseSearch, teamSearchSchema, toSearch } from "@/schemas/search";
 import type { TeamMember, TeamRole } from "@/types/moderation";
 
 import { ErrorPage } from "./ErrorPages";
@@ -44,6 +46,13 @@ function Team() {
   const [isAdding, setIsAdding] = useState(false);
   const [removing, setRemoving] = useState<TeamMember | null>(null);
   const members = team.data?.members ?? [];
+  // el filtro por rol vive en la URL (/team?role=admin); sin rol se muestran todos
+  const [params, setParams] = useSearchParams();
+  const { role: roleFilter } = parseSearch(teamSearchSchema, params);
+  const visibleMembers = roleFilter ? members.filter((member) => member.role === roleFilter) : members;
+  // volver a tocar el rol activo quita el filtro
+  const toggleRole = (role: TeamRole) =>
+    setParams(toSearch({ role: role === roleFilter ? undefined : role }));
 
   const columns: Column<TeamMember>[] = [
     {
@@ -114,17 +123,33 @@ function Team() {
     >
       <div className="flex h-9 items-center gap-3">
         <h2 className="text-[21px] font-bold">{countLabel(members.length, "miembro", "miembros")}</h2>
-        {roles.map((role) => (
-          <Chip
-            key={role}
-            label={countLabel(
-              members.filter((member) => member.role === role).length,
-              teamRoles[role].singular,
-              teamRoles[role].plural,
-            )}
-            variant={teamRoles[role].variant}
-          />
-        ))}
+        {roles.map((role) => {
+          const isSelected = role === roleFilter;
+          return (
+            <button
+              key={role}
+              type="button"
+              aria-pressed={isSelected}
+              title={isSelected ? "Mostrar todos los roles" : `Mostrar solo ${teamRoles[role].plural}`}
+              onClick={() => toggleRole(role)}
+              className={cn(
+                "rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                isSelected && "ring-2 ring-brand ring-offset-2 ring-offset-background",
+                roleFilter && !isSelected && "opacity-55 hover:opacity-100",
+              )}
+            >
+              <Chip
+                label={countLabel(
+                  members.filter((member) => member.role === role).length,
+                  teamRoles[role].singular,
+                  teamRoles[role].plural,
+                )}
+                variant={teamRoles[role].variant}
+                className="cursor-pointer"
+              />
+            </button>
+          );
+        })}
         <span className="flex-1" />
         <Icon name="shield-check" size={18} className="text-brand" />
         <span className="text-sm text-muted-foreground">Solo Admin puede gestionar roles</span>
@@ -136,12 +161,14 @@ function Team() {
         <DataTable
           label="Miembros del equipo"
           columns={columns}
-          rows={members}
+          rows={visibleMembers}
           getRowKey={(member) => member.id}
           rowHeight={90}
           density="comfortable"
           footer={
             <p className="flex h-[50px] items-center px-[22px] text-[13px] text-muted-foreground">
+              {roleFilter &&
+                `Mostrando ${visibleMembers.length} de ${countLabel(members.length, "miembro", "miembros")} · `}
               Última actualización: {team.data?.lastUpdated}
             </p>
           }

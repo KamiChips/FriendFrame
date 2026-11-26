@@ -160,6 +160,23 @@ describe("usuarios", () => {
 });
 
 describe("equipo", () => {
+  test("los chips de rol filtran la tabla y se pueden quitar", async () => {
+    const { user, location } = renderApp("/team");
+    const moderators = await screen.findByRole("button", { name: "2 moderadores" });
+    const table = await screen.findByRole("table", { name: "Miembros del equipo" });
+    expect(within(table).getAllByRole("row")).toHaveLength(5);
+
+    await user.click(moderators);
+    expect(moderators).toHaveAttribute("aria-pressed", "true");
+    expect(location().search).toBe("?role=moderator");
+    await waitFor(() => expect(within(table).getAllByRole("row")).toHaveLength(3));
+    expect(screen.getByText(/Mostrando 2 de 4 miembros/)).toBeInTheDocument();
+
+    await user.click(moderators);
+    expect(location().search).toBe("");
+    await waitFor(() => expect(within(table).getAllByRole("row")).toHaveLength(5));
+  });
+
   test("agregar un miembro buscandolo por su usuario", async () => {
     const { user } = renderApp("/team");
     await user.click(await screen.findByRole("button", { name: "Agregar miembro" }));
