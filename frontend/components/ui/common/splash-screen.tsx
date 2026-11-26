@@ -20,7 +20,7 @@ export default function SplashScreen() {
             {/* Los marcos de fotos que cubren toda la pantalla. 
           Usamos ImageBackground en lugar de Image para forzar que ocupe el 100% no deje bordes vacíos. */}
             <ImageBackground
-                source={require('../../assets/images/FondoSplash.png')}
+                source={require('../../../assets/images/FondoSplash.png')}
                 style={StyleSheet.absoluteFill}
                 imageStyle={styles.patternOpacity}
                 resizeMode="cover"
@@ -30,14 +30,14 @@ export default function SplashScreen() {
                 <View style={styles.contentContainer}>
                     {/* Logo principal, la de los personajes */}
                     <Image
-                        source={require('../../assets/images/logoSplash.png')}
+                        source={require('../../../assets/images/logoSplash.png')}
                         style={styles.mainLogo}
                         resizeMode="contain"
                     />
 
                     {/* Texto de FriendFrame */}
                     <Image
-                        source={require('../../assets/images/friendframe.png')}
+                        source={require('../../../assets/images/friendframe.png')}
                         style={styles.textLogo}
                         resizeMode="contain"
                     />
