@@ -1,0 +1,198 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * League Spartan trae metricas asimetricas (ascendente 0.70em, descendente 0.22em, mayusculas 0.66em):
+ * con ellas el texto queda ~0.09em por encima del centro de cualquier caja (chips, botones, contadores).
+ * Se reparten de nuevo para que las mayusculas y los numeros queden centrados en su linea, sin cambiar
+ * el alto total (0.79 + 0.13 = 0.92em, igual que el original): 0.79 - 0.13 = 0.66 = altura de mayusculas.
+ */
+@font-face {
+  font-family: "League Spartan";
+  src: url("./assets/fonts/LeagueSpartan-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+  ascent-override: 79%;
+  descent-override: 13%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "League Spartan";
+  src: url("./assets/fonts/LeagueSpartan-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+  ascent-override: 79%;
+  descent-override: 13%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Borel";
+  src: url("./assets/fonts/Borel-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+/*
+ * colores del diseno de FriendFrame por tema. Los nombres de shadcn/ui (background, primary...)
+ * apuntan a ellos, asi los componentes de shadcn heredan el diseno sin tocarlos.
+ */
+:root {
+  --radius: 0.75rem;
+
+  --ff-canvas: #fafafa;
+  --ff-surface: #ffffff;
+  --ff-soft: #f0eded;
+  /* gris de bordes y divisores: lo bastante oscuro para separarse del fondo blanco */
+  --ff-line: #cfd1d6;
+  --ff-ink: #182240;
+  --ff-muted: #6b6b6b;
+  --ff-faint: #8a8a8e;
+  --ff-link: #115a67;
+  --ff-brand: #30c2d9;
+  --ff-brand-soft: #ddf5f8;
+  --ff-on-brand-soft: #115a67;
+  --ff-action: #1d2a4f;
+  --ff-on-action: #ffffff;
+  --ff-success: #246b43;
+  --ff-success-soft: #e6f3e9;
+  --ff-notice-soft: #fff0d9;
+  --ff-on-notice-soft: #895819;
+  --ff-danger: #d4183d;
+  --ff-danger-soft: #fde8ec;
+  --ff-on-danger-soft: #d4183d;
+  --ff-on-danger-soft-muted: #82181a;
+  --ff-warn-soft: #fff0e1;
+  --ff-on-warn-soft: #945019;
+  --ff-highlight: #f7fcfd;
+  --ff-bar: #30c2d9;
+  --ff-bar-current: #30c2d9;
+
+  --background: var(--ff-canvas);
+  --foreground: var(--ff-ink);
+  --card: var(--ff-surface);
+  --card-foreground: var(--ff-ink);
+  --popover: var(--ff-surface);
+  --popover-foreground: var(--ff-ink);
+  --primary: var(--ff-action);
+  --primary-foreground: var(--ff-on-action);
+  --secondary: var(--ff-soft);
+  --secondary-foreground: var(--ff-ink);
+  --muted: var(--ff-soft);
+  --muted-foreground: var(--ff-muted);
+  --accent: var(--ff-soft);
+  --accent-foreground: var(--ff-ink);
+  --destructive: var(--ff-danger);
+  --border: var(--ff-line);
+  --input: var(--ff-line);
+  --ring: var(--ff-brand);
+
+  /* series de graficos, iguales en ambos temas */
+  --chart-1: #30c2d9;
+  --chart-2: #ff9b42;
+  --chart-3: #115a67;
+  --chart-4: #7385a6;
+  --chart-5: #b1becd;
+  --chart-6: #d9dddf;
+}
+
+.dark {
+  --ff-canvas: #182240;
+  --ff-surface: #1d2a4f;
+  --ff-soft: #1f2b4a;
+  --ff-line: #404b65;
+  --ff-ink: #f0f0f0;
+  --ff-muted: #a0a0a0;
+  --ff-faint: #a0a0a0;
+  --ff-link: #30c2d9;
+  --ff-brand: #ff9b42;
+  --ff-brand-soft: #aa3e14;
+  --ff-on-brand-soft: #ff9b42;
+  --ff-action: #ff9b42;
+  --ff-on-action: #182240;
+  --ff-success: #b7ddc3;
+  --ff-success-soft: #254839;
+  --ff-notice-soft: #51432e;
+  --ff-on-notice-soft: #f0cd94;
+  --ff-danger: #d4183d;
+  --ff-danger-soft: #82181a;
+  --ff-on-danger-soft: #ffffff;
+  --ff-on-danger-soft-muted: #ffffff;
+  --ff-warn-soft: #aa3e14;
+  --ff-on-warn-soft: #ff9b42;
+  --ff-highlight: #1f2b4a;
+  --ff-bar: #115a67;
+  --ff-bar-current: #ff9b42;
+}
+
+@theme inline {
+  --font-sans: "League Spartan", ui-sans-serif, system-ui, sans-serif;
+  --font-brand: "Borel", cursive;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+
+  /* tokens propios del diseno */
+  --color-canvas: var(--ff-canvas);
+  --color-surface: var(--ff-surface);
+  --color-soft: var(--ff-soft);
+  --color-line: var(--ff-line);
+  --color-ink: var(--ff-ink);
+  --color-faint: var(--ff-faint);
+  --color-link: var(--ff-link);
+  --color-brand: var(--ff-brand);
+  --color-brand-soft: var(--ff-brand-soft);
+  --color-on-brand-soft: var(--ff-on-brand-soft);
+  --color-action: var(--ff-action);
+  --color-on-action: var(--ff-on-action);
+  --color-success: var(--ff-success);
+  --color-success-soft: var(--ff-success-soft);
+  --color-notice-soft: var(--ff-notice-soft);
+  --color-on-notice-soft: var(--ff-on-notice-soft);
+  --color-danger: var(--ff-danger);
+  --color-danger-soft: var(--ff-danger-soft);
+  --color-on-danger-soft: var(--ff-on-danger-soft);
+  --color-on-danger-soft-muted: var(--ff-on-danger-soft-muted);
+  --color-warn-soft: var(--ff-warn-soft);
+  --color-on-warn-soft: var(--ff-on-warn-soft);
+  --color-highlight: var(--ff-highlight);
+  --color-bar: var(--ff-bar);
+  --color-bar-current: var(--ff-bar-current);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+}

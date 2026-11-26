@@ -1,0 +1,101 @@
+import type { Report } from "@/types/moderation";
+
+// datos de ejemplo tomados del diseno; los usan las pruebas y el servicio simulado
+const carlos = { handle: "@carlos_dev", initials: "CD" };
+const luis = { handle: "@luis.fotos", initials: "LF" };
+const ana = { handle: "@ana.rmz", initials: "AR" };
+const maria = { handle: "@maria.lopez", initials: "ML" };
+
+export const reports: Report[] = [
+  {
+    id: "r1",
+    timeAgo: "3 min ago",
+    contentType: "post",
+    reason: "Harassment",
+    user: carlos,
+    reportCount: 4,
+    status: "pending",
+    assignee: null,
+    isNew: true,
+  },
+  {
+    id: "r2",
+    timeAgo: "8 min ago",
+    contentType: "fragment",
+    reason: "Spam",
+    user: luis,
+    reportCount: 3,
+    status: "pending",
+    assignee: null,
+  },
+  {
+    id: "r3",
+    timeAgo: "12 min ago",
+    contentType: "comment",
+    reason: "Harassment",
+    user: carlos,
+    reportCount: 2,
+    status: "pending",
+    assignee: null,
+  },
+  {
+    id: "r4",
+    timeAgo: "25 min ago",
+    contentType: "chat_message",
+    reason: "Other",
+    user: ana,
+    reportCount: 1,
+    status: "pending",
+    assignee: null,
+  },
+  {
+    id: "r5",
+    timeAgo: "42 min ago",
+    contentType: "profile",
+    reason: "Impersonation",
+    user: luis,
+    reportCount: 5,
+    status: "pending",
+    assignee: null,
+  },
+  {
+    id: "r6",
+    timeAgo: "1 h ago",
+    contentType: "post",
+    reason: "Nudity",
+    user: maria,
+    reportCount: 1,
+    status: "in_review",
+    assignee: "@moderator2",
+  },
+  {
+    id: "r7",
+    timeAgo: "2 h ago",
+    contentType: "comment",
+    reason: "Spam",
+    user: luis,
+    reportCount: 3,
+    status: "pending",
+    assignee: null,
+  },
+  {
+    id: "r8",
+    timeAgo: "3 h ago",
+    contentType: "fragment",
+    reason: "Violence",
+    user: ana,
+    reportCount: 1,
+    status: "pending",
+    assignee: null,
+  },
+  {
+    id: "r9",
+    timeAgo: "4 h ago",
+    contentType: "post",
+    reason: "Other",
+    user: maria,
+    reportCount: 2,
+    status: "pending",
+    assignee: null,
+  },
+];

@@ -1,0 +1,309 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { useSearchParams } from "react-router";
+import { toast } from "sonner";
+
+import { useAddMember, useRemoveRole } from "@/api/mutations";
+import { currentUserQuery, teamQuery, usersQuery } from "@/api/queries";
+import { Chip } from "@/components/common/Chip";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { type Column, DataTable } from "@/components/common/DataTable";
+import { Spinner } from "@/components/common/Feedback";
+import { TextField } from "@/components/common/Fields";
+import { Icon } from "@/components/common/Icon";
+import { AccountCell } from "@/components/common/UserCells";
+import { UserAvatar } from "@/components/common/UserAvatar";
+import { Page } from "@/components/layout/Page";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { teamRoles } from "@/constants/team";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { countLabel } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import { type AddMemberValues, addMemberSchema } from "@/schemas/forms";
+import { parseSearch, teamSearchSchema, toSearch } from "@/schemas/search";
+import type { TeamMember, TeamRole } from "@/types/moderation";
+
+import { ErrorPage } from "./ErrorPages";
+
+const roles: TeamRole[] = ["admin", "moderator"];
+
+export default function TeamPage() {
+  const { data: currentUser } = useSuspenseQuery(currentUserQuery());
+  // gestionar el equipo es solo para admins
+  if (currentUser.role !== "admin") return <ErrorPage kind="forbidden" />;
+  return <Team />;
+}
+
+function Team() {
+  const team = useQuery(teamQuery());
+  const addMember = useAddMember();
+  const removeRole = useRemoveRole();
+  // agregar y quitar roles piden confirmacion
+  const [isAdding, setIsAdding] = useState(false);
+  const [removing, setRemoving] = useState<TeamMember | null>(null);
+  const members = team.data?.members ?? [];
+  // el filtro por rol vive en la URL (/team?role=admin); sin rol se muestran todos
+  const [params, setParams] = useSearchParams();
+  const { role: roleFilter } = parseSearch(teamSearchSchema, params);
+  const visibleMembers = roleFilter ? members.filter((member) => member.role === roleFilter) : members;
+  // volver a tocar el rol activo quita el filtro
+  const toggleRole = (role: TeamRole) =>
+    setParams(toSearch({ role: role === roleFilter ? undefined : role }));
+
+  const columns: Column<TeamMember>[] = [
+    {
+      key: "member",
+      header: "Member",
+      width: 300,
+      render: (member) => (
+        <AccountCell name={member.isCurrentUser ? `${member.name} (you)` : member.name} account={member} />
+      ),
+    },
+    {
+      key: "role",
+      header: "Role",
+      width: 145,
+      render: (member) => (
+        <Chip label={teamRoles[member.role].label} variant={teamRoles[member.role].variant} />
+      ),
+    },
+    {
+      key: "grantedBy",
+      header: "Granted by",
+      width: 175,
+      // sin moderador que lo otorgara, el rol viene de la configuracion inicial
+      render: (member) => (
+        <span className={cn("text-[15px]", member.grantedBy && "font-bold")}>
+          {member.grantedBy ?? "System"}
+        </span>
+      ),
+    },
+    {
+      key: "joinedAt",
+      header: "Joined",
+      width: 140,
+      render: (member) => <span className="text-sm text-muted-foreground">{member.joinedAt}</span>,
+    },
+    {
+      key: "actions",
+      header: "Actions",
+      render: (member) => (
+        <div className="flex flex-col items-start gap-1.5">
+          <Button
+            variant="destructive"
+            aria-label={`Remove role from ${member.handle}`}
+            disabled={member.isCurrentUser}
+            onClick={() => setRemoving(member)}
+          >
+            Remove role
+          </Button>
+          {member.isCurrentUser && (
+            <span className="rounded-md bg-soft px-2 py-1 text-[11px]">You can't remove your own role</span>
+          )}
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <Page
+      breadcrumb="Moderation / Team"
+      title="Team"
+      actions={
+        <Button variant="default" onClick={() => setIsAdding(true)}>
+          <Icon name="plus" />
+          Add member
+        </Button>
+      }
+      intro="Manage who helps keep FriendFrame safe."
+    >
+      <div className="flex h-9 items-center gap-3">
+        <h2 className="text-[21px] font-bold">{countLabel(members.length, "member", "members")}</h2>
+        {roles.map((role) => {
+          const isSelected = role === roleFilter;
+          return (
+            <button
+              key={role}
+              type="button"
+              aria-pressed={isSelected}
+              title={isSelected ? "Show all roles" : `Show only ${teamRoles[role].plural}`}
+              onClick={() => toggleRole(role)}
+              className={cn(
+                "rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                isSelected && "ring-2 ring-brand ring-offset-2 ring-offset-background",
+                roleFilter && !isSelected && "opacity-55 hover:opacity-100",
+              )}
+            >
+              <Chip
+                label={countLabel(
+                  members.filter((member) => member.role === role).length,
+                  teamRoles[role].singular,
+                  teamRoles[role].plural,
+                )}
+                variant={teamRoles[role].variant}
+                className="cursor-pointer"
+              />
+            </button>
+          );
+        })}
+        <span className="flex-1" />
+        <Icon name="shield-check" size={18} className="text-brand" />
+        <span className="text-sm text-muted-foreground">Only Admins can manage roles</span>
+      </div>
+
+      {team.isPending ? (
+        <Spinner className="min-h-[200px]" />
+      ) : (
+        <DataTable
+          label="Team members"
+          columns={columns}
+          rows={visibleMembers}
+          getRowKey={(member) => member.id}
+          rowHeight={90}
+          density="comfortable"
+          footer={
+            <p className="flex h-[50px] items-center px-[22px] text-[13px] text-muted-foreground">
+              {roleFilter &&
+                `Showing ${visibleMembers.length} of ${countLabel(members.length, "member", "members")} · `}
+              Last updated: {team.data?.lastUpdated}
+            </p>
+          }
+        />
+      )}
+
+      <div className="grid grid-cols-1 items-start gap-5 md:grid-cols-2">
+        {roles.map((role) => (
+          <Card key={role} className="gap-3 p-[22px]">
+            <h3 className="flex items-center gap-2.5 text-xl font-bold">
+              <Icon name={teamRoles[role].icon} size={20} className="text-brand" />
+              {teamRoles[role].label}
+            </h3>
+            <p className="text-base text-muted-foreground">{teamRoles[role].scope}</p>
+          </Card>
+        ))}
+      </div>
+
+      {isAdding && (
+        <AddMemberDialog
+          members={members}
+          onCancel={() => setIsAdding(false)}
+          onConfirm={(userId, role, handle) => {
+            setIsAdding(false);
+            addMember.mutate(
+              { userId, role },
+              { onSuccess: () => toast.success("Member added", { description: handle }) },
+            );
+          }}
+        />
+      )}
+      {removing && (
+        <ConfirmDialog
+          open
+          tone="danger"
+          icon="user-minus"
+          title={`Remove role from ${removing.handle}`}
+          confirmLabel="Remove role"
+          onCancel={() => setRemoving(null)}
+          onConfirm={() => {
+            setRemoving(null);
+            removeRole.mutate(removing.id, {
+              onSuccess: () => toast.success("Role removed", { description: removing.handle }),
+            });
+          }}
+        >
+          <Chip label={teamRoles[removing.role].label} variant="accent" />
+          <p className="text-center text-base text-muted-foreground">
+            {removing.handle} will lose access to the panel. Their FriendFrame account will stay active.
+          </p>
+        </ConfirmDialog>
+      )}
+    </Page>
+  );
+}
+
+const roleOptions: TeamRole[] = ["moderator", "admin"];
+
+function AddMemberDialog({
+  members,
+  onConfirm,
+  onCancel,
+}: {
+  members: TeamMember[];
+  onConfirm: (userId: string, role: TeamRole, handle: string) => void;
+  onCancel: () => void;
+}) {
+  const form = useForm<AddMemberValues>({
+    resolver: zodResolver(addMemberSchema),
+    defaultValues: { query: "", role: "moderator" },
+  });
+  // se busca mientras se escribe, esperando a que la persona deje de teclear
+  const query = useDebouncedValue(useWatch({ control: form.control, name: "query" }).trim(), 250);
+  const results = useQuery({ ...usersQuery({ query }), enabled: query.length > 0 });
+  // primera cuenta que coincide y que todavia no es del equipo
+  const candidate =
+    query.length > 0
+      ? results.data?.users.find((user) => !members.some((member) => member.handle === user.handle))
+      : undefined;
+
+  return (
+    <ConfirmDialog
+      open
+      icon="user-plus"
+      title="Add member"
+      confirmLabel="Add"
+      confirmDisabled={!candidate}
+      formId="add-member-form"
+      onCancel={onCancel}
+    >
+      <form
+        id="add-member-form"
+        noValidate
+        className="flex w-full flex-col gap-[18px]"
+        onSubmit={form.handleSubmit(
+          (values) => candidate && onConfirm(candidate.id, values.role, candidate.handle),
+        )}
+      >
+        <TextField label="Search by name or @username" autoComplete="off" {...form.register("query")} />
+
+        {candidate && (
+          <p className="flex items-center gap-2.5" role="status">
+            <UserAvatar initials={candidate.initials} imageUrl={candidate.avatarUrl} size={32} />
+            <span className="text-base font-bold">{candidate.handle}</span>
+            <Icon name="check" size={18} className="text-brand" />
+          </p>
+        )}
+
+        <Controller
+          control={form.control}
+          name="role"
+          render={({ field }) => (
+            <RadioGroup
+              aria-label="Role"
+              value={field.value}
+              onValueChange={field.onChange}
+              className="grid-cols-2 gap-2.5"
+            >
+              {roleOptions.map((option) => (
+                <label
+                  key={option}
+                  htmlFor={`role-${option}`}
+                  className={cn(
+                    "flex h-10 cursor-pointer items-center justify-center gap-2 rounded-xl text-[15px]",
+                    option === field.value ? "border-2 border-brand bg-brand-soft" : "border border-line",
+                  )}
+                >
+                  <RadioGroupItem id={`role-${option}`} value={option} />
+                  {teamRoles[option].label}
+                </label>
+              ))}
+            </RadioGroup>
+          )}
+        />
+      </form>
+    </ConfirmDialog>
+  );
+}
