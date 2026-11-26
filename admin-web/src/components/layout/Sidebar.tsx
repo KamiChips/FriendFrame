@@ -42,8 +42,9 @@ export function Sidebar({ currentUser, sectionCounts = {}, onSignOut }: SidebarP
                   // el borde izquierdo siempre ocupa su lugar para que el texto no se mueva al activarse
                   "flex h-[46px] items-center gap-3 rounded-xl border-l-4 pr-4 pl-3 text-base outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
                   isActive
-                    ? "rounded-l-none border-brand bg-brand/12 font-bold text-on-brand-soft [&_svg]:text-on-brand-soft"
-                    : "border-transparent text-muted-foreground hover:bg-soft",
+                    ? "rounded-l-none border-brand bg-brand/12 font-bold text-on-brand-soft hover:bg-brand/20 [&_svg]:text-on-brand-soft"
+                    : // al pasar el cursor: fondo mas oscuro y texto en negritas, azul principal en claro y blanco en oscuro
+                      "border-transparent text-muted-foreground hover:bg-line/60 hover:font-bold hover:text-ink dark:hover:bg-white/10 dark:hover:text-white hover:[&_svg]:text-ink dark:hover:[&_svg]:text-white",
                 )
               }
             >
