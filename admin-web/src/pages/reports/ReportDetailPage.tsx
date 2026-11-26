@@ -5,7 +5,6 @@ import { toast } from "sonner";
 
 import { useResolveReport, useRevealEvidence, useTakeCase } from "@/api/mutations";
 import { currentUserQuery, reportQuery, userIdByHandleQuery } from "@/api/queries";
-import { Chip } from "@/components/common/Chip";
 import { Icon } from "@/components/common/Icon";
 import { Page } from "@/components/layout/Page";
 import {
@@ -15,7 +14,7 @@ import {
   EvidenceCard,
   RelatedReportsCard,
 } from "@/components/reports/CaseCards";
-import { StatusChip } from "@/components/reports/ReportsTable";
+import { ReasonChip, StatusChip } from "@/components/reports/ReportsTable";
 import { BanDialog, ResolutionPanel, SuspensionDialog } from "@/components/reports/Resolution";
 import { Button } from "@/components/ui/button";
 import { contentTypes } from "@/constants/content-types";
@@ -98,7 +97,7 @@ export default function ReportDetailPage() {
       }
     >
       <div className="flex h-8 items-center gap-3">
-        <Chip label={report.reason} />
+        <ReasonChip reason={report.reason} />
         <span className="text-[15px]">{contentLabel}</span>
         <span className="text-sm text-muted-foreground">{report.reportedAt}</span>
         <StatusChip status={report.status} muted={isTakenByOther} />

@@ -2,7 +2,7 @@ import { Chip } from "@/components/common/Chip";
 import { type Column, DataTable } from "@/components/common/DataTable";
 import { Icon } from "@/components/common/Icon";
 import { UserCell } from "@/components/common/UserCells";
-import { contentTypes, reportStatuses } from "@/constants/content-types";
+import { contentTypes, reasonSeverity, reportStatuses, severityStyles } from "@/constants/content-types";
 import { cn } from "@/lib/utils";
 import type { Report, ReportStatus } from "@/types/moderation";
 
@@ -45,7 +45,7 @@ const columns = (highCountFrom: number): Column<Report>[] => [
     key: "reason",
     header: "Motivo",
     width: 110,
-    render: (report) => <span className="text-sm">{report.reason}</span>,
+    render: (report) => <ReasonChip reason={report.reason} />,
   },
   { key: "user", header: "Usuario", width: 205, render: (report) => <UserCell user={report.user} /> },
   {
@@ -118,4 +118,10 @@ export function QueueBanner({ message, onClick }: { message: string; onClick: ()
       <Icon name="arrow-right" size={17} className="text-current" />
     </button>
   );
+}
+
+// motivo con el color de su gravedad; la gravedad tambien se anuncia a lectores de pantalla
+export function ReasonChip({ reason }: { reason: string }) {
+  const severity = severityStyles[reasonSeverity[reason] ?? "unknown"];
+  return <Chip label={reason} variant={severity.variant} title={severity.label} />;
 }
