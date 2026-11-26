@@ -12,7 +12,9 @@ export interface TextFieldProps extends Omit<ComponentProps<"input">, "className
   error?: string;
 }
 
-// campo relleno del diseno: etiqueta dentro y linea inferior. Funciona con register() de react-hook-form
+// campo relleno del diseno con etiqueta flotante: vacio, la etiqueta ocupa el lugar del texto; al enfocarlo
+// o escribir sube arriba a la izquierda. En foco la etiqueta y la linea se pintan de naranja.
+// Todo es CSS (peer + :placeholder-shown), asi funciona con register() de react-hook-form y el autocompletado
 export function TextField({ label, error, type = "text", ...inputProps }: TextFieldProps) {
   const id = useId();
   const [isHidden, setIsHidden] = useState(true);
@@ -22,32 +24,47 @@ export function TextField({ label, error, type = "text", ...inputProps }: TextFi
     <div className="flex w-full flex-col gap-1.5">
       <div
         className={cn(
-          "flex h-[62px] w-full flex-col gap-[7px] rounded-t-lg border-b-2 bg-soft px-3 py-[9px] focus-within:border-brand",
+          "relative h-[62px] w-full rounded-t-lg border-b-2 bg-soft transition-colors duration-200",
+          "focus-within:border-[#E07B1F] dark:focus-within:border-[#FF9B42]",
           error ? "border-danger" : "border-line",
         )}
       >
-        <label htmlFor={id} className="text-xs leading-[14px] text-muted-foreground">
+        <input
+          id={id}
+          type={isPassword && !isHidden ? "text" : type}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${id}-error` : undefined}
+          {...inputProps}
+          // un espacio como placeholder permite saber con CSS si el campo esta vacio
+          placeholder=" "
+          className={cn(
+            "peer absolute inset-x-3 bottom-[9px] h-6 bg-transparent text-[17px] leading-6 outline-none",
+            isPassword && "right-10",
+          )}
+        />
+        <label
+          htmlFor={id}
+          className={cn(
+            "pointer-events-none absolute top-[9px] left-3 text-xs leading-[14px] text-muted-foreground transition-all duration-200 ease-out",
+            // vacio y sin foco: grande y centrada, como si fuera el texto del campo
+            "peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-[17px] peer-placeholder-shown:leading-5",
+            // en foco: arriba a la izquierda y naranja
+            "peer-focus:top-[9px] peer-focus:translate-y-0 peer-focus:text-xs peer-focus:leading-[14px] peer-focus:text-[#E07B1F] dark:peer-focus:text-[#FF9B42]",
+            "motion-reduce:transition-none",
+          )}
+        >
           {label}
         </label>
-        <div className="flex items-center justify-between gap-2">
-          <input
-            id={id}
-            type={isPassword && !isHidden ? "text" : type}
-            aria-invalid={error ? true : undefined}
-            aria-describedby={error ? `${id}-error` : undefined}
-            className="min-w-0 flex-1 bg-transparent text-[17px] leading-5 outline-none placeholder:text-muted-foreground"
-            {...inputProps}
-          />
-          {isPassword && (
-            <button
-              type="button"
-              aria-label={isHidden ? "Mostrar contraseña" : "Ocultar contraseña"}
-              onClick={() => setIsHidden((hidden) => !hidden)}
-            >
-              <Icon name={isHidden ? "eye-off" : "eye"} size={18} />
-            </button>
-          )}
-        </div>
+        {isPassword && (
+          <button
+            type="button"
+            aria-label={isHidden ? "Mostrar contraseña" : "Ocultar contraseña"}
+            onClick={() => setIsHidden((hidden) => !hidden)}
+            className="absolute right-3 bottom-[12px]"
+          >
+            <Icon name={isHidden ? "eye-off" : "eye"} size={18} />
+          </button>
+        )}
       </div>
       {error && (
         <p id={`${id}-error`} className="text-[13px] leading-4 text-danger">
