@@ -32,7 +32,8 @@
   --ff-canvas: #fafafa;
   --ff-surface: #ffffff;
   --ff-soft: #f0eded;
-  --ff-line: #e6e6e6;
+  /* gris de bordes y divisores: lo bastante oscuro para separarse del fondo blanco */
+  --ff-line: #cfd1d6;
   --ff-ink: #182240;
   --ff-muted: #6b6b6b;
   --ff-faint: #8a8a8e;
