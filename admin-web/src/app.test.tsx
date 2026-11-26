@@ -166,14 +166,15 @@ describe("equipo", () => {
     const table = await screen.findByRole("table", { name: "Miembros del equipo" });
     expect(within(table).getAllByRole("row")).toHaveLength(5);
 
+    // cambiar el filtro es una navegacion: el router corre el loader antes de pintar
     await user.click(moderators);
-    expect(moderators).toHaveAttribute("aria-pressed", "true");
+    await waitFor(() => expect(moderators).toHaveAttribute("aria-pressed", "true"));
     expect(location().search).toBe("?role=moderator");
     await waitFor(() => expect(within(table).getAllByRole("row")).toHaveLength(3));
     expect(screen.getByText(/Mostrando 2 de 4 miembros/)).toBeInTheDocument();
 
     await user.click(moderators);
-    expect(location().search).toBe("");
+    await waitFor(() => expect(location().search).toBe(""));
     await waitFor(() => expect(within(table).getAllByRole("row")).toHaveLength(5));
   });
 
