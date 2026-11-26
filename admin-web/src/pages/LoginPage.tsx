@@ -26,7 +26,7 @@ export default function LoginPage() {
   const rejection = signIn.error
     ? signIn.error instanceof AuthError
       ? authErrorMessages[signIn.error.reason]
-      : "No se pudo iniciar sesión. Intenta de nuevo."
+      : "Couldn't sign in. Please try again."
     : null;
 
   const onSubmit = form.handleSubmit(async (values) => {
@@ -47,19 +47,19 @@ export default function LoginPage() {
       <Card className="w-[464px] max-w-full gap-7 rounded-3xl p-10">
         <div className="flex flex-col items-center gap-[9px] text-center">
           <BrandLogo size={40} />
-          <h1 className="text-[27px] leading-8 font-bold">Panel de moderación</h1>
+          <h1 className="text-[27px] leading-8 font-bold">Moderation panel</h1>
           {rejection ? (
             <p role="alert" className="text-base font-bold text-on-notice-soft">
               {rejection}
             </p>
           ) : (
-            <p className="text-base text-muted-foreground">Un espacio seguro empieza contigo.</p>
+            <p className="text-base text-muted-foreground">A safe space starts with you.</p>
           )}
         </div>
 
         <form noValidate onSubmit={onSubmit} className="flex flex-col gap-5">
           <TextField
-            label="Correo"
+            label="Email"
             type="email"
             autoComplete="username"
             autoCapitalize="none"
@@ -67,14 +67,14 @@ export default function LoginPage() {
             {...form.register("email")}
           />
           <TextField
-            label="Contraseña"
+            label="Password"
             type="password"
             autoComplete="current-password"
             error={errors.password?.message}
             {...form.register("password")}
           />
           {/* todavia no hay flujo de recuperacion definido */}
-          <span className="self-start text-sm text-link">¿Olvidaste tu contraseña?</span>
+          <span className="self-start text-sm text-link">Forgot your password?</span>
           <Button
             type="submit"
             variant="default"
@@ -82,17 +82,17 @@ export default function LoginPage() {
             className="w-full duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:ring-0 hover:shadow-action/35 active:translate-y-0 active:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Entrando…" : "Iniciar sesión"}
+            {isSubmitting ? "Signing in…" : "Sign in"}
           </Button>
         </form>
 
         <p className="flex items-center justify-center gap-2 text-[13px] text-muted-foreground">
           <Icon name="shield-check" className="text-faint" />
-          Solo para el equipo de FriendFrame
+          For the FriendFrame team only
         </p>
       </Card>
 
-      <p className="text-[13px] text-muted-foreground">FriendFrame · Moderación con contexto y empatía</p>
+      <p className="text-[13px] text-muted-foreground">FriendFrame · Moderation with context and empathy</p>
     </div>
   );
 }

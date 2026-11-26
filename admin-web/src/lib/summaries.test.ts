@@ -14,7 +14,7 @@ describe("textos derivados", () => {
         { label: "b", value: 30 },
       ]),
     ).toEqual({
-      label: "↓ 25% frente a la anterior",
+      label: "↓ 25% vs. last week",
       isDrop: true,
     });
     expect(
@@ -22,7 +22,7 @@ describe("textos derivados", () => {
         { label: "a", value: 10 },
         { label: "b", value: 10 },
       ])?.label,
-    ).toBe("Sin cambio frente a la anterior");
+    ).toBe("No change from last week");
     expect(
       trendFor([
         { label: "a", value: 0 },
@@ -35,32 +35,32 @@ describe("textos derivados", () => {
     expect(
       highlightFor([
         { label: "Spam", percent: 20 },
-        { label: "Acoso", percent: 35 },
-        { label: "Otro", percent: 45 },
+        { label: "Harassment", percent: 35 },
+        { label: "Other", percent: 45 },
       ]),
-    ).toBe("Otro y acoso concentran el 80% de los reportes.");
+    ).toBe("Other and harassment make up 80% of reports.");
   });
 
   test("resume sanciones por gravedad", () => {
-    expect(summarizeSanctions([])).toBe("Sin sanciones previas");
+    expect(summarizeSanctions([])).toBe("No previous sanctions");
     expect(
       summarizeSanctions([
         { id: "1", kind: "ban", detail: "", date: "" },
         { id: "2", kind: "warning", detail: "", date: "" },
         { id: "3", kind: "warning", detail: "", date: "" },
       ]),
-    ).toBe("2 advertencias · 1 baneo");
+    ).toBe("2 warnings · 1 ban");
   });
 
   test("avisa cuantos reportes se cierran junto con el actual", () => {
     expect(closingNotice(0)).toBeNull();
-    expect(closingNotice(1)).toMatch(/el otro reporte/);
-    expect(closingNotice(3)).toMatch(/los otros 3 reportes/);
+    expect(closingNotice(1)).toMatch(/other pending report/);
+    expect(closingNotice(3)).toMatch(/other 3 pending reports/);
   });
 
   test("formatea fechas y cifras", () => {
-    expect(formatCount(1284)).toBe("1.284");
-    expect(joinDates(["7 nov 2026", "6 nov 2026"])).toBe("7 nov y 6 nov 2026");
+    expect(formatCount(1284)).toBe("1,284");
+    expect(joinDates(["7 Nov 2026", "6 Nov 2026"])).toBe("7 Nov and 6 Nov 2026");
   });
 
   test("redacta el aviso de una suspension con su fecha de fin", () => {
@@ -71,9 +71,9 @@ describe("textos derivados", () => {
       new Date(2026, 10, 8),
     );
     expect(feedback).toEqual({
-      title: "Usuario suspendido hasta el 15 nov",
-      message: "@carlos_dev · 3 reportes cerrados",
-      notice: "Cola actualizada · 3 reportes resueltos",
+      title: "User suspended until 15 Nov",
+      message: "@carlos_dev · 3 reports closed",
+      notice: "Queue updated · 3 reports resolved",
     });
   });
 });

@@ -53,7 +53,7 @@ export function ErrorMessage({ kind, onAction }: ErrorMessageProps) {
 // indicador de carga centrado
 export function Spinner({ className = "min-h-[60vh]" }: { className?: string }) {
   return (
-    <div role="status" aria-label="Cargando" className={`flex items-center justify-center ${className}`}>
+    <div role="status" aria-label="Loading" className={`flex items-center justify-center ${className}`}>
       <span className="size-8 animate-spin rounded-full border-[3px] border-brand border-t-transparent" />
     </div>
   );

@@ -15,7 +15,7 @@ import { accountStatusOptions, ALL, fromOption } from "@/constants/filters";
 import { countLabel, formatCount } from "@/lib/format";
 import { parseSearch, toSearch, type UsersSearch, usersSearchSchema } from "@/schemas/search";
 
-const PLACEHOLDER = "Buscar por nombre o @username";
+const PLACEHOLDER = "Search by name or @username";
 
 export default function UsersPage() {
   const [params, setParams] = useSearchParams();
@@ -35,15 +35,15 @@ export default function UsersPage() {
 
   return (
     <Page
-      breadcrumb="Moderación / Usuarios"
-      title="Usuarios"
+      breadcrumb="Moderation / Users"
+      title="Users"
       actions={
-        users.data && <Chip label={`${formatCount(users.data.totalAccounts)} cuentas`} size="header" />
+        users.data && <Chip label={`${formatCount(users.data.totalAccounts)} accounts`} size="header" />
       }
-      intro="Encuentra una cuenta y revisa su contexto antes de actuar."
+      intro="Find an account and review its context before acting."
     >
       <Card className="gap-3 p-[22px]">
-        <h2 className="text-lg font-bold">¿A quién estás buscando?</h2>
+        <h2 className="text-lg font-bold">Who are you looking for?</h2>
         <form role="search" onSubmit={onSubmit} className="flex items-center gap-5">
           <label className="flex h-[50px] min-w-0 flex-1 items-center gap-3 border-b-2 border-line bg-soft px-3.5 focus-within:border-brand">
             <Icon name="search" size={20} />
@@ -57,13 +57,13 @@ export default function UsersPage() {
             />
           </label>
           <FilterSelect
-            label="Estado"
+            label="Status"
             width={180}
             value={search.status ?? ALL}
             options={accountStatusOptions}
             onChange={(value) => update({ status: fromOption(value) as UsersSearch["status"] })}
           />
-          <Button type="submit">Buscar</Button>
+          <Button type="submit">Search</Button>
         </form>
       </Card>
 
@@ -71,17 +71,17 @@ export default function UsersPage() {
         <Spinner className="min-h-[200px]" />
       ) : users.isError ? (
         <StatePanel
-          title="No pudimos buscar cuentas"
-          description="Comprueba tu conexión e inténtalo de nuevo."
-          actionLabel="Reintentar"
+          title="We couldn't search accounts"
+          description="Check your connection and try again."
+          actionLabel="Retry"
           onAction={() => void users.refetch()}
         />
       ) : (
         <>
           <div className="flex items-start justify-between">
-            <h2 className="text-xl font-bold">Resultados</h2>
+            <h2 className="text-xl font-bold">Results</h2>
             <p className="text-sm text-muted-foreground">
-              {countLabel(users.data.users.length, "cuenta", "cuentas")} · ordenadas por actividad reciente
+              {countLabel(users.data.users.length, "account", "accounts")} · sorted by recent activity
             </p>
           </div>
           <UsersTable users={users.data.users} />

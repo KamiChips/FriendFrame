@@ -60,15 +60,15 @@ export function ResolutionPanel({
   return (
     <Card className="gap-[15px] p-[22px]">
       <form noValidate onSubmit={submit} className="contents">
-        <h2 className="text-[21px] leading-[25px] font-bold">Resolver reporte</h2>
-        <p className="text-sm text-muted-foreground">Selecciona una acción para {authorHandle}.</p>
+        <h2 className="text-[21px] leading-[25px] font-bold">Resolve report</h2>
+        <p className="text-sm text-muted-foreground">Choose an action for {authorHandle}.</p>
 
         <Controller
           control={form.control}
           name="action"
           render={({ field }) => (
             <RadioGroup
-              aria-label="Acción"
+              aria-label="Action"
               value={field.value ?? ""}
               onValueChange={(value) => {
                 field.onChange(value);
@@ -113,7 +113,7 @@ export function ResolutionPanel({
 
         {action === "suspend" && (
           <fieldset className="flex flex-col gap-[15px]">
-            <legend className="mb-[15px] text-[15px]">Duración de la suspensión</legend>
+            <legend className="mb-[15px] text-[15px]">Suspension length</legend>
             <div className="flex gap-2">
               {suspensionDurations.map((days) => {
                 const isSelected = days === suspensionDays;
@@ -132,14 +132,14 @@ export function ResolutionPanel({
                         : "border border-line bg-soft",
                     )}
                   >
-                    {countLabel(days, "día", "días")}
+                    {countLabel(days, "day", "days")}
                   </button>
                 );
               })}
             </div>
             {suspensionDays !== undefined && (
               <p className="text-base font-bold">
-                Suspendido hasta: {formatDate(addDays(referenceDate, suspensionDays))}
+                Suspended until: {formatDate(addDays(referenceDate, suspensionDays))}
               </p>
             )}
           </fieldset>
@@ -165,7 +165,7 @@ export function ResolutionPanel({
           variant={selected?.isDestructive ? "destructive" : "secondary"}
           disabled={!form.formState.isValid || isSubmitting}
         >
-          {selected?.submitLabel ?? "Aplicar"}
+          {selected?.submitLabel ?? "Apply"}
         </Button>
       </form>
     </Card>
@@ -195,13 +195,13 @@ export function SuspensionDialog({
     <ConfirmDialog
       open
       icon="clock-3"
-      title="Confirmar suspensión"
-      description={`${authorHandle} no podrá acceder durante ${countLabel(days, "día", "días")}.`}
-      confirmLabel="Suspender"
+      title="Confirm suspension"
+      description={`${authorHandle} won't be able to sign in for ${countLabel(days, "day", "days")}.`}
+      confirmLabel="Suspend"
       onConfirm={onConfirm}
       onCancel={onCancel}
     >
-      <Chip label={`Suspendido hasta: ${until}`} variant="notice" />
+      <Chip label={`Suspended until: ${until}`} variant="notice" />
       {notice && <p className="text-center text-sm text-muted-foreground">{notice}.</p>}
     </ConfirmDialog>
   );
@@ -229,9 +229,9 @@ export function BanDialog({ authorHandle, initialNotes, onConfirm, onCancel }: B
       open
       tone="danger"
       icon="shield-ban"
-      title={`Banear a ${authorHandle}`}
-      description="Confirma la cuenta que perderá el acceso."
-      confirmLabel="Banear"
+      title={`Ban ${authorHandle}`}
+      description="Confirm the account that will lose access."
+      confirmLabel="Ban"
       confirmDisabled={!form.formState.isValid}
       formId="ban-form"
       onCancel={onCancel}
@@ -243,7 +243,7 @@ export function BanDialog({ authorHandle, initialNotes, onConfirm, onCancel }: B
         onSubmit={form.handleSubmit((values) => onConfirm(values.notes))}
       >
         <TextField
-          label={`Escribe ${authorHandle} para confirmar`}
+          label={`Type ${authorHandle} to confirm`}
           autoCapitalize="none"
           autoComplete="off"
           {...form.register("typedHandle")}

@@ -12,27 +12,27 @@ export function resolutionFeedback(
   closedCount: number,
   today = new Date(),
 ) {
-  const closed = countLabel(closedCount, "reporte cerrado", "reportes cerrados");
-  const resolved = countLabel(closedCount, "reporte resuelto", "reportes resueltos");
+  const closed = countLabel(closedCount, "report closed", "reports closed");
+  const resolved = countLabel(closedCount, "report resolved", "reports resolved");
 
   if (resolution.action === "suspend" && resolution.suspensionDays) {
     return {
-      title: `Usuario suspendido hasta el ${shortDate(addDays(today, resolution.suspensionDays))}`,
+      title: `User suspended until ${shortDate(addDays(today, resolution.suspensionDays))}`,
       message: `${authorHandle} · ${closed}`,
-      notice: `Cola actualizada · ${resolved}`,
+      notice: `Queue updated · ${resolved}`,
     };
   }
   if (resolution.action === "ban") {
     return {
-      title: "Usuario baneado",
-      message: `${authorHandle} · Acción registrada en bitácora`,
-      notice: `Baneo aplicado · ${resolved}`,
+      title: "User banned",
+      message: `${authorHandle} · Action recorded in the audit log`,
+      notice: `Ban applied · ${resolved}`,
     };
   }
   const action = resolutionActions.find((option) => option.key === resolution.action);
   return {
-    title: action?.successTitle ?? "Reporte resuelto",
+    title: action?.successTitle ?? "Report resolved",
     message: `${authorHandle} · ${closed}`,
-    notice: `Cola actualizada · ${resolved}`,
+    notice: `Queue updated · ${resolved}`,
   };
 }

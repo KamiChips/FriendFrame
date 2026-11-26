@@ -26,13 +26,13 @@ export interface ReportsTableProps {
 const columns = (highCountFrom: number): Column<Report>[] => [
   {
     key: "date",
-    header: "Fecha ↓",
+    header: "Date ↓",
     width: 90,
     render: (report) => <span className="text-[13px] text-muted-foreground">{report.timeAgo}</span>,
   },
   {
     key: "type",
-    header: "Tipo",
+    header: "Type",
     width: 150,
     render: (report) => (
       <span className="flex items-center gap-2 text-sm">
@@ -43,14 +43,14 @@ const columns = (highCountFrom: number): Column<Report>[] => [
   },
   {
     key: "reason",
-    header: "Motivo",
+    header: "Reason",
     width: 110,
     render: (report) => <ReasonChip reason={report.reason} />,
   },
-  { key: "user", header: "Usuario", width: 205, render: (report) => <UserCell user={report.user} /> },
+  { key: "user", header: "User", width: 205, render: (report) => <UserCell user={report.user} /> },
   {
     key: "count",
-    header: "Nº reportes",
+    header: "Reports",
     width: 90,
     render: (report) => (
       <span
@@ -63,15 +63,15 @@ const columns = (highCountFrom: number): Column<Report>[] => [
       </span>
     ),
   },
-  { key: "status", header: "Estado", width: 130, render: (report) => <StatusChip status={report.status} /> },
+  { key: "status", header: "Status", width: 130, render: (report) => <StatusChip status={report.status} /> },
   {
     key: "assignee",
-    header: "Asignado a",
+    header: "Assigned to",
     render: (report) =>
       report.assignee ? (
         <span className="text-sm font-bold">{report.assignee}</span>
       ) : (
-        <span className="text-sm text-muted-foreground">Sin asignar</span>
+        <span className="text-sm text-muted-foreground">Unassigned</span>
       ),
   },
 ];
@@ -85,18 +85,18 @@ export function ReportsTable({
 }: ReportsTableProps) {
   return (
     <DataTable
-      label="Cola de reportes"
+      label="Report queue"
       columns={columns(highCountFrom)}
       rows={reports}
       getRowKey={(report) => report.id}
       isRowHighlighted={(report) => report.isNew === true || highlightedIds.includes(report.id)}
       rowLink={(report) => ({
         to: `/reports/${report.id}`,
-        label: `Abrir reporte de ${report.user.handle}, ${report.timeAgo}`,
+        label: `Open report from ${report.user.handle}, ${report.timeAgo}`,
       })}
       footer={
         <div className="flex h-14 items-center px-4 text-[13px] text-muted-foreground">
-          Mostrando {reports.length} de {totalReports} reportes · {dateLabel}
+          Showing {reports.length} of {totalReports} reports · {dateLabel}
         </div>
       }
     />

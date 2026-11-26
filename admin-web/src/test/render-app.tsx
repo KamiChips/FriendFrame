@@ -24,4 +24,4 @@ export function renderApp(path = "/dashboard") {
 
 // entra como moderador (sin acceso a Bitacora ni Equipo)
 export const signInAsModerator = () =>
-  moderation.signIn({ email: "moderador@friendframe.test", password: "clave-de-prueba" });
+  moderation.signIn({ email: "moderator@friendframe.test", password: "clave-de-prueba" });

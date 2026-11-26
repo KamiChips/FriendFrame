@@ -25,52 +25,52 @@ import type {
 } from "@/types/moderation";
 
 const statuses: Record<AccountStatus, { label: string; variant: ChipVariant }> = {
-  active: { label: "Activa", variant: "success" },
-  suspended: { label: "Suspendida", variant: "notice" },
-  banned: { label: "Baneada", variant: "danger" },
+  active: { label: "Active", variant: "success" },
+  suspended: { label: "Suspended", variant: "notice" },
+  banned: { label: "Banned", variant: "danger" },
 };
 
 // fin de la suspension, como "15 nov", se agrega a la etiqueta
 export function AccountStatusChip({ status, until }: { status: AccountStatus; until?: string }) {
   const { label, variant } = statuses[status];
-  return <Chip label={until ? `${label} hasta ${until}` : label} variant={variant} />;
+  return <Chip label={until ? `${label} until ${until}` : label} variant={variant} />;
 }
 
 const userColumns: Column<UserAccount>[] = [
   {
     key: "account",
-    header: "Cuenta",
+    header: "Account",
     width: 370,
     render: (user) => <AccountCell name={user.name} account={user} />,
   },
   {
     key: "status",
-    header: "Estado",
+    header: "Status",
     width: 180,
     render: (user) => <AccountStatusChip status={user.status} />,
   },
   {
     key: "reports",
-    header: "Reportes recibidos",
+    header: "Reports received",
     width: 150,
     render: (user) => <span className="text-[17px] font-bold">{user.reportsReceived}</span>,
   },
   {
     key: "activity",
-    header: "Última actividad",
+    header: "Last activity",
     render: (user) => <span className="text-sm text-muted-foreground">{user.lastActivity}</span>,
   },
   {
     key: "actions",
-    header: "Acciones",
+    header: "Actions",
     width: 110,
     render: (user) => (
       <Link
         to={`/users/${user.id}`}
-        aria-label={`Ver perfil de ${user.handle}`}
+        aria-label={`View ${user.handle}'s profile`}
         className="text-sm text-link hover:underline"
       >
-        Ver perfil ↗
+        View profile ↗
       </Link>
     ),
   },
@@ -79,7 +79,7 @@ const userColumns: Column<UserAccount>[] = [
 export function UsersTable({ users }: { users: UserAccount[] }) {
   return (
     <DataTable
-      label="Cuentas encontradas"
+      label="Accounts found"
       columns={userColumns}
       rows={users}
       getRowKey={(user) => user.id}
@@ -87,7 +87,7 @@ export function UsersTable({ users }: { users: UserAccount[] }) {
       density="comfortable"
       footer={
         <p className="flex h-[50px] items-center px-[22px] text-[13px] text-muted-foreground">
-          No se muestran datos personales sensibles.
+          No sensitive personal data is shown.
         </p>
       }
     />
@@ -104,17 +104,17 @@ export function ProfileIdentityCard({ profile }: { profile: UserProfile }) {
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         <h2 className="text-[27px] leading-8 font-bold">{profile.name}</h2>
         <p className="text-lg font-bold">{profile.handle}</p>
-        <p className="text-sm text-muted-foreground">Miembro desde el {profile.memberSince}</p>
+        <p className="text-sm text-muted-foreground">Member since {profile.memberSince}</p>
       </div>
       <div className="flex flex-col items-end gap-2">
         <AccountStatusChip status={profile.status} until={sanction?.until} />
         {sanction && (
           <>
             <p className="text-[13px] text-muted-foreground">
-              Aplicada por {sanction.appliedBy} · {sanction.appliedAt}
+              Applied by {sanction.appliedBy} · {sanction.appliedAt}
             </p>
             <Link to={`/reports/${sanction.reportId}`} className="text-[13px] text-link hover:underline">
-              Reporte {sanction.reportCode} ↗
+              Report {sanction.reportCode} ↗
             </Link>
           </>
         )}
@@ -175,15 +175,15 @@ function HiddenContentItem({
         <p className="text-lg font-bold">
           {contentTypes[item.contentType].label} · {item.reportCode}
         </p>
-        <p className="text-[15px]">Publicado por {handle}</p>
-        <p className="text-sm text-muted-foreground">En el perfil de {item.profileOwnerHandle}</p>
-        <p className="text-[13px] text-muted-foreground">Oculto · {item.hiddenAt}</p>
+        <p className="text-[15px]">Posted by {handle}</p>
+        <p className="text-sm text-muted-foreground">On {item.profileOwnerHandle}'s profile</p>
+        <p className="text-[13px] text-muted-foreground">Hidden · {item.hiddenAt}</p>
       </div>
       <Button
         onClick={onRestore}
-        aria-label={`Restaurar ${contentTypes[item.contentType].label} ${item.reportCode}`}
+        aria-label={`Restore ${contentTypes[item.contentType].label} ${item.reportCode}`}
       >
-        Restaurar
+        Restore
       </Button>
     </li>
   );
@@ -209,10 +209,10 @@ export function ProfileActivityCard({
       <Tabs value={activeTab} onValueChange={(value) => onChangeTab(value as ProfileTab)}>
         <TabsList className="h-auto w-full justify-start gap-7 rounded-none border-b border-line bg-transparent p-0">
           <TabsTrigger value="timeline" className={trigger}>
-            Línea de tiempo
+            Timeline
           </TabsTrigger>
           <TabsTrigger value="hidden" className={trigger}>
-            Contenido oculto ({profile.hiddenContent.length})
+            Hidden content ({profile.hiddenContent.length})
           </TabsTrigger>
         </TabsList>
         <TabsContent value="timeline" className="pt-[18px]">
@@ -222,7 +222,7 @@ export function ProfileActivityCard({
             ))}
           </ul>
           {profile.timeline.length === 0 && (
-            <p className="text-sm text-muted-foreground">La cuenta no tiene eventos de moderación.</p>
+            <p className="text-sm text-muted-foreground">This account has no moderation events.</p>
           )}
         </TabsContent>
         <TabsContent value="hidden" className="pt-[6px]">
@@ -238,7 +238,7 @@ export function ProfileActivityCard({
               ))}
             </ul>
           ) : (
-            <p className="pt-3 text-sm text-muted-foreground">La cuenta no tiene contenido oculto.</p>
+            <p className="pt-3 text-sm text-muted-foreground">This account has no hidden content.</p>
           )}
         </TabsContent>
       </Tabs>
@@ -251,15 +251,14 @@ export function RestoreGuidanceCard({ handle }: { handle: string }) {
   return (
     <Card className="gap-4 p-[22px]">
       <Icon name="info" size={24} className="text-brand" />
-      <h2 className="text-xl font-bold">Antes de restaurar</h2>
+      <h2 className="text-xl font-bold">Before restoring</h2>
       <p className="text-[15px] leading-[18px] text-muted-foreground">
-        La cuenta recuperará el acceso a FriendFrame. La evidencia y el historial de moderación se
-        conservarán.
+        The account will regain access to FriendFrame. Evidence and moderation history will be kept.
       </p>
       <div className="h-px bg-line" />
-      <p className="text-sm">Registra un motivo en las notas internas para dejar contexto al equipo.</p>
+      <p className="text-sm">Write a reason in the internal notes to leave context for the team.</p>
       <Link to="/reports?status=all" className="self-start text-sm text-link hover:underline">
-        Ver reportes de {handle} ↗
+        View reports for {handle} ↗
       </Link>
     </Card>
   );
@@ -286,9 +285,9 @@ export function RestoreAccountDialog({
     <ConfirmDialog
       open
       icon="rotate-ccw"
-      title={`Restaurar a ${handle}`}
-      description="La cuenta recuperará el acceso. Conservaremos su historial."
-      confirmLabel="Restaurar"
+      title={`Restore ${handle}`}
+      description="The account will regain access. We'll keep its history."
+      confirmLabel="Restore"
       confirmDisabled={!form.formState.isValid}
       formId="restore-form"
       onCancel={onCancel}

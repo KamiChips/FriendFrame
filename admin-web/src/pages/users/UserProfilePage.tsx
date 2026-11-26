@@ -35,7 +35,7 @@ export default function UserProfilePage() {
 
   return (
     <Page
-      breadcrumb={`Moderación / Usuarios / ${profile.handle}`}
+      breadcrumb={`Moderation / Users / ${profile.handle}`}
       title={profile.handle}
       actions={
         <Button
@@ -44,10 +44,10 @@ export default function UserProfilePage() {
           onClick={() => setIsRestoring(true)}
         >
           <Icon name="rotate-ccw" />
-          {isSanctioned ? "Restaurar cuenta" : "Cuenta activa"}
+          {isSanctioned ? "Restore account" : "Account active"}
         </Button>
       }
-      intro="Perfil de moderación · contexto y actividad de la cuenta."
+      intro="Moderation profile · account context and activity."
     >
       <ProfileIdentityCard profile={profile} />
 
@@ -65,7 +65,7 @@ export default function UserProfilePage() {
           onRestoreContent={(contentId) =>
             restoreContent.mutate(
               { userId: profile.id, contentId },
-              { onSuccess: () => toast.success("Contenido restaurado") },
+              { onSuccess: () => toast.success("Content restored") },
             )
           }
         />
@@ -82,7 +82,7 @@ export default function UserProfilePage() {
             setTab("timeline");
             restoreAccount.mutate(
               { userId: profile.id, notes },
-              { onSuccess: () => toast.success("Cuenta restaurada", { description: profile.handle }) },
+              { onSuccess: () => toast.success("Account restored", { description: profile.handle }) },
             );
           }}
         />

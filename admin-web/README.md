@@ -1,6 +1,6 @@
 # admin-web · Consola de moderación de FriendFrame
 
-Panel web del equipo de moderación. Reemplaza a `admin-panel/` (Expo + React Native Web): mismas 9 pantallas y mismo diseño, pero con un stack hecho para la web. El build es un sitio estático que sirve Azure Static Web Apps.
+Panel web del equipo de moderación. La interfaz está en inglés. Reemplaza a `admin-panel/` (Expo + React Native Web): mismas 9 pantallas y mismo diseño, pero con un stack hecho para la web. El build es un sitio estático que sirve Azure Static Web Apps.
 
 Por ahora la app funciona con **datos simulados en memoria**: se puede recorrer completa sin backend. Para conectarla al backend solo hay que cambiar una pieza (ver [Conectar el backend](#conectar-el-backend)).
 
@@ -47,12 +47,12 @@ Playwright necesita un navegador. La primera vez: `npx playwright install chromi
 
 El modo simulado acepta cualquier contraseña de 6 o más caracteres con un correo `@friendframe.test`:
 
-| Correo                                                                | Entra como                                                 |
-| --------------------------------------------------------------------- | ---------------------------------------------------------- |
-| `admin@friendframe.test` (o cualquier otro `@friendframe.test`)       | `@admin`, rol Admin                                        |
-| `moderador@friendframe.test` (cualquiera que empiece con `moderador`) | `@moderador1`, rol Moderador: sin Bitácora ni Equipo (403) |
+| Correo                                                                | Entra como                                                |
+| --------------------------------------------------------------------- | --------------------------------------------------------- |
+| `admin@friendframe.test` (o cualquier otro `@friendframe.test`)       | `@admin`, rol Admin                                       |
+| `moderator@friendframe.test` (cualquiera que empiece con `moderator`) | `@moderator1`, rol Moderator: sin Audit log ni Team (403) |
 
-Un correo de otro dominio muestra "No tienes acceso al panel". Al recargar, los datos simulados vuelven a su estado inicial y la sesión vuelve a ser `@admin`.
+Un correo de otro dominio muestra "You don't have access to the panel". Al recargar, los datos simulados vuelven a su estado inicial y la sesión vuelve a ser `@admin`.
 
 ### Rutas
 

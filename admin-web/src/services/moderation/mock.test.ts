@@ -50,13 +50,13 @@ describe("servicio simulado de moderacion", () => {
   });
 
   test("restaurar una cuenta la deja activa y lo anota en su linea de tiempo", async () => {
-    await mockModeration.restoreAccount("u1", "Apelación revisada");
+    await mockModeration.restoreAccount("u1", "Appeal reviewed");
     const profile = await mockModeration.getUser("u1");
     expect(profile?.status).toBe("active");
     expect(profile?.timeline[0]).toMatchObject({
       kind: "restoration",
-      title: "Cuenta restaurada",
-      note: "Apelación revisada",
+      title: "Account restored",
+      note: "Appeal reviewed",
     });
   });
 
@@ -107,8 +107,8 @@ describe("servicio simulado de moderacion", () => {
   });
 
   test("el correo de moderador entra con permisos de moderador", async () => {
-    await mockModeration.signIn({ email: "moderador@friendframe.test", password: "clave-de-prueba" });
-    expect(await mockModeration.getCurrentUser()).toMatchObject({ handle: "@moderador1", role: "moderator" });
+    await mockModeration.signIn({ email: "moderator@friendframe.test", password: "clave-de-prueba" });
+    expect(await mockModeration.getCurrentUser()).toMatchObject({ handle: "@moderator1", role: "moderator" });
   });
 
   test("marca la evidencia expirada o borrada por el autor", async () => {

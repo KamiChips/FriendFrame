@@ -16,7 +16,7 @@ import { StatusChip } from "./ReportsTable";
 const title = "text-lg leading-[22px] font-bold";
 const link = "text-link hover:underline";
 
-const REVEAL_LABEL = "Contenido potencialmente sensible — clic para revelar";
+const REVEAL_LABEL = "Potentially sensitive content — click to reveal";
 
 export interface EvidenceCardProps {
   contentType: ContentType;
@@ -42,20 +42,20 @@ export function EvidenceCard({
   const isVeiled = content.isSensitive && !content.isRevealed;
   const details = [contentTypes[contentType].label, content.postedAt];
   // el feed invertido permite publicar en perfiles ajenos; se senala porque cambia el contexto
-  if (content.author.handle !== content.profileOwnerHandle) details.push("Autor ≠ dueño del perfil");
+  if (content.author.handle !== content.profileOwnerHandle) details.push("Author ≠ profile owner");
 
   return (
     <Card className="gap-4 p-5">
       <div className="flex items-center gap-2.5">
         <UserAvatar initials={content.author.initials} imageUrl={content.author.avatarUrl} size={38} />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <p className="text-[17px] leading-5 font-bold">Publicado por {content.author.handle}</p>
-          <p className="text-[15px] leading-[18px]">en el perfil de {content.profileOwnerHandle}</p>
+          <p className="text-[17px] leading-5 font-bold">Posted by {content.author.handle}</p>
+          <p className="text-[15px] leading-[18px]">on {content.profileOwnerHandle}'s profile</p>
         </div>
         <Chip
           variant="success"
           label={
-            evidenceStatus === "deleted" ? "Borrado por el autor" : content.isVisible ? "Visible" : "Oculto"
+            evidenceStatus === "deleted" ? "Deleted by author" : content.isVisible ? "Visible" : "Hidden"
           }
         />
       </div>
@@ -64,16 +64,16 @@ export function EvidenceCard({
 
       {evidenceStatus === "expired" ? (
         <div className="flex h-[230px] flex-col items-center justify-center gap-4 rounded-xl bg-soft">
-          <p className="text-[22px] leading-[26px]">El enlace de evidencia expiró</p>
+          <p className="text-[22px] leading-[26px]">The evidence link has expired</p>
           <Button variant="ghost" onClick={onReloadEvidence}>
             <Icon name="refresh-cw" />
-            Recargar
+            Reload
           </Button>
         </div>
       ) : evidenceStatus === "deleted" ? (
         <div className="flex h-[230px] flex-col items-center justify-center gap-2.5">
-          <p className="text-[21px] leading-[25px]">El autor borró esta publicación</p>
-          <p className="text-[15px] text-muted-foreground">El reporte y su historial se conservan.</p>
+          <p className="text-[21px] leading-[25px]">The author deleted this post</p>
+          <p className="text-[15px] text-muted-foreground">The report and its history are kept.</p>
         </div>
       ) : (
         <div
@@ -84,7 +84,7 @@ export function EvidenceCard({
           {content.mediaUrl && (
             <img
               src={content.mediaUrl}
-              alt="Evidencia reportada"
+              alt="Reported evidence"
               className="absolute inset-0 size-full object-cover"
               style={isVeiled ? { filter: "blur(10px)" } : undefined}
             />
@@ -105,14 +105,14 @@ export function EvidenceCard({
           {content.isSensitive && content.isRevealed && (
             <span className="absolute top-3 left-3 flex items-center gap-1.5 rounded-[20px] bg-[rgba(24,34,64,0.8)] px-2.5 py-1.5 text-xs text-white">
               <Icon name="eye" size={14} className="text-white" />
-              Evidencia revelada
+              Evidence revealed
             </span>
           )}
         </div>
       )}
 
       <figure className="flex flex-col gap-[7px] rounded-[10px] bg-soft p-3.5">
-        <figcaption className="text-xs text-muted-foreground">REPORTADO POR {reporterHandle}</figcaption>
+        <figcaption className="text-xs text-muted-foreground">REPORTED BY {reporterHandle}</figcaption>
         <blockquote className="text-base">“{statement}”</blockquote>
       </figure>
     </Card>
@@ -131,17 +131,17 @@ export function AssignmentCard({
 }) {
   return (
     <Card className="gap-3 p-5">
-      <h2 className={title}>Este caso está disponible</h2>
-      <p className="text-sm text-muted-foreground">Tómalo para revisarlo y aplicar una acción.</p>
+      <h2 className={title}>This case is available</h2>
+      <p className="text-sm text-muted-foreground">Take it to review it and apply an action.</p>
       {reviewer ? (
         <Button className="w-full border-0 bg-soft text-ink" disabled>
           <Icon name="hand" />
-          En revisión por {reviewer}
+          In review by {reviewer}
         </Button>
       ) : (
         <Button variant="default" className="w-full" disabled={isTaking} onClick={onTakeCase}>
           <Icon name="hand" />
-          Tomar caso
+          Take case
         </Button>
       )}
     </Card>
@@ -161,10 +161,10 @@ export function AuthorHistoryCard({
   return (
     <Card className="gap-3.5 p-5">
       <div className="flex items-start justify-between">
-        <h2 className={title}>Historial del autor</h2>
+        <h2 className={title}>Author history</h2>
         {authorHref && (
           <Link to={authorHref} className={`${link} text-[13px]`}>
-            Ver perfil ↗
+            View profile ↗
           </Link>
         )}
       </div>
@@ -195,8 +195,8 @@ export function RelatedReportsCard({
 }) {
   return (
     <Card className="gap-3 p-5">
-      <h2 className={title}>Mismo contenido · {countLabel(reports.length, "reporte", "reportes")}</h2>
-      <p className="text-[13px] text-muted-foreground">El objetivo es el mismo {targetDescription}.</p>
+      <h2 className={title}>Same content · {countLabel(reports.length, "report", "reports")}</h2>
+      <p className="text-[13px] text-muted-foreground">They all target the same {targetDescription}.</p>
       {reports.map((report) => (
         <div key={report.id} className="flex items-center justify-between">
           <div className="flex flex-col gap-[3px]">
@@ -237,15 +237,15 @@ export function CaseSummaryCard({
         </div>
         {authorHref && (
           <Link to={authorHref} className={`${link} text-sm`}>
-            Ver historial ↗
+            View history ↗
           </Link>
         )}
       </div>
       <div className="h-px bg-line" />
       <div className="flex items-start justify-between text-sm">
-        <p>{countLabel(relatedCount, "reporte", "reportes")} del mismo contenido</p>
+        <p>{countLabel(relatedCount, "report", "reports")} on the same content</p>
         <Link to="/reports?status=all" className={link}>
-          Ver relacionados ↗
+          View related ↗
         </Link>
       </div>
     </Card>

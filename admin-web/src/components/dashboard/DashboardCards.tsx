@@ -40,7 +40,7 @@ export function MetricCard({ metric }: { metric: Metric }) {
   );
 }
 
-const barConfig = { value: { label: "Reportes" } } satisfies ChartConfig;
+const barConfig = { value: { label: "Reports" } } satisfies ChartConfig;
 
 export interface BarChartCardProps {
   title: string;
@@ -57,7 +57,7 @@ export function BarChartCard({
   subtitle,
   periodLabel,
   bars,
-  summaryPrefix = "Actual",
+  summaryPrefix = "Current",
   unit = "",
 }: BarChartCardProps) {
   const current = bars[bars.length - 1];
@@ -169,9 +169,9 @@ export function ReviewCasesCard({ cases }: { cases: ReviewCase[] }) {
   return (
     <Card className="min-w-0 gap-[15px] p-[22px]">
       <div className="flex items-start justify-between">
-        <h2 className={cardTitle}>Mis casos en revisión ({cases.length})</h2>
+        <h2 className={cardTitle}>My cases in review ({cases.length})</h2>
         <Link to="/reports?status=in_review&mine=1" className="text-sm text-link hover:underline">
-          Ver mis casos →
+          View my cases →
         </Link>
       </div>
 
@@ -180,7 +180,7 @@ export function ReviewCasesCard({ cases }: { cases: ReviewCase[] }) {
           <li key={reviewCase.id}>
             <Link
               to={`/reports/${reviewCase.id}`}
-              aria-label={`Abrir caso ${reviewCase.code}`}
+              aria-label={`Open case ${reviewCase.code}`}
               className="-mx-2 flex items-center gap-[14px] rounded-lg px-2 py-1 hover:bg-soft"
             >
               <Icon name="file-search" size={20} className="text-brand" />
@@ -205,12 +205,12 @@ export function GuidanceCard() {
   return (
     <Card className="min-w-0 gap-3 p-[22px]">
       <Icon name="heart-handshake" size={28} className="text-brand" />
-      <h2 className={cardTitle}>Primero, el contexto.</h2>
+      <h2 className={cardTitle}>Context first.</h2>
       <p className="text-[15px] leading-[18px] text-muted-foreground">
-        Revisa quién publica y en qué perfil aparece el contenido antes de tomar una decisión.
+        Check who posted and on which profile the content appears before making a decision.
       </p>
       {/* la guia todavia no tiene pagina: se muestra sin enlace */}
-      <span className="text-sm text-link">Consultar guía de moderación ↗</span>
+      <span className="text-sm text-link">Read the moderation guide ↗</span>
     </Card>
   );
 }

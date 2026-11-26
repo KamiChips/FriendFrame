@@ -7,7 +7,7 @@ import { auditActions } from "./team";
 // opciones de cada filtro; ALL es "sin filtro" (los menus no aceptan un valor vacio)
 export const ALL = "all";
 
-const all = (label = "Todos"): FilterOption => ({ label, value: ALL });
+const all = (label = "All"): FilterOption => ({ label, value: ALL });
 
 // la cola abre en "Pendiente"; "Todos" va al final porque es lo menos usado
 export const reportStatusOptions: FilterOption[] = [
@@ -28,7 +28,7 @@ export const contentTypeOptions: FilterOption[] = [
 
 export const reasonOptions: FilterOption[] = [
   all(),
-  ...["Spam", "Acoso", "Desnudez", "Violencia", "Suplantación", "Otro"].map((reason) => ({
+  ...["Spam", "Harassment", "Nudity", "Violence", "Impersonation", "Other"].map((reason) => ({
     label: reason,
     value: reason,
   })),
@@ -36,13 +36,13 @@ export const reasonOptions: FilterOption[] = [
 
 export const accountStatusOptions: FilterOption[] = [
   all(),
-  { label: "Activas", value: "active" },
-  { label: "Suspendidas", value: "suspended" },
-  { label: "Baneadas", value: "banned" },
+  { label: "Active", value: "active" },
+  { label: "Suspended", value: "suspended" },
+  { label: "Banned", value: "banned" },
 ];
 
 export const auditActionOptions: FilterOption[] = [
-  all("Todas"),
+  all(),
   ...(Object.keys(auditActions) as AuditAction[]).map((action) => ({
     label: auditActions[action].label,
     value: action,

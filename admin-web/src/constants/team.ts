@@ -4,16 +4,16 @@ import type { AuditAction, TeamRole } from "@/types/moderation";
 
 // como se nombra cada accion registrada y con que chip se muestra
 export const auditActions: Record<AuditAction, { label: string; variant: ChipVariant }> = {
-  took_case: { label: "Tomó caso", variant: "neutral" },
-  viewed_evidence: { label: "Vio evidencia", variant: "accent" },
-  dismissed_report: { label: "Descartó reporte", variant: "neutral" },
-  hid_content: { label: "Ocultó contenido", variant: "neutral" },
-  warned_author: { label: "Advirtió al autor", variant: "neutral" },
-  suspended_account: { label: "Suspendió cuenta", variant: "neutral" },
-  banned_account: { label: "Baneó cuenta", variant: "danger" },
-  restored_account: { label: "Restauró cuenta", variant: "neutral" },
-  granted_role: { label: "Otorgó rol", variant: "neutral" },
-  revoked_role: { label: "Quitó rol", variant: "neutral" },
+  took_case: { label: "Took case", variant: "neutral" },
+  viewed_evidence: { label: "Viewed evidence", variant: "accent" },
+  dismissed_report: { label: "Dismissed report", variant: "neutral" },
+  hid_content: { label: "Hid content", variant: "neutral" },
+  warned_author: { label: "Warned author", variant: "neutral" },
+  suspended_account: { label: "Suspended account", variant: "neutral" },
+  banned_account: { label: "Banned account", variant: "danger" },
+  restored_account: { label: "Restored account", variant: "neutral" },
+  granted_role: { label: "Granted role", variant: "neutral" },
+  revoked_role: { label: "Revoked role", variant: "neutral" },
 };
 
 // nombre, alcance e icono de cada rol del equipo
@@ -27,15 +27,14 @@ export const teamRoles: Record<
     plural: "admins",
     variant: "accent",
     icon: "shield-check",
-    scope: "Revisa reportes, aplica sanciones, consulta la bitácora y gestiona los roles del equipo.",
+    scope: "Reviews reports, applies sanctions, checks the audit log and manages team roles.",
   },
   moderator: {
-    label: "Moderador",
-    singular: "moderador",
-    plural: "moderadores",
+    label: "Moderator",
+    singular: "moderator",
+    plural: "moderators",
     variant: "neutral",
     icon: "flag",
-    scope:
-      "Revisa evidencia y resuelve reportes. No puede modificar el equipo ni los permisos de otros miembros.",
+    scope: "Reviews evidence and resolves reports. Can't change the team or other members' permissions.",
   },
 };

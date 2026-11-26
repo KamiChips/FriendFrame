@@ -5,12 +5,12 @@ import { z } from "zod";
 
 export const NOTES_MAX_LENGTH = 500;
 
-const notes = z.string().max(NOTES_MAX_LENGTH, `Máximo ${NOTES_MAX_LENGTH} caracteres`);
-const requiredNotes = notes.trim().min(1, "Escribe el motivo de la decisión");
+const notes = z.string().max(NOTES_MAX_LENGTH, `Maximum ${NOTES_MAX_LENGTH} characters`);
+const requiredNotes = notes.trim().min(1, "Write the reason for the decision");
 
 export const loginSchema = z.object({
-  email: z.string().trim().min(1, "Escribe tu correo").pipe(z.email("Escribe un correo válido")),
-  password: z.string().min(1, "Escribe tu contraseña"),
+  email: z.string().trim().min(1, "Enter your email").pipe(z.email("Enter a valid email")),
+  password: z.string().min(1, "Enter your password"),
 });
 export type LoginValues = z.infer<typeof loginSchema>;
 
@@ -19,16 +19,16 @@ export const resolutionActions = ["dismiss", "hide_content", "warn", "suspend", 
 // suspender exige duracion y banear exige notas; el resto solo exige elegir la accion
 export const resolutionSchema = z
   .object({
-    action: z.enum(resolutionActions, { error: "Elige una acción" }),
+    action: z.enum(resolutionActions, { error: "Choose an action" }),
     suspensionDays: z.number().int().positive().optional(),
     notes,
   })
   .superRefine((value, context) => {
     if (value.action === "suspend" && value.suspensionDays === undefined) {
-      context.addIssue({ code: "custom", path: ["suspensionDays"], message: "Elige la duración" });
+      context.addIssue({ code: "custom", path: ["suspensionDays"], message: "Choose the duration" });
     }
     if (value.action === "ban" && value.notes.trim().length === 0) {
-      context.addIssue({ code: "custom", path: ["notes"], message: "Las notas son obligatorias" });
+      context.addIssue({ code: "custom", path: ["notes"], message: "Notes are required" });
     }
   });
 export type ResolutionValues = z.infer<typeof resolutionSchema>;
@@ -40,7 +40,7 @@ export const banConfirmSchema = (authorHandle: string) =>
       .string()
       .trim()
       .refine((value) => value === authorHandle, {
-        message: `Escribe ${authorHandle} exactamente`,
+        message: `Type ${authorHandle} exactly`,
       }),
     notes: requiredNotes,
   });

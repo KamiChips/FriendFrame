@@ -58,7 +58,7 @@ export function TextField({ label, error, type = "text", ...inputProps }: TextFi
         {isPassword && (
           <button
             type="button"
-            aria-label={isHidden ? "Mostrar contraseña" : "Ocultar contraseña"}
+            aria-label={isHidden ? "Show password" : "Hide password"}
             onClick={() => setIsHidden((hidden) => !hidden)}
             className="absolute right-3 bottom-[12px]"
           >
@@ -95,12 +95,12 @@ export function NotesField({ length, required = false, error, ...textareaProps }
         )}
       >
         <label htmlFor={id} className="text-xs leading-[14px] text-muted-foreground">
-          Notas internas{required ? " · obligatorio" : ""}
+          Internal notes{required ? " · required" : ""}
         </label>
         <Textarea
           id={id}
           maxLength={NOTES_MAX_LENGTH}
-          placeholder="Escribe el motivo de la decisión"
+          placeholder="Write the reason for the decision"
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
           className="min-h-10 resize-none rounded-none border-0 bg-transparent p-0 text-[15px] shadow-none focus-visible:ring-0 dark:bg-transparent"

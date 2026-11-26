@@ -57,15 +57,15 @@ function Team() {
   const columns: Column<TeamMember>[] = [
     {
       key: "member",
-      header: "Miembro",
+      header: "Member",
       width: 300,
       render: (member) => (
-        <AccountCell name={member.isCurrentUser ? `${member.name} (tú)` : member.name} account={member} />
+        <AccountCell name={member.isCurrentUser ? `${member.name} (you)` : member.name} account={member} />
       ),
     },
     {
       key: "role",
-      header: "Rol",
+      header: "Role",
       width: 145,
       render: (member) => (
         <Chip label={teamRoles[member.role].label} variant={teamRoles[member.role].variant} />
@@ -73,36 +73,36 @@ function Team() {
     },
     {
       key: "grantedBy",
-      header: "Otorgado por",
+      header: "Granted by",
       width: 175,
       // sin moderador que lo otorgara, el rol viene de la configuracion inicial
       render: (member) => (
         <span className={cn("text-[15px]", member.grantedBy && "font-bold")}>
-          {member.grantedBy ?? "Sistema"}
+          {member.grantedBy ?? "System"}
         </span>
       ),
     },
     {
       key: "joinedAt",
-      header: "Fecha de alta",
+      header: "Joined",
       width: 140,
       render: (member) => <span className="text-sm text-muted-foreground">{member.joinedAt}</span>,
     },
     {
       key: "actions",
-      header: "Acciones",
+      header: "Actions",
       render: (member) => (
         <div className="flex flex-col items-start gap-1.5">
           <Button
             variant="destructive"
-            aria-label={`Quitar rol a ${member.handle}`}
+            aria-label={`Remove role from ${member.handle}`}
             disabled={member.isCurrentUser}
             onClick={() => setRemoving(member)}
           >
-            Quitar rol
+            Remove role
           </Button>
           {member.isCurrentUser && (
-            <span className="rounded-md bg-soft px-2 py-1 text-[11px]">No puedes quitarte tu propio rol</span>
+            <span className="rounded-md bg-soft px-2 py-1 text-[11px]">You can't remove your own role</span>
           )}
         </div>
       ),
@@ -111,18 +111,18 @@ function Team() {
 
   return (
     <Page
-      breadcrumb="Moderación / Equipo"
-      title="Equipo"
+      breadcrumb="Moderation / Team"
+      title="Team"
       actions={
         <Button variant="default" onClick={() => setIsAdding(true)}>
           <Icon name="plus" />
-          Agregar miembro
+          Add member
         </Button>
       }
-      intro="Gestiona quién ayuda a mantener FriendFrame seguro."
+      intro="Manage who helps keep FriendFrame safe."
     >
       <div className="flex h-9 items-center gap-3">
-        <h2 className="text-[21px] font-bold">{countLabel(members.length, "miembro", "miembros")}</h2>
+        <h2 className="text-[21px] font-bold">{countLabel(members.length, "member", "members")}</h2>
         {roles.map((role) => {
           const isSelected = role === roleFilter;
           return (
@@ -130,7 +130,7 @@ function Team() {
               key={role}
               type="button"
               aria-pressed={isSelected}
-              title={isSelected ? "Mostrar todos los roles" : `Mostrar solo ${teamRoles[role].plural}`}
+              title={isSelected ? "Show all roles" : `Show only ${teamRoles[role].plural}`}
               onClick={() => toggleRole(role)}
               className={cn(
                 "rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
@@ -152,14 +152,14 @@ function Team() {
         })}
         <span className="flex-1" />
         <Icon name="shield-check" size={18} className="text-brand" />
-        <span className="text-sm text-muted-foreground">Solo Admin puede gestionar roles</span>
+        <span className="text-sm text-muted-foreground">Only Admins can manage roles</span>
       </div>
 
       {team.isPending ? (
         <Spinner className="min-h-[200px]" />
       ) : (
         <DataTable
-          label="Miembros del equipo"
+          label="Team members"
           columns={columns}
           rows={visibleMembers}
           getRowKey={(member) => member.id}
@@ -168,8 +168,8 @@ function Team() {
           footer={
             <p className="flex h-[50px] items-center px-[22px] text-[13px] text-muted-foreground">
               {roleFilter &&
-                `Mostrando ${visibleMembers.length} de ${countLabel(members.length, "miembro", "miembros")} · `}
-              Última actualización: {team.data?.lastUpdated}
+                `Showing ${visibleMembers.length} of ${countLabel(members.length, "member", "members")} · `}
+              Last updated: {team.data?.lastUpdated}
             </p>
           }
         />
@@ -195,7 +195,7 @@ function Team() {
             setIsAdding(false);
             addMember.mutate(
               { userId, role },
-              { onSuccess: () => toast.success("Miembro agregado", { description: handle }) },
+              { onSuccess: () => toast.success("Member added", { description: handle }) },
             );
           }}
         />
@@ -205,19 +205,19 @@ function Team() {
           open
           tone="danger"
           icon="user-minus"
-          title={`Quitar rol a ${removing.handle}`}
-          confirmLabel="Quitar rol"
+          title={`Remove role from ${removing.handle}`}
+          confirmLabel="Remove role"
           onCancel={() => setRemoving(null)}
           onConfirm={() => {
             setRemoving(null);
             removeRole.mutate(removing.id, {
-              onSuccess: () => toast.success("Rol quitado", { description: removing.handle }),
+              onSuccess: () => toast.success("Role removed", { description: removing.handle }),
             });
           }}
         >
           <Chip label={teamRoles[removing.role].label} variant="accent" />
           <p className="text-center text-base text-muted-foreground">
-            {removing.handle} perderá el acceso al panel. Su cuenta de FriendFrame seguirá activa.
+            {removing.handle} will lose access to the panel. Their FriendFrame account will stay active.
           </p>
         </ConfirmDialog>
       )}
@@ -253,8 +253,8 @@ function AddMemberDialog({
     <ConfirmDialog
       open
       icon="user-plus"
-      title="Agregar miembro"
-      confirmLabel="Agregar"
+      title="Add member"
+      confirmLabel="Add"
       confirmDisabled={!candidate}
       formId="add-member-form"
       onCancel={onCancel}
@@ -267,7 +267,7 @@ function AddMemberDialog({
           (values) => candidate && onConfirm(candidate.id, values.role, candidate.handle),
         )}
       >
-        <TextField label="Buscar por nombre o @username" autoComplete="off" {...form.register("query")} />
+        <TextField label="Search by name or @username" autoComplete="off" {...form.register("query")} />
 
         {candidate && (
           <p className="flex items-center gap-2.5" role="status">
@@ -282,7 +282,7 @@ function AddMemberDialog({
           name="role"
           render={({ field }) => (
             <RadioGroup
-              aria-label="Rol"
+              aria-label="Role"
               value={field.value}
               onValueChange={field.onChange}
               className="grid-cols-2 gap-2.5"

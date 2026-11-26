@@ -26,10 +26,10 @@ export function Sidebar({ currentUser, sectionCounts = {}, onSignOut }: SidebarP
     <aside className="sticky top-0 flex h-screen w-[248px] shrink-0 flex-col gap-5 border-r border-line bg-surface px-5 pt-[30px] pb-6">
       <div className="flex flex-col pl-2">
         <BrandLogo size={25} />
-        <span className="text-[11px] leading-[13px] text-muted-foreground">CONSOLA / MODERACIÓN</span>
+        <span className="text-[11px] leading-[13px] text-muted-foreground">CONSOLE / MODERATION</span>
       </div>
 
-      <nav aria-label="Secciones" className="flex flex-col gap-2 pt-6">
+      <nav aria-label="Sections" className="flex flex-col gap-2 pt-6">
         {visible.map((section) => {
           const count = sectionCounts[section.key];
           return (
@@ -52,7 +52,7 @@ export function Sidebar({ currentUser, sectionCounts = {}, onSignOut }: SidebarP
               {section.label}
               {count !== undefined && (
                 <span
-                  aria-label={`${count} abiertos`}
+                  aria-label={`${count} open`}
                   className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-action px-1.5 text-xs leading-none font-bold text-on-action tabular-nums"
                 >
                   {count}
@@ -67,9 +67,9 @@ export function Sidebar({ currentUser, sectionCounts = {}, onSignOut }: SidebarP
 
       <div className="flex flex-col gap-2 rounded-xl bg-soft p-4">
         <Icon name="heart-handshake" size={24} className="text-brand" />
-        <p className="text-[15px] leading-[18px]">Cuidamos la comunidad.</p>
+        <p className="text-[15px] leading-[18px]">We look after the community.</p>
         <p className="text-[13px] leading-4 text-muted-foreground">
-          Cada decisión cuenta. Modera con contexto y empatía.
+          Every decision counts. Moderate with context and empathy.
         </p>
       </div>
 
@@ -89,7 +89,7 @@ export function Sidebar({ currentUser, sectionCounts = {}, onSignOut }: SidebarP
         className="flex items-center gap-2.5 self-start pl-2 text-sm text-muted-foreground hover:text-ink"
       >
         <Icon name="log-out" size={18} className="text-current" />
-        Cerrar sesión
+        Sign out
       </button>
     </aside>
   );

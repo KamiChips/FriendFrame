@@ -42,7 +42,7 @@ export default function ReportsPage() {
     markSeen.mutate(undefined, {
       onSuccess: () =>
         update({
-          notice: `${countLabel(newCount, "reporte nuevo incorporado", "reportes nuevos incorporados")} · Cola actualizada`,
+          notice: `${countLabel(newCount, "new report added", "new reports added")} · Queue updated`,
           highlight: newIds.join(",") || undefined,
         }),
     });
@@ -53,27 +53,27 @@ export default function ReportsPage() {
     ? { message: search.notice, onClick: () => update({}) }
     : newCount > 0
       ? {
-          message: `${countLabel(newCount, "reporte nuevo", "reportes nuevos")} — clic para ver`,
+          message: `${countLabel(newCount, "new report", "new reports")} — click to view`,
           onClick: showNewReports,
         }
       : null;
 
   return (
     <Page
-      breadcrumb="Moderación / Reportes"
-      title="Reportes"
+      breadcrumb="Moderation / Reports"
+      title="Reports"
       actions={
         <Chip
-          label={openCount > 0 ? `${openCount} abiertos` : "Sin pendientes"}
+          label={openCount > 0 ? `${openCount} open` : "Nothing pending"}
           variant="accent"
           size="header"
         />
       }
-      intro="Revisa, prioriza y asigna los reportes de la comunidad."
+      intro="Review, prioritize and assign community reports."
     >
       <div className="flex flex-wrap items-center gap-3">
         <FilterSelect
-          label="Estado"
+          label="Status"
           width={204}
           value={search.status ?? "pending"}
           options={reportStatusOptions}
@@ -82,14 +82,14 @@ export default function ReportsPage() {
           }
         />
         <FilterSelect
-          label="Tipo"
+          label="Type"
           width={172}
           value={search.type ?? ALL}
           options={contentTypeOptions}
           onChange={(value) => update({ type: fromOption(value) as ReportsSearch["type"] })}
         />
         <FilterSelect
-          label="Motivo"
+          label="Reason"
           width={184}
           value={search.reason ?? ALL}
           options={reasonOptions}
@@ -102,18 +102,18 @@ export default function ReportsPage() {
             onCheckedChange={(checked) => update({ mine: checked ? "1" : undefined })}
           />
           <Label htmlFor="assigned-to-me" className="text-sm font-normal">
-            Asignados a mí
+            Assigned to me
           </Label>
         </div>
         <button type="button" className="text-sm text-link hover:underline" onClick={() => setParams("")}>
-          Limpiar filtros
+          Clear filters
         </button>
       </div>
 
       {reports.isSuccess && banner && <QueueBanner {...banner} />}
 
       {reports.isPending ? (
-        <div aria-label="Cargando reportes" className="flex flex-col gap-4">
+        <div aria-label="Loading reports" className="flex flex-col gap-4">
           {Array.from({ length: SKELETON_ROWS }, (_, index) => (
             <div key={index} className="flex h-9 items-center gap-4">
               <Skeleton className="size-9 rounded-full bg-line" />
@@ -127,16 +127,16 @@ export default function ReportsPage() {
         </div>
       ) : reports.isError ? (
         <StatePanel
-          title="No pudimos cargar los reportes"
-          description="Comprueba tu conexión e inténtalo de nuevo. Tus casos siguen guardados."
-          actionLabel="Reintentar"
+          title="We couldn't load the reports"
+          description="Check your connection and try again. Your cases are still saved."
+          actionLabel="Retry"
           onAction={() => void reports.refetch()}
         />
       ) : reports.data.reports.length === 0 ? (
         <StatePanel
           icon="heart-handshake"
-          title="No hay reportes pendientes 🎉"
-          description="La comunidad está al día. Los nuevos reportes aparecerán aquí."
+          title="No pending reports 🎉"
+          description="The community is all caught up. New reports will show up here."
         />
       ) : (
         <ReportsTable

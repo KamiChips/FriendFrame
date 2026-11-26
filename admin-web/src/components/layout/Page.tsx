@@ -15,7 +15,7 @@ export interface PageProps {
 // cabecera y area de trabajo de cada pagina dentro de la consola
 export function Page({ breadcrumb, title, actions, intro, children }: PageProps) {
   useEffect(() => {
-    document.title = `${title} · FriendFrame Moderación`;
+    document.title = `${title} · FriendFrame Moderation`;
   }, [title]);
 
   return (

@@ -96,7 +96,7 @@ function accountFor(email: string, password: string): CurrentUser {
     throw new AuthError("invalid_credentials");
   }
   if (domain !== teamEmailDomain) throw new AuthError("not_authorized");
-  return localPart.startsWith("moderador") ? moderatorUser : adminUser;
+  return localPart.startsWith("moderator") ? moderatorUser : adminUser;
 }
 
 export interface MockOptions {
@@ -159,7 +159,7 @@ export function createMockModerationService({ latencyMs = 0 }: MockOptions = {})
     profile.timeline.unshift({
       id: `e${Date.now()}`,
       kind: status === "suspended" ? "suspension" : "ban",
-      title: status === "suspended" ? `Suspensión de ${days} días` : "Cuenta baneada",
+      title: status === "suspended" ? `${days}-day suspension` : "Account banned",
       date: formatDate(now),
       moderator: me(),
       reportCode: codeOf(reportId),
@@ -186,7 +186,7 @@ export function createMockModerationService({ latencyMs = 0 }: MockOptions = {})
     async getDashboard() {
       return {
         adminName: "Admin",
-        dateLabel: "8 de noviembre de 2026",
+        dateLabel: "November 8, 2026",
         metrics,
         weeklyReports,
         reasons,
@@ -207,7 +207,7 @@ export function createMockModerationService({ latencyMs = 0 }: MockOptions = {})
         total: filtered.length,
         openCount: state.reports.filter((report) => report.status !== "resolved").length,
         newReportsCount: state.reports.filter((report) => report.isNew).length,
-        dateLabel: "8 nov 2026",
+        dateLabel: "8 Nov 2026",
       };
     },
     async markNewReportsSeen() {
@@ -247,7 +247,7 @@ export function createMockModerationService({ latencyMs = 0 }: MockOptions = {})
       if (!report) return;
       report.status = "in_review";
       report.assignee = me();
-      log("took_case", report.user.handle, { id: reportId, code: codeOf(reportId) }, "Asignación manual.");
+      log("took_case", report.user.handle, { id: reportId, code: codeOf(reportId) }, "Manual assignment.");
     },
     async revealEvidence(reportId) {
       state.revealed.add(reportId);
@@ -255,7 +255,7 @@ export function createMockModerationService({ latencyMs = 0 }: MockOptions = {})
         "viewed_evidence",
         findReport(reportId)?.user.handle ?? "",
         { id: reportId, code: codeOf(reportId) },
-        "Acceso a evidencia registrado.",
+        "Evidence access logged.",
       );
     },
     async resolveReport(reportId, resolution) {
@@ -293,17 +293,17 @@ export function createMockModerationService({ latencyMs = 0 }: MockOptions = {})
       // perfil basico para las cuentas que el diseno no detalla
       return {
         ...user,
-        memberSince: "1 nov 2026",
+        memberSince: "1 Nov 2026",
         activeSanction: null,
         counters: [
           {
             id: "received",
             value: user.reportsReceived,
-            label: "Reportes recibidos",
-            caption: "Sobre su contenido",
+            label: "Reports received",
+            caption: "On their content",
           },
-          { id: "made", value: 0, label: "Reportes hechos", caption: "Enviados por la cuenta" },
-          { id: "sanctions", value: 0, label: "Sanciones", caption: "Registradas en la bitácora" },
+          { id: "made", value: 0, label: "Reports made", caption: "Sent by the account" },
+          { id: "sanctions", value: 0, label: "Sanctions", caption: "Recorded in the audit log" },
         ],
         timeline: [],
         hiddenContent: [],
@@ -323,7 +323,7 @@ export function createMockModerationService({ latencyMs = 0 }: MockOptions = {})
         profile.timeline.unshift({
           id: `e${Date.now()}`,
           kind: "restoration",
-          title: "Cuenta restaurada",
+          title: "Account restored",
           date: formatDate(new Date()),
           moderator: me(),
           note: notes || undefined,
@@ -343,14 +343,14 @@ export function createMockModerationService({ latencyMs = 0 }: MockOptions = {})
           (!query.moderator || entry.moderator === query.moderator) &&
           (!query.action || entry.action === query.action),
       );
-      return { entries, total: entries.length, dateRangeLabel: "1–8 nov 2026" };
+      return { entries, total: entries.length, dateRangeLabel: "1–8 Nov 2026" };
     },
 
     async getTeam() {
       // quien es "tu" lo decide la sesion, no los datos
       return {
         members: state.team.map((member) => ({ ...member, isCurrentUser: member.handle === me() })),
-        lastUpdated: "8 nov 2026 · 11:05",
+        lastUpdated: "8 Nov 2026 · 11:05",
       };
     },
     async addMember(userId, role) {

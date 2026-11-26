@@ -2,8 +2,8 @@ import type { AuthErrorReason } from "@/services/moderation/types";
 
 // mensaje del login para cada motivo de rechazo
 export const authErrorMessages: Record<AuthErrorReason, string> = {
-  invalid_credentials: "Correo o contraseña incorrectos",
-  not_authorized: "No tienes acceso al panel",
+  invalid_credentials: "Incorrect email or password",
+  not_authorized: "You don't have access to the panel",
 };
 
 export type ErrorKind = "forbidden" | "not-found" | "unexpected";
@@ -16,29 +16,29 @@ export const errorPages: Record<
   forbidden: {
     title: "Error 403",
     code: "403",
-    heading: "No tienes permiso para ver esta sección",
-    description: "Esta sección está disponible solo para administradores.",
-    actionLabel: "Volver al dashboard",
+    heading: "You don't have permission to view this section",
+    description: "This section is only available to admins.",
+    actionLabel: "Back to dashboard",
   },
   "not-found": {
     title: "Error 404",
     code: "404",
-    heading: "No encontramos esta página",
-    description: "El enlace no existe o la página cambió de lugar.",
-    actionLabel: "Volver al dashboard",
+    heading: "We couldn't find this page",
+    description: "The link doesn't exist or the page has moved.",
+    actionLabel: "Back to dashboard",
   },
   unexpected: {
-    title: "Error inesperado",
-    code: "Ups...",
-    heading: "Algo salió mal",
-    description: "Ocurrió un error inesperado. Tus cambios guardados están seguros.",
-    actionLabel: "Recargar",
+    title: "Unexpected error",
+    code: "Oops...",
+    heading: "Something went wrong",
+    description: "An unexpected error occurred. Your saved changes are safe.",
+    actionLabel: "Reload",
   },
 };
 
 // aviso cuando una accion no se pudo guardar
 export const actionFailedToast = {
   variant: "error" as const,
-  title: "No se pudo aplicar la acción",
-  message: "No se guardaron cambios. Intenta de nuevo.",
+  title: "The action couldn't be applied",
+  message: "No changes were saved. Please try again.",
 };

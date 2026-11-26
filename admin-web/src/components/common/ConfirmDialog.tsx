@@ -39,7 +39,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
-  cancelLabel = "Cancelar",
+  cancelLabel = "Cancel",
   confirmDisabled = false,
   formId,
   onConfirm,

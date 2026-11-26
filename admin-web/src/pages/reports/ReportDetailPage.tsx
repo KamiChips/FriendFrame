@@ -45,7 +45,7 @@ export default function ReportDetailPage() {
   // solo quien tomo el caso lo resuelve; los demas consultan el contexto
   const isMine = report.assignee === currentUser.handle;
   const isTakenByOther = isInReview && !isMine;
-  const title = `Reporte ${report.code}`;
+  const title = `Report ${report.code}`;
   const otherPendingCount = report.relatedReports.filter((related) => related.status === "pending").length;
   const [today] = useState(() => new Date());
 
@@ -85,13 +85,13 @@ export default function ReportDetailPage() {
 
   return (
     <Page
-      breadcrumb={`Moderación / Reportes / ${title}`}
+      breadcrumb={`Moderation / Reports / ${title}`}
       title={title}
       actions={
         <Button variant="ghost" asChild>
           <Link to="/reports">
             <Icon name="arrow-left" />
-            Volver a la cola
+            Back to queue
           </Link>
         </Button>
       }
@@ -107,7 +107,7 @@ export default function ReportDetailPage() {
             report.assignee && !isTakenByOther ? "text-sm font-bold" : "text-sm text-muted-foreground"
           }
         >
-          {report.assignee ? `Asignado a ${report.assignee}` : "Sin asignar"}
+          {report.assignee ? `Assigned to ${report.assignee}` : "Unassigned"}
         </span>
       </div>
 
@@ -136,7 +136,7 @@ export default function ReportDetailPage() {
             {evidence}
             <p className="flex items-center gap-2 p-3 text-[13px] text-muted-foreground">
               <Icon name="shield-check" size={18} />
-              Revelar evidencia queda registrado en la bitácora. No se notifica al autor.
+              Revealing evidence is recorded in the audit log. The author isn't notified.
             </p>
           </div>
           <div className="flex min-w-0 flex-col gap-4">
@@ -153,7 +153,7 @@ export default function ReportDetailPage() {
               sanctions={report.authorHistory}
             />
             <RelatedReportsCard
-              targetDescription={`${contentLabel.toLowerCase()} de ${author} en el perfil de ${content.profileOwnerHandle}`}
+              targetDescription={`${contentLabel.toLowerCase()} by ${author} on ${content.profileOwnerHandle}'s profile`}
               reports={report.relatedReports}
             />
           </div>

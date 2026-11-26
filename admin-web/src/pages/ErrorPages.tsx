@@ -18,11 +18,11 @@ export function ErrorPage({ kind }: { kind: ErrorKind }) {
 
   return (
     <Page
-      breadcrumb={section ? `Moderación / ${section.label}` : "Moderación"}
+      breadcrumb={section ? `Moderation / ${section.label}` : "Moderation"}
       title={page.title}
       actions={
         counts?.reports !== undefined && (
-          <Chip label={`${counts.reports} abiertos`} variant="accent" size="header" />
+          <Chip label={`${counts.reports} open`} variant="accent" size="header" />
         )
       }
     >

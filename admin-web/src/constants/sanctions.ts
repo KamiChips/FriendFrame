@@ -7,13 +7,13 @@ export const sanctionKinds: Record<
   { label: string; singular: string; plural: string; icon: IconName }
 > = {
   warning: {
-    label: "Advertencia",
-    singular: "advertencia",
-    plural: "advertencias",
+    label: "Warning",
+    singular: "warning",
+    plural: "warnings",
     icon: "message-square-warning",
   },
-  suspension: { label: "Suspensión", singular: "suspensión", plural: "suspensiones", icon: "clock-3" },
-  ban: { label: "Baneo", singular: "baneo", plural: "baneos", icon: "shield-ban" },
+  suspension: { label: "Suspension", singular: "suspension", plural: "suspensions", icon: "clock-3" },
+  ban: { label: "Ban", singular: "ban", plural: "bans", icon: "shield-ban" },
 };
 
 // icono de cada evento de la linea de tiempo de una cuenta
@@ -37,33 +37,33 @@ export const resolutionActions: {
 }[] = [
   {
     key: "dismiss",
-    label: "Descartar",
-    submitLabel: "Descartar reporte",
-    successTitle: "Reporte descartado",
+    label: "Dismiss",
+    submitLabel: "Dismiss report",
+    successTitle: "Report dismissed",
   },
   {
     key: "hide_content",
-    label: "Ocultar contenido",
-    submitLabel: "Ocultar contenido",
-    successTitle: "Contenido ocultado",
+    label: "Hide content",
+    submitLabel: "Hide content",
+    successTitle: "Content hidden",
   },
   {
     key: "warn",
-    label: "Advertir al autor",
-    submitLabel: "Enviar advertencia",
-    successTitle: "Advertencia enviada",
+    label: "Warn author",
+    submitLabel: "Send warning",
+    successTitle: "Warning sent",
   },
   {
     key: "suspend",
-    label: "Suspender autor",
-    submitLabel: "Aplicar suspensión",
-    successTitle: "Usuario suspendido",
+    label: "Suspend author",
+    submitLabel: "Apply suspension",
+    successTitle: "User suspended",
   },
   {
     key: "ban",
-    label: "Banear autor",
-    submitLabel: "Continuar con el baneo",
-    successTitle: "Usuario baneado",
+    label: "Ban author",
+    submitLabel: "Continue with ban",
+    successTitle: "User banned",
     isDestructive: true,
     requiresNotes: true,
   },

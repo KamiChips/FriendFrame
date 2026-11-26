@@ -15,8 +15,8 @@ export interface Section {
 // secciones fijas de la consola de moderacion
 export const sections: Section[] = [
   { key: "dashboard", href: "/dashboard", label: "Dashboard", icon: "layout-dashboard" },
-  { key: "reports", href: "/reports", label: "Reportes", icon: "flag" },
-  { key: "users", href: "/users", label: "Usuarios", icon: "users" },
-  { key: "audit", href: "/audit", label: "Bitácora", icon: "history", adminOnly: true },
-  { key: "team", href: "/team", label: "Equipo", icon: "shield-check", adminOnly: true },
+  { key: "reports", href: "/reports", label: "Reports", icon: "flag" },
+  { key: "users", href: "/users", label: "Users", icon: "users" },
+  { key: "audit", href: "/audit", label: "Audit log", icon: "history", adminOnly: true },
+  { key: "team", href: "/team", label: "Team", icon: "shield-check", adminOnly: true },
 ];

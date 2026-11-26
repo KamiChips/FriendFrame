@@ -18,17 +18,17 @@ export default function DashboardPage() {
 
   return (
     <Page
-      breadcrumb="Moderación / Dashboard"
+      breadcrumb="Moderation / Dashboard"
       title="Dashboard"
       actions={
         <Button variant="default" asChild>
           <Link to="/reports">
-            Ver cola de reportes
+            View report queue
             <Icon name="arrow-up-right" />
           </Link>
         </Button>
       }
-      intro={`Hola, ${data.adminName}. Este es el pulso de la comunidad hoy, ${data.dateLabel}.`}
+      intro={`Hi, ${data.adminName}. Here's the pulse of the community today, ${data.dateLabel}.`}
     >
       <div className="grid grid-cols-2 gap-4 xl:flex">
         {data.metrics.map((metric) => (
@@ -39,14 +39,14 @@ export default function DashboardPage() {
       {/* las dos filas comparten proporcion de columnas: 658 y 450 de 1128 */}
       <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[658fr_450fr]">
         <BarChartCard
-          title="Una comunidad mejor cuidada"
-          subtitle={`Reportes resueltos · últimas ${data.weeklyReports.length} semanas`}
-          periodLabel="Semanal"
+          title="A better cared-for community"
+          subtitle={`Resolved reports · last ${data.weeklyReports.length} weeks`}
+          periodLabel="Weekly"
           bars={data.weeklyReports}
-          summaryPrefix="Semana actual"
-          unit="reportes"
+          summaryPrefix="This week"
+          unit="reports"
         />
-        <DonutChartCard title="¿Qué se reporta?" periodLabel="últimos 7 días" reasons={data.reasons} />
+        <DonutChartCard title="What gets reported?" periodLabel="last 7 days" reasons={data.reasons} />
         <ReviewCasesCard cases={data.reviewCases} />
         <GuidanceCard />
       </div>

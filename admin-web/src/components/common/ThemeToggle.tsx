@@ -16,14 +16,14 @@ export function ThemeToggle({ variant = "plain" }: ThemeToggleProps) {
     <button
       type="button"
       onClick={toggleTheme}
-      aria-label={`Tema ${isDark ? "oscuro" : "claro"}. Cambiar tema`}
+      aria-label={`${isDark ? "Dark" : "Light"} theme. Change theme`}
       className={cn(
         "flex items-center gap-2 rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
         isPill ? "h-9 border border-line px-3 text-[13px] hover:bg-soft" : "text-sm",
       )}
     >
       <Icon name={isDark ? "moon" : "sun"} size={isPill ? 16 : 18} className="text-brand" />
-      {isDark ? "Oscuro" : "Claro"}
+      {isDark ? "Dark" : "Light"}
     </button>
   );
 }
