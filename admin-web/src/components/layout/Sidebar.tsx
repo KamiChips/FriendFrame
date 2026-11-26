@@ -39,10 +39,11 @@ export function Sidebar({ currentUser, sectionCounts = {}, onSignOut }: SidebarP
               to={section.href}
               className={({ isActive }) =>
                 cn(
-                  "flex h-[46px] items-center gap-3 rounded-xl px-4 text-base outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                  // el borde izquierdo siempre ocupa su lugar para que el texto no se mueva al activarse
+                  "flex h-[46px] items-center gap-3 rounded-xl border-l-4 pr-4 pl-3 text-base outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
                   isActive
-                    ? "bg-brand-soft text-on-brand-soft [&_svg]:text-on-brand-soft"
-                    : "text-muted-foreground hover:bg-soft",
+                    ? "rounded-l-none border-brand bg-brand/12 font-bold text-on-brand-soft [&_svg]:text-on-brand-soft"
+                    : "border-transparent text-muted-foreground hover:bg-soft",
                 )
               }
             >
@@ -51,7 +52,7 @@ export function Sidebar({ currentUser, sectionCounts = {}, onSignOut }: SidebarP
               {count !== undefined && (
                 <span
                   aria-label={`${count} abiertos`}
-                  className="flex h-6 min-w-[26px] items-center justify-center rounded-lg bg-surface px-1 text-xs text-ink dark:bg-canvas"
+                  className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-action px-1.5 text-xs leading-none font-bold text-on-action tabular-nums"
                 >
                   {count}
                 </span>

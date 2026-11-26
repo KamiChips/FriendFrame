@@ -38,7 +38,7 @@ describe("navegacion y permisos", () => {
     renderApp("/reports/r2");
     const nav = await screen.findByRole("navigation", { name: "Secciones" });
     await waitFor(() =>
-      expect(within(nav).getByRole("link", { name: /Reportes/ })).toHaveClass("bg-brand-soft"),
+      expect(within(nav).getByRole("link", { name: /Reportes/ })).toHaveAttribute("aria-current", "page"),
     );
     expect(await within(nav).findByLabelText("9 abiertos")).toBeInTheDocument();
   });
