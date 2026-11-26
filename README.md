@@ -13,7 +13,7 @@ El proyecto se está extendiendo con un **panel de moderación** (frontend web +
 | App móvil | `frontend/` | ✅ En desarrollo activo (sobre Supabase) |
 | Infraestructura en Azure | `infra/` | ✅ Lista: frontend, backend, base de datos, blob y Key Vault en Terraform |
 | API del panel de moderación | `backend/` | 🚧 Por iniciar |
-| Panel de moderación (web) | `admin-web/` | 🚧 En migración: Vite + React + TS con datos simulados ([README](admin-web/README.md)). `admin-panel/` (Expo) se retira cuando termine la migración |
+| Panel de moderación (web) | `admin-web/` | 🚧 En desarrollo: Vite + React + TS con datos simulados ([README](admin-web/README.md)) |
 
 ---
 
@@ -86,7 +86,6 @@ FriendFrame/
 │   └── .env.example        # Variables que necesita la app (sin valores)
 ├── backend/                # API del panel de moderación (por iniciar)
 ├── admin-web/              # Panel de moderación web (Vite + React + TS)
-├── admin-panel/            # Versión anterior del panel en Expo (se retira)
 ├── infra/
 │   ├── bootstrap/          # Script inicial de Azure (solo Owner)
 │   ├── terraform/          # Recursos de Azure

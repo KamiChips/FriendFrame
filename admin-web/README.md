@@ -1,6 +1,6 @@
 # admin-web · Consola de moderación de FriendFrame
 
-Panel web del equipo de moderación. La interfaz está en inglés. Reemplaza a `admin-panel/` (Expo + React Native Web): mismas 9 pantallas y mismo diseño, pero con un stack hecho para la web. El build es un sitio estático que sirve Azure Static Web Apps.
+Panel web del equipo de moderación. La interfaz está en inglés. Reemplaza a la versión anterior en Expo + React Native Web (eliminada del repo): mismas 9 pantallas y mismo diseño, pero con un stack hecho para la web. El build es un sitio estático que sirve Azure Static Web Apps.
 
 Por ahora la app funciona con **datos simulados en memoria**: se puede recorrer completa sin backend. Para conectarla al backend solo hay que cambiar una pieza (ver [Conectar el backend](#conectar-el-backend)).
 
