@@ -21,3 +21,16 @@ jest.mock('react-native-safe-area-context', () => ({
 jest.mock('@/lib/supabase/client', () => ({
     supabase: require('./supabaseMock').supabase,
 }));
+
+jest.mock('@/services/ratelimit/rateLimiter', () => ({
+    signupAttempts: jest.fn().mockResolvedValue({
+        success: true,
+        remaining: 2,
+        resetAt: new Date(Date.now() + 60_000),
+    }),
+    postCreation: jest.fn().mockResolvedValue({
+        success: true,
+        remaining: 49,
+        resetAt: new Date(Date.now() + 60_000),
+    }),
+}));
